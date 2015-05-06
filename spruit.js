@@ -1,10 +1,10 @@
 
 JobStarts = new Mongo.Collection("job_starts");
 JobEnds = new Mongo.Collection("job_ends");
-TaskStarts = new Mongo.Collection("started_tasks");
-TaskEnds = new Mongo.Collection("ended_tasks");
-StageStarts = new Mongo.Collection("submitted_stages");
-StageEnds = new Mongo.Collection("completed_stages");
+TaskStarts = new Mongo.Collection("task_starts");
+TaskEnds = new Mongo.Collection("task_ends");
+StageStarts = new Mongo.Collection("stage_starts");
+StageEnds = new Mongo.Collection("stage_ends");
 
 if (Meteor.isClient) {
 
