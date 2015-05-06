@@ -1,0 +1,40 @@
+<head>
+  <title>spruit</title>
+  <script src="moment.js" type="text/javascript" />
+</head>
+
+<body>
+  <h1>Spark Jobs</h1>
+  <div>Total Duration: TODO</div>
+  <div>Scheduling Mode: TODO</div>
+  <div>Completed Jobs: TODO</div>
+
+  <h2>Completed Jobs</h2>
+  <table>
+    <tbody>
+    <tr>
+      <th>Job Id</th>
+      <th>Description</th>
+      <th>Submitted</th>
+      <th>Duration</th>
+      <th>Stages: Succeeded/Total</th>
+      <th>Tasks (for all stages): Succeeded/Total</th>
+    </tr>
+    {{> jobRows}}
+    </tbody>
+  </table>
+</body>
+
+<template name="jobRows">
+  {{#each jobs}}
+  {{log this}}
+  <tr>
+    <td>{{jobId}}</td>
+    <td><a href="/job/{{jobId}}">{{stageInfos.[0].name}}</a></td>
+    <td>{{formatDateTime time}}</td>
+    <td>{{getJobDuration this}}</td>
+    <td>{{getSucceededStages this}}/{{stageInfos.length}}</td>
+    <td>{{getSucceededTasks this}}/{{getStartedTasks this}}</td>
+  </tr>
+  {{/each}}
+</template>
