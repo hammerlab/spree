@@ -1,10 +1,7 @@
 
-JobStarts = new Mongo.Collection("job_starts");
-JobEnds = new Mongo.Collection("job_ends");
-TaskStarts = new Mongo.Collection("task_starts");
-TaskEnds = new Mongo.Collection("task_ends");
-StageStarts = new Mongo.Collection("stage_starts");
-StageEnds = new Mongo.Collection("stage_ends");
+Jobs = new Mongo.Collection("jobs")
+Stages = new Mongo.Collection("stages")
+Tasks = new Mongo.Collection("tasks")
 
 if (Meteor.isClient) {
 
@@ -22,53 +19,55 @@ if (Meteor.isClient) {
 
   Template.jobRows.helpers({
     jobs: function() {
-      return JobStarts.find();
+      var jobs = Jobs.find();
+      var stagesById = {}
+      var stageIDs = []
+      jobs.forEach(function(job) {
+        stageIDs = stageIDs.concat(job.stageIDs);
+      });
+      console.log("fetching stages: %s", stageIDs.join(','));
+      Stages.find({id: { '$in': stageIDs }}).map(function(stage) {
+        if (!(stage.id in stagesById)) {
+          stagesById[stage.id] = []
+        }
+        stagesById[stage.id].push(stage);
+      });
+      console.log("stagesById: %O", stagesById);
+      var j = jobs.map(function(job) {
+        return {
+          id: job.id,
+          time: job.time,
+          finishTime: job.finishTime,
+          succeeded: job.succeeded,
+          stages: job.stageIDs.map(function (stageId) {
+            var attempts = stagesById[stageId];
+            return attempts ? attempts[attempts.length - 1] : [];
+          })
+        }
+      });
+      console.log("jobs: %O", j);
+      window.jobs = j;
+      return j;
     },
 
-    getJobDuration: function(jobStart) {
-      var jobEnd = JobEnds.findOne({jobId: jobStart.jobId});
-      if (!jobEnd) return null;
-      console.log("jobEnd: %O", jobEnd);
-      return formatTime(jobEnd.time - jobStart.time);
+    getJobDuration: function(job) {
+      return formatTime(job.finishTime - job.time);
     },
 
-    getSucceededStages: function(jobStart) {
-      var query = {
-        $or: jobStart.stageInfos.map(
-              function(stageInfo) {
-                return  {
-                  stageId: stageInfo.stageId,
-                  attemptId: stageInfo.attemptId
-                };
-              }
-        )
-      }
-      return StageEnds.find(query).count();
+    getSucceededStages: function(job) {
+      return job.stages.filter(function(stage) { return stage.completionTime && !stage.failureReason; }).length;
     },
 
-    getSucceededTasks: function(jobStart) {
-      var query = {
-        $or: jobStart.stageInfos.map(function (stageInfo) {
-          return {
-            stageId: stageInfo.stageId,
-            stageAttemptId: stageInfo.attemptId,
-            "reason.success": true
-          };
-        })
-      };
-      return TaskEnds.find(query).count();
+    getSucceededTasks: function(job) {
+      var s = 0;
+      job.stages.forEach(function(stage) { s += stage.tasksSucceeded; });
+      return s;
     },
 
-    getStartedTasks: function(jobStart) {
-      var query = {
-        $or: jobStart.stageInfos.map(function (stageInfo) {
-          return {
-            stageId: stageInfo.stageId,
-            stageAttemptId: stageInfo.attemptId
-          };
-        })
-      };
-      return TaskEnds.find(query).count();
+    getStartedTasks: function(job) {
+      var s = 0;
+      job.stages.forEach(function(stage) { s += stage.tasksStarted; });
+      return s;
     }
   });
 

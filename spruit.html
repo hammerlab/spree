@@ -29,11 +29,11 @@
   {{#each jobs}}
   {{log this}}
   <tr>
-    <td>{{jobId}}</td>
-    <td><a href="/job/{{jobId}}">{{stageInfos.[0].name}}</a></td>
+    <td>{{id}}</td>
+    <td><a href="/job/{{jobId}}">{{stages.[0].name}}</a></td>
     <td>{{formatDateTime time}}</td>
     <td>{{getJobDuration this}}</td>
-    <td>{{getSucceededStages this}}/{{stageInfos.length}}</td>
+    <td>{{getSucceededStages this}}/{{stages.length}}</td>
     <td>{{getSucceededTasks this}}/{{getStartedTasks this}}</td>
   </tr>
   {{/each}}
