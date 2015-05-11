@@ -4,12 +4,16 @@
 </head>
 
 <body>
-  <h1>Spark Jobs</h1>
-  <div>Total Duration: TODO</div>
-  <div>Scheduling Mode: TODO</div>
-  <div>Completed Jobs: TODO</div>
+<div class="navbar navbar-static-top">
 
-  <h2>Completed Jobs</h2>
+</div>
+<div class="container-fluid">
+  <h3>Spark Jobs</h3>
+  <div><strong>Total Duration:</strong> TODO</div>
+  <div><strong>Scheduling Mode:</strong> TODO</div>
+  <div><a href="#completed"><strong>Completed Jobs:</strong></a> TODO</div>
+
+  <h4 id="completed">Completed Jobs</h4>
   <table>
     <tbody>
     <tr>
@@ -23,18 +27,19 @@
     {{> jobRows}}
     </tbody>
   </table>
+</div>
 </body>
 
 <template name="jobRows">
   {{#each jobs}}
   {{log this}}
-  <tr>
+  <tr class="{{rowClass this}}">
     <td>{{id}}</td>
     <td><a href="/job/{{jobId}}">{{stages.[0].name}}</a></td>
     <td>{{formatDateTime time}}</td>
     <td>{{getJobDuration this}}</td>
     <td>{{getSucceededStages this}}/{{stages.length}}</td>
-    <td>{{getSucceededTasks this}}/{{getStartedTasks this}}</td>
+    <td>{{getSucceededTasks this}}/{{getNumTasks this}} ({{getStartedTasks this}} started, {{getFailedTasks this}} failed)</td>
   </tr>
   {{/each}}
 </template>

@@ -39,6 +39,8 @@ if (Meteor.isClient) {
           time: job.time,
           finishTime: job.finishTime,
           succeeded: job.succeeded,
+          inProgress: !job.finishTime,
+          failed: job.finishTime && !job.succeeded,
           stages: job.stageIDs.map(function (stageId) {
             var attempts = stagesById[stageId];
             return attempts ? attempts[attempts.length - 1] : [];
@@ -50,8 +52,20 @@ if (Meteor.isClient) {
       return j;
     },
 
+    rowClass: function(job) {
+      if (job.succeeded) {
+        return "succeeded";
+      } else if (job.inProgress) {
+        return "in-progress";
+      } else if (job.failed) {
+        return "failed";
+      } else {
+        return "";
+      }
+    },
+
     getJobDuration: function(job) {
-      return formatTime(job.finishTime - job.time);
+      return job.finishTime ? formatTime(job.finishTime - job.time) : (formatTime(moment().unix()*1000 - job.time) + '...');
     },
 
     getSucceededStages: function(job) {
@@ -60,13 +74,25 @@ if (Meteor.isClient) {
 
     getSucceededTasks: function(job) {
       var s = 0;
-      job.stages.forEach(function(stage) { s += stage.tasksSucceeded; });
+      job.stages.forEach(function(stage) { s += (stage.tasksSucceeded || 0); });
       return s;
     },
 
     getStartedTasks: function(job) {
       var s = 0;
-      job.stages.forEach(function(stage) { s += stage.tasksStarted; });
+      job.stages.forEach(function(stage) { s += (stage.tasksStarted || 0); });
+      return s;
+    },
+
+    getNumTasks: function(job) {
+      var s = 0;
+      job.stages.forEach(function(stage) { s += (stage.numTasks || 0); });
+      return s;
+    },
+
+    getFailedTasks: function(job) {
+      var s = 0;
+      job.stages.forEach(function(stage) { s += (stage.failedTasks || 0); });
       return s;
     }
   });
