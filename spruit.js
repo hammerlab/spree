@@ -113,25 +113,25 @@ if (Meteor.isClient) {
 
     getSucceededTasks: function(job) {
       var s = 0;
-      job.stages.forEach(function(stage) { s += (stage.tasksSucceeded || 0); });
+      job.stages.forEach(function(stage) { s += (stage.counts.tasksSucceeded || 0); });
       return s;
     },
 
     getStartedTasks: function(job) {
       var s = 0;
-      job.stages.forEach(function(stage) { s += (stage.tasksStarted || 0); });
+      job.stages.forEach(function(stage) { s += (stage.counts.tasksStarted || 0); });
       return s;
     },
 
     getNumTasks: function(job) {
       var s = 0;
-      job.stages.forEach(function(stage) { s += (stage.numTasks || 0); });
+      job.stages.forEach(function(stage) { s += (stage.counts.numTasks || 0); });
       return s;
     },
 
     getFailedTasks: function(job) {
       var s = 0;
-      job.stages.forEach(function(stage) { s += (stage.failedTasks || 0); });
+      job.stages.forEach(function(stage) { s += (stage.counts.failedTasks || 0); });
       return s;
     }
   });
