@@ -102,4 +102,16 @@ if (Meteor.isClient) {
       return stageCounts.num - stageCounts.running;
     }
   });
+
+  Template.stageRow.helpers({
+    getClass: function(stage) {
+      if (stage.failureReason) {
+        return "failed"
+      }
+      if (stage.time.end) {
+        return "succeeded";
+      }
+      return "";
+    }
+  })
 }
