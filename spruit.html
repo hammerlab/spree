@@ -42,7 +42,7 @@
     <td><a href="/job/{{id}}">{{getJobName this}}</a></td>
     <td>{{formatDateTime time.start}}</td>
     <td>{{getJobDuration this}}</td>
-    <td>{{getSucceededStages this}}/{{stages.length}}</td>
+    <td>{{stageCounts.succeeded}}/{{stageCounts.num}}</td>
     <td>
       {{taskCounts.succeeded}}/{{taskCounts.num}},
       ({{taskCounts.started}} started,

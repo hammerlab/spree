@@ -93,34 +93,7 @@ if (Meteor.isClient) {
             formatTime(job.time.end - job.time.start) :
             (formatTime(Math.max(0, moment().unix()*1000 - job.time.start)) + '...')
       ;
-    },
-
-    getSucceededStages: function(job) {
-      return job.stages.filter(function(stage) { return stage.time.end && !stage.failureReason; }).length;
-    },
-
-  });
-
-  Template.jobPage.helpers({
-    numCompleteStages: function(job) {
-      return job.stages.filter(function(stage) {
-        return !!stage.completionTime;
-      }).length;
-    },
-    numSucceededStages: function(job) {
-      return job.stages.filter(function(stage) {
-        return !!stage.completionTime && !stage.failed;
-      }).length;
-    },
-    numFailedStages: function(job) {
-      return job.stages.filter(function(stage) {
-        return stage.failed;
-      }).length;
-    },
-    numRunningStages: function(job) {
-      return job.stages.filter(function(stage) {
-        return !stage.completionTime;
-      }).length;
     }
+
   });
 }
