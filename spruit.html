@@ -35,24 +35,29 @@
 </template>
 
 <template name="jobRows">
+  {{#with data}}
   {{#each jobs}}
-  {{log this}}
   <tr class="{{rowClass this}}">
     <td>{{id}}</td>
-    <td><a href="/job/{{id}}">{{stages.[0].name}}</a></td>
+    <td><a href="/job/{{id}}">{{getJobName this}}</a></td>
     <td>{{formatDateTime time.start}}</td>
     <td>{{getJobDuration this}}</td>
     <td>{{getSucceededStages this}}/{{stages.length}}</td>
-    <td>{{counts.tasksSucceeded}}/{{counts.numTasks}} ({{counts.tasksStarted}} started, {{counts.tasksFailed}} failed)</td>
+    <td>
+      {{taskCounts.succeeded}}/{{taskCounts.num}},
+      ({{taskCounts.started}} started,
+      {{#if taskCounts.failed}}{{taskCounts.failed}}{{else}}0{{/if}} failed)
+    </td>
   </tr>
   {{/each}}
+  {{/with}}
 </template>
 
 <template name="jobPage">
   {{log this}}
   <div class="container-fluid">
-    <h3>Details for Job {{id}}</h3>
-    <div><strong>Status:</strong> {{jobStatus this}}</div>
+    <h3>Details for Job {{job.id}}</h3>
+    <div><strong>Status:</strong> {{jobStatus job}}</div>
     <div>
       <strong><a href="#completed-stages">Completed Stages:</a></strong>
       {{numCompleteStages this}}
@@ -84,7 +89,7 @@
     <td>{{name}}</td>
     <td>{{formatDateTime time.start}}</td>
     <td>{{formatDuration time.start time.end}}</td>
-    <td>{{counts.tasksSucceeded}}/{{counts.tasksStarted}}</td>
+    <td>{{taskCounts.succeeded}}/{{taskCounts.started}}</td>
     <td></td>
     <td></td>
     <td></td>
