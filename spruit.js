@@ -96,4 +96,10 @@ if (Meteor.isClient) {
     }
 
   });
+
+  Template.jobPage.helpers({
+    completed: function(stageCounts) {
+      return stageCounts.num - stageCounts.running;
+    }
+  });
 }

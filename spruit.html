@@ -60,10 +60,12 @@
     <div><strong>Status:</strong> {{jobStatus job}}</div>
     <div>
       <strong><a href="#completed-stages">Completed Stages:</a></strong>
-      {{numCompleteStages this}}
-      ({{numSucceededStages this}} succeeded, {{numFailedStages this}} failed, {{numRunningStages this}} running)
+      {{#with job.stageCounts}}
+        {{completed this}}
+        ({{succeeded}} succeeded, {{failed}} failed, {{running}} running)
+      {{/with}}
     </div>
-    <h4 id="completed-stages">Completed Stages ({{numCompleteStages this}})</h4>
+    <h4 id="completed-stages">Completed Stages ({{completed job.stageCounts}})</h4>
     <table>
       <tr>
         <th>Stage ID</th>
