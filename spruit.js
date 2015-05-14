@@ -3,6 +3,12 @@ Jobs = new Mongo.Collection("jobs")
 Stages = new Mongo.Collection("stages")
 Tasks = new Mongo.Collection("tasks")
 
+function getNumTasks(stages) {
+  var s = 0;
+  stages.forEach(function(stage) { s += (stage.counts.numTasks || 0); });
+  return s;
+}
+
 function jobsWithStages(queryObj) {
   var jobs = Jobs.find(queryObj || {});
   console.log("pre jobs: %O", jobs);
@@ -20,18 +26,21 @@ function jobsWithStages(queryObj) {
     stagesById[stage.id].push(stage);
   });
   console.log("stagesById: %O", stagesById);
+
   var j = jobs.map(function(job) {
+    var stages = job.stageIDs.map(function (stageId) {
+      var attempts = stagesById[stageId];
+      return attempts ? attempts[attempts.length - 1] : [];
+    });
+
     return {
       id: job.id,
-      startTime: job.startTime,
-      endTime: job.endTime,
+      time: job.time,
       succeeded: job.succeeded,
-      inProgress: !job.endTime,
-      failed: job.endTime && !job.succeeded,
-      stages: job.stageIDs.map(function (stageId) {
-        var attempts = stagesById[stageId];
-        return attempts ? attempts[attempts.length - 1] : [];
-      })
+      inProgress: !job.time.end,
+      failed: job.time.end && !job.succeeded,
+      numTasks: getNumTasks(stages),
+      stages: stages
     }
   });
   return j;
@@ -95,11 +104,11 @@ if (Meteor.isClient) {
     },
 
     getJobDuration: function(job) {
-      return job.endTime ? formatTime(job.endTime - job.startTime) : (formatTime(moment().unix()*1000 - job.startTime) + '...');
+      return job.time.end ? formatTime(job.time.end - job.time.start) : (formatTime(moment().unix()*1000 - job.time.start) + '...');
     },
 
     getSucceededStages: function(job) {
-      return job.stages.filter(function(stage) { return stage.endTime && !stage.failureReason; }).length;
+      return job.stages.filter(function(stage) { return stage.time.end && !stage.failureReason; }).length;
     },
 
     getSucceededTasks: function(job) {

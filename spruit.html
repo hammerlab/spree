@@ -40,7 +40,7 @@
   <tr class="{{rowClass this}}">
     <td>{{id}}</td>
     <td><a href="/job/{{id}}">{{stages.[0].name}}</a></td>
-    <td>{{formatDateTime startTime}}</td>
+    <td>{{formatDateTime time.start}}</td>
     <td>{{getJobDuration this}}</td>
     <td>{{getSucceededStages this}}/{{stages.length}}</td>
     <td>{{getSucceededTasks this}}/{{getNumTasks this}} ({{getStartedTasks this}} started, {{getFailedTasks this}} failed)</td>
@@ -82,8 +82,8 @@
   <tr>
     <td>{{id}}</td>
     <td>{{name}}</td>
-    <td>{{formatDateTime startTime}}</td>
-    <td>{{formatDuration startTime endTime}}</td>
+    <td>{{formatDateTime time.start}}</td>
+    <td>{{formatDuration time.start time.end}}</td>
     <td>{{tasksSucceeded}}/{{tasksStarted}}</td>
     <td></td>
     <td></td>
