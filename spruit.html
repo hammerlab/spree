@@ -43,7 +43,7 @@
     <td>{{formatDateTime time.start}}</td>
     <td>{{getJobDuration this}}</td>
     <td>{{getSucceededStages this}}/{{stages.length}}</td>
-    <td>{{getSucceededTasks this}}/{{getNumTasks this}} ({{getStartedTasks this}} started, {{getFailedTasks this}} failed)</td>
+    <td>{{counts.tasksSucceeded}}/{{counts.numTasks}} ({{counts.tasksStarted}} started, {{counts.tasksFailed}} failed)</td>
   </tr>
   {{/each}}
 </template>
