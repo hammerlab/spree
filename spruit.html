@@ -92,9 +92,9 @@
     <td>{{formatDateTime time.start}}</td>
     <td>{{formatDuration time.start time.end}}</td>
     <td>{{taskCounts.succeeded}}/{{taskCounts.started}}</td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
+    <td>{{formatBytes metrics.inputMetrics.bytesRead}}</td>
+    <td>{{formatBytes metrics.outputMetrics.bytesWritten}}</td>
+    <td>{{formatBytes metrics.shuffleReadMetrics.localBytesRead}}</td>
+    <td>{{formatBytes metrics.shuffleWriteMetrics.shuffleBytesWritten}}</td>
   </tr>
 </template>
