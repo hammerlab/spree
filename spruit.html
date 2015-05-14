@@ -7,39 +7,87 @@
 <div class="navbar navbar-static-top">
 
 </div>
-<div class="container-fluid">
-  <h3>Spark Jobs</h3>
-  <div><strong>Total Duration:</strong> TODO</div>
-  <div><strong>Scheduling Mode:</strong> TODO</div>
-  <div><a href="#completed"><strong>Completed Jobs:</strong></a> TODO</div>
 
-  <h4 id="completed">Completed Jobs</h4>
-  <table>
-    <tbody>
-    <tr>
-      <th>Job Id</th>
-      <th>Description</th>
-      <th>Submitted</th>
-      <th>Duration</th>
-      <th>Stages: Succeeded/Total</th>
-      <th>Tasks (for all stages): Succeeded/Total</th>
-    </tr>
-    {{> jobRows}}
-    </tbody>
-  </table>
-</div>
 </body>
+
+<template name="jobsPage">
+  <div class="container-fluid">
+    <h3>Spark Jobs</h3>
+    <div><strong>Total Duration:</strong> TODO</div>
+    <div><strong>Scheduling Mode:</strong> TODO</div>
+    <div><a href="#completed"><strong>Completed Jobs:</strong></a> TODO</div>
+
+    <h4 id="completed">Completed Jobs</h4>
+    <table>
+      <tbody>
+      <tr>
+        <th>Job Id</th>
+        <th>Description</th>
+        <th>Submitted</th>
+        <th>Duration</th>
+        <th>Stages: Succeeded/Total</th>
+        <th>Tasks (for all stages): Succeeded/Total</th>
+      </tr>
+      {{> jobRows}}
+      </tbody>
+    </table>
+  </div>
+</template>
 
 <template name="jobRows">
   {{#each jobs}}
   {{log this}}
   <tr class="{{rowClass this}}">
     <td>{{id}}</td>
-    <td><a href="/job/{{jobId}}">{{stages.[0].name}}</a></td>
-    <td>{{formatDateTime time}}</td>
+    <td><a href="/job/{{id}}">{{stages.[0].name}}</a></td>
+    <td>{{formatDateTime startTime}}</td>
     <td>{{getJobDuration this}}</td>
     <td>{{getSucceededStages this}}/{{stages.length}}</td>
     <td>{{getSucceededTasks this}}/{{getNumTasks this}} ({{getStartedTasks this}} started, {{getFailedTasks this}} failed)</td>
   </tr>
   {{/each}}
+</template>
+
+<template name="jobPage">
+  {{log this}}
+  <div class="container-fluid">
+    <h3>Details for Job {{id}}</h3>
+    <div><strong>Status:</strong> {{jobStatus this}}</div>
+    <div>
+      <strong><a href="#completed-stages">Completed Stages:</a></strong>
+      {{numCompleteStages this}}
+      ({{numSucceededStages this}} succeeded, {{numFailedStages this}} failed, {{numRunningStages this}} running)
+    </div>
+    <h4 id="completed-stages">Completed Stages ({{numCompleteStages this}})</h4>
+    <table>
+      <tr>
+        <th>Stage ID</th>
+        <th>Description</th>
+        <th>Submitted</th>
+        <th>Duration</th>
+        <th>Tasks: Suceeded/Total</th>
+        <th>Input</th>
+        <th>Output</th>
+        <th>Shuffle Read</th>
+        <th>Shuffle Write</th>
+      </tr>
+      {{#each stages}}
+        {{> stageRow this}}
+      {{/each}}
+    </table>
+  </div>
+</template>
+
+<template name="stageRow">
+  <tr>
+    <td>{{id}}</td>
+    <td>{{name}}</td>
+    <td>{{formatDateTime startTime}}</td>
+    <td>{{formatDuration startTime endTime}}</td>
+    <td>{{tasksSucceeded}}/{{tasksStarted}}</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
 </template>
