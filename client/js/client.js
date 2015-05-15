@@ -71,9 +71,7 @@ Template.registerHelper("formatBytes", function(bytes) {
   for (var i = 0; i < levels.length; i++) {
     var order = levels[i];
     if (bytes < cutoff*base || order == 'PB') {
-      var r = sigFigs(bytes) + order;
-      console.log("returning.. %s", r)
-      return r;
+      return sigFigs(bytes) + order;
     }
     bytes /= 1024;
   }
