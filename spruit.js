@@ -95,7 +95,7 @@ if (Meteor.isClient) {
   });
 
   Template.registerHelper("formatBytes", function(bytes) {
-    if (bytes == 0) return "-";
+    if (!bytes) return "-";
     var base = 1024;
     var cutoff = 2;
     var levels = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
@@ -153,7 +153,7 @@ if (Meteor.isClient) {
 
   Template.jobPage.helpers({
     completed: function(stageCounts) {
-      return stageCounts.num - stageCounts.running;
+      return (stageCounts.num - stageCounts.running) || 0;
     }
   });
 
