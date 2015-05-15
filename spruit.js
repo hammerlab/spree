@@ -40,6 +40,10 @@ sigFigs = function(m, n) {
 Router.route("/job/:_id", function() {
   console.log("params: %O", this.params._id);
   var job = Jobs.findOne( { id: parseInt(this.params._id) });
+  if (!job) {
+    this.render('jobPage');
+    return;
+  }
   var stages = Stages.find({ id: { $in: job.stageIDs }})
   this.render('jobPage', {
     data: {
