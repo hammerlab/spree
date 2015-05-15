@@ -4,7 +4,7 @@ Stages = new Mongo.Collection("stages")
 Tasks = new Mongo.Collection("tasks")
 
 function jobsAndStages(queryObj) {
-  var jobs = Jobs.find(queryObj || {});
+  var jobs = Jobs.find(queryObj || {}, {sort: {id:-1}});
 
   var stageIDs = [];
   jobs.map(function(job) { stageIDs = stageIDs.concat(job.stageIDs); })
