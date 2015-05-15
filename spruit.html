@@ -42,12 +42,8 @@
     <td><a href="/job/{{id}}">{{getJobName this}}</a></td>
     <td>{{formatDateTime time.start}}</td>
     <td>{{getJobDuration this}}</td>
-    <td>{{stageCounts.succeeded}}/{{stageCounts.num}}</td>
-    <td>
-      {{taskCounts.succeeded}}/{{taskCounts.num}},
-      ({{taskCounts.started}} started,
-      {{#if taskCounts.failed}}{{taskCounts.failed}}{{else}}0{{/if}} failed)
-    </td>
+    <td>{{> progressBar stageCounts}}</td>
+    <td>{{> progressBar taskCounts}}</td>
   </tr>
   {{/each}}
   {{/with}}
@@ -60,10 +56,14 @@
     <div><strong>Status:</strong> {{jobStatus job}}</div>
     <div>
       <strong><a href="#completed-stages">Completed Stages:</a></strong>
-      {{#with job.stageCounts}}
-        {{completed this}}
-        ({{succeeded}} succeeded, {{failed}} failed, {{running}} running)
-      {{/with}}
+      {{#if job.stageCounts}}
+        {{#with job.stageCounts}}
+          {{completed this}}
+          ({{succeeded}} succeeded, {{failed}} failed, {{running}} running)
+        {{/with}}
+      {{else}}
+        0
+      {{/if}}
     </div>
     <h4 id="completed-stages">Completed Stages ({{completed job.stageCounts}})</h4>
     <table>
@@ -91,10 +91,18 @@
     <td>{{name}}</td>
     <td>{{formatDateTime time.start}}</td>
     <td>{{formatDuration time.start time.end}}</td>
-    <td>{{taskCounts.succeeded}}/{{taskCounts.started}}</td>
+    <td>{{> progressBar taskCounts}}</td>
     <td>{{formatBytes metrics.inputMetrics.bytesRead}}</td>
     <td>{{formatBytes metrics.outputMetrics.bytesWritten}}</td>
     <td>{{formatBytes metrics.shuffleReadMetrics.localBytesRead}}</td>
     <td>{{formatBytes metrics.shuffleWriteMetrics.shuffleBytesWritten}}</td>
   </tr>
+</template>
+
+<template name="progressBar">
+  <div class="progress">
+    <span class="label">{{label this}}</span>
+    <div class="bar bar-completed" style="width:{{completedPercentage this}}"></div>
+    <div class="bar bar-running" style="width:{{runningPercentage this}}"></div>
+  </div>
 </template>

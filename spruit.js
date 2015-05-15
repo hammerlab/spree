@@ -38,10 +38,11 @@ sigFigs = function(m, n) {
 }
 
 Router.route("/job/:_id", function() {
-  console.log("params: %O", this.params._id);
-  var job = Jobs.findOne( { id: parseInt(this.params._id) });
+  var id = parseInt(this.params._id)
+  console.log("params: %O", id);
+  var job = Jobs.findOne( { id: id });
   if (!job) {
-    this.render('jobPage');
+    this.render('jobPage', { data: { job: {id:id}, stages: [] }});
     return;
   }
   var stages = Stages.find({ id: { $in: job.stageIDs }})
@@ -153,7 +154,7 @@ if (Meteor.isClient) {
 
   Template.jobPage.helpers({
     completed: function(stageCounts) {
-      return (stageCounts.num - stageCounts.running) || 0;
+      return (stageCounts && (stageCounts.num - stageCounts.running)) || 0;
     }
   });
 
@@ -168,4 +169,20 @@ if (Meteor.isClient) {
       return "";
     }
   })
+
+  Template.progressBar.helpers({
+    label: function(counts) {
+      return counts.succeeded + "/" + counts.num + (counts.running ? (" (" + counts.running + " running)") : "");
+    },
+    completedPercentage: function(bar) {
+      var p = (bar.succeeded / bar.num) * 100 + '%'
+      console.log("complete: %O %s", bar, p);
+      return p;
+    },
+    runningPercentage: function(bar) {
+      var p = (bar.running / bar.num) * 100 + '%';
+      console.log("running: %O %s", bar, p);
+      return p;
+    }
+  });
 }

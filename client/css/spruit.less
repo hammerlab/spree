@@ -11,11 +11,13 @@
 
   padding-left: 20px;
   padding-right: 20px;
+  font-size: 14px;
 
   table {
 
     width: 100%;
     border: 1px solid #ddd;
+    line-height: 20px;
 
     td,th {
       padding: 4px 5px;
@@ -27,5 +29,36 @@
       background: #efe;
     }
 
+  }
+
+  .progress {
+    width: 100%;
+    margin-bottom: 0px;
+    position: relative;
+
+    .label {
+      position: absolute;
+      width: 100%;
+      text-align: center;
+      left: 0px;
+      font-size: 100%;
+      color: #000;
+      font-weight: normal;
+    }
+    .bar {
+      float: left;
+      //color: #000;
+      height: 100%;
+    }
+    .bar-completed {
+      background-color: #3EC0FF;
+      background-image: linear-gradient(to bottom, #64CBFF, #54B0EE);
+      background-repeat: repeat-x;
+    }
+    .bar-running {
+      background-color: #A0DFFF;
+      background-image: linear-gradient(to bottom, #A4EDFF, #94DDFF);
+      background-repeat: repeat-x;
+    }
   }
 }
