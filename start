@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+host=localhost
+port=27017
+db=spear
+
+while getopts ":h:p:d:" opt; do
+  case $opt in
+    h)
+      host="$OPTARG"
+      ;;
+    p)
+      port="$OPTARG"
+      ;;
+    d)
+      db="$OPTARG"
+      ;;
+    \?)
+      break
+      ;;
+  esac
+done
+shift $((OPTIND-1))
+
+export MONGO_URL="mongodb://$host:$port/$db"
+export MONGO_OPLOG_URL="mongodb://$host:$port/local"
+
+echo "Starting Meteor pointing at mongo URL $MONGO_URL"
+
+meteor "$@"
