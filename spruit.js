@@ -49,7 +49,11 @@ Router.route("/a/:_appId", function() {
   var jobIDs = jobs.map(function(job) { return job.id; });
   Meteor.subscribe("last-stages", appId, jobIDs);
   this.render('jobsPage', {
-    data: { jobs: jobs, stages: Stages.find() }//jobsAndStages(appId)
+    data: {
+      jobs: jobs,
+      stages: Stages.find(),
+      jobsTab: 1
+    }
   });
 });
 
