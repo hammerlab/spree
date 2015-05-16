@@ -10,7 +10,36 @@
 
 </body>
 
+<template name="appsPage">
+  <div class="container-fluid">
+    <h3>Spark Applications</h3>
+    <table>
+      <tbody>
+        <tr>
+          <th>App ID</th>
+          <th>App Name</th>
+          <th>Started</th>
+          <th>Completed</th>
+          <th>Duration</th>
+          <th>User</th>
+        </tr>
+        {{#each applications}}
+          <tr>
+            <td><a href="/a/{{id}}">{{id}}</a></td>
+            <td>{{name}}</td>
+            <td>{{formatDateTime time.start}}</td>
+            <td>{{formatDateTime time.end}}</td>
+            <td>{{formatDuration time.start time.end}}</td>
+            <td>{{user}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+</template>
+
 <template name="jobsPage">
+  {{log this}}
   <div class="container-fluid">
     <h3>Spark Jobs</h3>
     <div><strong>Total Duration:</strong> TODO</div>
@@ -28,25 +57,19 @@
         <th>Stages: Succeeded/Total</th>
         <th>Tasks (all stages): Succeeded/Total</th>
       </tr>
-      {{> jobRows}}
+      {{#each jobs}}
+      <tr class="{{rowClass this}}">
+        <td>{{id}}</td>
+        <td><a href="/a/{{appId}}/job/{{id}}">{{getJobName this}}</a></td>
+        <td>{{formatDateTime time.start}}</td>
+        <td>{{getJobDuration this}}</td>
+        <td>{{> progressBar stageCounts}}</td>
+        <td>{{> progressBar taskCounts}}</td>
+      </tr>
+      {{/each}}
       </tbody>
     </table>
   </div>
-</template>
-
-<template name="jobRows">
-  {{#with data}}
-  {{#each jobs}}
-  <tr class="{{rowClass this}}">
-    <td>{{id}}</td>
-    <td><a href="/job/{{id}}">{{getJobName this}}</a></td>
-    <td>{{formatDateTime time.start}}</td>
-    <td>{{getJobDuration this}}</td>
-    <td>{{> progressBar stageCounts}}</td>
-    <td>{{> progressBar taskCounts}}</td>
-  </tr>
-  {{/each}}
-  {{/with}}
 </template>
 
 <template name="jobPage">

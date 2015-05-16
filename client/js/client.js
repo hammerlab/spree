@@ -5,25 +5,6 @@ sigFigs = function(m, n) {
   return m.toFixed(Math.max(0, n - leftOfDecimal));
 }
 
-function jobsAndStages(queryObj) {
-  var jobs = Jobs.find(queryObj || {}, {sort: {id:-1}});
-
-  var stageIDs = [];
-  jobs.map(function(job) { stageIDs = stageIDs.concat(job.stageIDs); })
-
-  var stages = Stages.find({ id: { $in: stageIDs } });
-
-  var stagesByJobId = {}
-  stages.map(function(stage) {
-    if (!(stage.jobId in stagesByJobId)) {
-      stagesByJobId[stage.jobId] = [];
-    }
-    stagesByJobId[stage.jobId].push(stage);
-  });
-
-  return { jobs: jobs, stages: stages, stagesByJobId: stagesByJobId };
-}
-
 function formatTime(ms) {
   var S = 1000;
   var M = 60*S;
@@ -89,10 +70,13 @@ Template.registerHelper("formatDuration", function(start, end) {
   return end ? formatTime(end - start) : (formatTime(moment().unix()*1000 - start) + '...');
 });
 
-Template.jobRows.helpers({
-  data: function() {
-    return jobsAndStages();
-  },
+Template.appsPage.helpers({
+  applications: function() {
+    return Applications.find();
+  }
+});
+
+Template.jobsPage.helpers({
 
   rowClass: function(job) {
     if (job.succeeded) {
