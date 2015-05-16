@@ -94,7 +94,7 @@
     <td>{{> progressBar taskCounts}}</td>
     <td>{{formatBytes metrics.inputMetrics.bytesRead}}</td>
     <td>{{formatBytes metrics.outputMetrics.bytesWritten}}</td>
-    <td>{{formatBytes metrics.shuffleReadMetrics.localBytesRead}}</td>
+    <td>{{shuffleRead metrics.shuffleReadMetrics}}</td>
     <td>{{formatBytes metrics.shuffleWriteMetrics.shuffleBytesWritten}}</td>
   </tr>
 </template>

@@ -63,7 +63,7 @@ Template.registerHelper("formatDateTime", function(dt) {
   return moment(dt).format("YYYY/MM/DD HH:mm:ss");
 });
 
-Template.registerHelper("formatBytes", function(bytes) {
+function formatBytes(bytes) {
   if (!bytes) return "-";
   var base = 1024;
   var cutoff = 2;
@@ -75,7 +75,8 @@ Template.registerHelper("formatBytes", function(bytes) {
     }
     bytes /= 1024;
   }
-});
+}
+Template.registerHelper("formatBytes", formatBytes);
 
 Template.registerHelper("jobStatus", function(job) {
   if (job.succeeded) return "SUCCEEDED";
@@ -133,6 +134,9 @@ Template.stageRow.helpers({
       return "succeeded";
     }
     return "";
+  },
+  shuffleRead: function(shuffleReadMetrics) {
+    return formatBytes(shuffleReadMetrics.localBytesRead + shuffleReadMetrics.remoteBytesRead);
   }
 })
 
