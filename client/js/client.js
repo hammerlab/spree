@@ -107,7 +107,8 @@ Template.jobRows.helpers({
   },
 
   getJobName: function(job, stagesByJobId) {
-    return Stages.findOne({ jobId: job.id }, { sort: { id: 1}}).name;
+    // NOTE(ryan): this sort presumably does not use my {appId:1,jobId:1} index on Stages.
+    return Stages.findOne({ jobId: job.id }, { sort: { id: -1 } }).name;
   },
 
   getJobDuration: function(job) {
