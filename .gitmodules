@@ -1,0 +1,3 @@
+[submodule ".submodules/spear"]
+	path = .submodules/spear
+	url = git@github.com:hammerlab/spear.git
