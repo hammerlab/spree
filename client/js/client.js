@@ -41,7 +41,8 @@ Template.registerHelper("log", function(something) {
 });
 
 Template.registerHelper("formatDateTime", function(dt) {
-  return moment(dt).format("YYYY/MM/DD HH:mm:ss");
+
+  return dt && moment(dt).format("YYYY/MM/DD HH:mm:ss") || "-";
 });
 
 function formatBytes(bytes) {
