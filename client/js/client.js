@@ -90,9 +90,10 @@ Template.jobsPage.helpers({
     }
   },
 
-  getJobName: function(job, stagesByJobId) {
+  getJobName: function(job) {
     // NOTE(ryan): this sort presumably does not use my {appId:1,jobId:1} index on Stages.
-    return Stages.findOne({ jobId: job.id }, { sort: { id: -1 } }).name;
+    var stage = Stages.findOne({ jobId: job.id }, { sort: { id: -1 } });
+    return stage && stage.name || "";
   },
 
   getJobDuration: function(job) {
