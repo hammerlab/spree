@@ -50,6 +50,11 @@ if (Meteor.isServer) {
   Meteor.publish("job-stages", function(appId, jobId) {
     return Stages.find({ appId: appId, jobId: jobId }, { sort: { id: -1 }});
   });
+
+  // Stages page
+  Meteor.publish("stages", function(appId) {
+    return Stages.find({ appId: appId });
+  });
 }
 
 // Applications page
@@ -60,7 +65,7 @@ Router.route("/", function() {
   this.render('appsPage');
 });
 
-// Jobs page
+// Application/Jobs page
 Router.route("/a/:_appId", function() {
   var appId = this.params._appId;
   Meteor.subscribe("jobs", appId);
@@ -69,6 +74,7 @@ Router.route("/a/:_appId", function() {
   Meteor.subscribe("last-stages", appId, jobIDs);
   this.render('jobsPage', {
     data: {
+      appId: appId,
       jobs: jobs,
       stages: Stages.find(),
       jobsTab: 1
@@ -89,6 +95,19 @@ Router.route("/a/:_appId/job/:_jobId", function() {
       appId: appId,
       job: Jobs.findOne(),
       stages: Stages.find({}, { sort: { id: -1 } })
+    }
+  });
+});
+
+// Stages page
+Router.route("/a/:_appId/stages", function() {
+  var appId = this.params._appId;
+  Meteor.subscribe("stages", appId);
+  this.render('stagesPage', {
+    data: {
+      appId: appId,
+      stages: Stages.find(),
+      stagesTab: 1
     }
   });
 });
