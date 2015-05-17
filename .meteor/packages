@@ -8,3 +8,4 @@ meteor-platform
 insecure
 less
 iron:router
+jquery

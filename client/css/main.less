@@ -3,7 +3,6 @@
   height: 50px;
   font-size: 15px;
   margin-bottom: 15px;
-  min-width: 2000px;
 
   .navbar-inner {
     height: 50px;
@@ -21,6 +20,11 @@
   .navbar-text {
     height: 50px;
     line-height: 3.3;
+    max-width: 200px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    cursor: pointer;
   }
 
   .brand {

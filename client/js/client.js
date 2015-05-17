@@ -1,4 +1,8 @@
 
+MongoUrl = new Mongo.Collection('mongoUrl');
+
+Meteor.subscribe('mongoUrl');
+
 sigFigs = function(m, n) {
   n = n || 3;
   var leftOfDecimal = Math.ceil(Math.log(m) / Math.log(10));
@@ -40,8 +44,23 @@ Template.registerHelper("log", function(something) {
   console.log(something);
 });
 
-Template.registerHelper("formatDateTime", function(dt) {
+function fullMongoUrl() {
+  var url = MongoUrl.findOne();
+  return url && url.url || "";
+}
+function mongoUrl() {
+  var url = MongoUrl.findOne();
+  return url && url.shortUrl || "";
+}
+Template.registerHelper("mongoUrl", mongoUrl);
 
+Template.navbar.events({
+  'click .navbar-text': function(e) {
+    prompt("Copy the mongo URL below", fullMongoUrl());
+  }
+});
+
+Template.registerHelper("formatDateTime", function(dt) {
   return dt && moment(dt).format("YYYY/MM/DD HH:mm:ss") || "-";
 });
 
