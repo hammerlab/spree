@@ -45,7 +45,6 @@ if (Meteor.isServer) {
 
   // Job page
   Meteor.publish("job", function(appId, jobId) {
-    console.log("publishing job: %s,%s", appId, jobId);
     return Jobs.find({appId: appId, id: jobId});
   });
   Meteor.publish("job-stages", function(appId, jobId) {

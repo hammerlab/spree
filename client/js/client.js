@@ -80,6 +80,7 @@ function formatBytes(bytes) {
 Template.registerHelper("formatBytes", formatBytes);
 
 Template.registerHelper("jobStatus", function(job) {
+  if (!job) { return ""; }
   if (job.succeeded) return "SUCCEEDED";
   if (job.failed) return "FAILED";
   if (job.inProgress) return "RUNNING";
@@ -133,16 +134,17 @@ Template.jobPage.helpers({
 
 Template.stageRow.helpers({
   getClass: function(stage) {
+    if (!stage) return "";
     if (stage.failureReason) {
       return "failed"
     }
-    if (stage.time.end) {
+    if (stage.time && stage.time.end) {
       return "succeeded";
     }
     return "";
   },
   shuffleRead: function(shuffleReadMetrics) {
-    return formatBytes(shuffleReadMetrics.localBytesRead + shuffleReadMetrics.remoteBytesRead);
+    return shuffleReadMetrics && formatBytes(shuffleReadMetrics.localBytesRead + shuffleReadMetrics.remoteBytesRead) || "";
   }
 })
 
