@@ -55,6 +55,14 @@ if (Meteor.isServer) {
   Meteor.publish("stages", function(appId) {
     return Stages.find({ appId: appId });
   });
+
+  // Stage page
+  Meteor.publish("stage", function(appId, stageId, attemptId) {
+    return Stages.find({ appId: appId, id: stageId, attempt: attemptId });
+  });
+  Meteor.publish("tasks", function(appId, stageId, attemptId) {
+    return Tasks.find({ appId: appId, stageId: stageId, stageAttemptId: attemptId });
+  });
 }
 
 // Applications page
@@ -94,7 +102,8 @@ Router.route("/a/:_appId/job/:_jobId", function() {
     data: {
       appId: appId,
       job: Jobs.findOne(),
-      stages: Stages.find({}, { sort: { id: -1 } })
+      stages: Stages.find({}, { sort: { id: -1 } }),
+      jobsTab: 1
     }
   });
 });
@@ -112,3 +121,49 @@ Router.route("/a/:_appId/stages", function() {
   });
 });
 
+function sortNumber(a,b) {
+  return a - b;
+}
+
+function makeSummaryStats(name, arr) {
+  var n = arr.length;
+  return {
+    name: name,
+    stats: [
+      arr[0],
+      arr[Math.floor(n/4)],
+      arr[Math.floor(n/2)],
+      arr[Math.floor(3*n/4)],
+      arr[n-1]
+    ]
+  }
+}
+
+Router.route("/a/:_appId/stage/:_stageId", function() {
+  var appId = this.params._appId;
+  var stageId = parseInt(this.params._stageId);
+  var attemptId = this.params.query.attempt ? parseInt(this.params.query.attempt) : 0;
+  console.log("looking up stage %d.%d", stageId, attemptId);
+  Meteor.subscribe("stage", appId, stageId, attemptId);
+  Meteor.subscribe("tasks", appId, stageId, attemptId);
+
+  var durations =
+        Tasks.find(
+              {"time.start": {$exists:1}, "time.end": {$exists:1}},
+              { select: { "time.start": 1, "time.end": 1 }}
+        ).map(function(t) {
+          return t.time.end - t.time.start;
+        }).sort(sortNumber);
+
+  console.log("durations: %d", durations.length);
+
+  this.render('stagePage', {
+    data: {
+      appId: appId,
+      stage: Stages.findOne(),
+      tasks: Tasks.find(),
+      durations: makeSummaryStats("Duration", durations),
+      stagesTab: 1
+    }
+  });
+});
