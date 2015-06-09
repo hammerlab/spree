@@ -183,7 +183,7 @@ MongoClient.connect(url, function(err, db) {
   assert.equal(null, err);
   console.log("Connected correctly to server");
 
-  Applications = db.collection('applications');
+  Applications = db.collection('apps');
   Jobs = db.collection('jobs');
   Stages = db.collection('stages');
   RDDs = db.collection('rdds');
