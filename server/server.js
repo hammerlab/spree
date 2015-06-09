@@ -40,7 +40,7 @@ function upsert(collection, cbName, find, $set) {
 
 var handlers = {
 
-  "SparkListenerApplicationStart": function(e) {
+  SparkListenerApplicationStart: function(e) {
     var o = {
       name: e['App Name'],
       'time.start': e['Timestamp'],
@@ -52,7 +52,7 @@ var handlers = {
     upsert(Applications, "SparkListenerApplicationStart", { id: e['App ID'] }, o);
   },
 
-  "SparkListenerApplicationEnd": function(e) {
+  SparkListenerApplicationEnd: function(e) {
     upsert(
           Applications,
           "SparkListenerApplicationEnd",
@@ -61,7 +61,7 @@ var handlers = {
     );
   },
 
-  "SparkListenerJobStart": function(e) {
+  SparkListenerJobStart: function(e) {
     var stageIDs = e['Stage IDs'];
     var stageInfos = e['Stage Infos'];
 
@@ -139,7 +139,7 @@ var handlers = {
 
   },
 
-  "SparkListenerJobEnd": function(e) {
+  SparkListenerJobEnd: function(e) {
     upsert(
           Jobs,
           "SparkListenerJobEnd",
@@ -153,45 +153,45 @@ var handlers = {
     );
   },
 
-  "SparkListenerStageSubmitted": function(e) {
+  SparkListenerStageSubmitted: function(e) {
 
   },
-  "SparkListenerStageCompleted": function(e) {
-
-  },
-
-  "SparkListenerTaskStart": function(e) {
-
-  },
-  "SparkListenerTaskGettingResult": function(e) {
-
-  },
-  "SparkListenerTaskEnd": function(e) {
+  SparkListenerStageCompleted: function(e) {
 
   },
 
-  "SparkListenerEnvironmentUpdate": function(e) {
+  SparkListenerTaskStart: function(e) {
 
   },
-  "SparkListenerBlockManagerAdded": function(e) {
+  SparkListenerTaskGettingResult: function(e) {
 
   },
-  "SparkListenerBlockManagerRemoved": function(e) {
+  SparkListenerTaskEnd: function(e) {
 
   },
-  "SparkListenerUnpersistRDD": function(e) {
+
+  SparkListenerEnvironmentUpdate: function(e) {
 
   },
-  "SparkListenerExecutorAdded": function(e) {
+  SparkListenerBlockManagerAdded: function(e) {
 
   },
-  "SparkListenerExecutorRemoved": function(e) {
+  SparkListenerBlockManagerRemoved: function(e) {
 
   },
-  "SparkListenerLogStart": function(e) {
+  SparkListenerUnpersistRDD: function(e) {
 
   },
-  "SparkListenerExecutorMetricsUpdate": function(e) {
+  SparkListenerExecutorAdded: function(e) {
+
+  },
+  SparkListenerExecutorRemoved: function(e) {
+
+  },
+  SparkListenerLogStart: function(e) {
+
+  },
+  SparkListenerExecutorMetricsUpdate: function(e) {
 
   }
 };
