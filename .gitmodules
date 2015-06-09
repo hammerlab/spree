@@ -1,3 +1,6 @@
 [submodule "spear"]
 	path = spear
 	url = git@github.com:hammerlab/spear.git
+[submodule "json-relay"]
+	path = json-relay
+	url = git@github.com:hammerlab/json-relay-spark-listener.git
