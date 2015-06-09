@@ -70,7 +70,7 @@ completedStages = function() {
       { "time.end": { $exists: true }}
     ]
   }, { sort: { id: -1 }});
-}
+};
 Template.registerHelper("completedStages", completedStages);
 Template.registerHelper("numCompletedStages", function() {
   return completedStages().count();
@@ -207,11 +207,11 @@ Template.stageRow.helpers({
   shuffleRead: function(shuffleReadMetrics) {
     return shuffleReadMetrics && formatBytes(shuffleReadMetrics.localBytesRead + shuffleReadMetrics.remoteBytesRead) || "";
   }
-})
+});
 
 Template.progressBar.helpers({
   label: function(counts) {
-    return counts.succeeded + "/" + counts.num + (counts.running ? (" (" + counts.running + " running)") : "");
+    return (counts.succeeded || 0) + "/" + counts.num + (counts.running ? (" (" + counts.running + " running)") : "");
   },
   completedPercentage: function(bar) {
     var p = (bar.succeeded / bar.num) * 100 + '%'

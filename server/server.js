@@ -25,31 +25,39 @@ var upsertCb = function(event) {
   }
 };
 
+function isEmptyObject(obj) {
+  return !Object.keys(obj).length;
+}
+
+function upsert(collection, cbName, find, $set) {
+  collection.findOneAndUpdate(
+        find,
+        { $set: $set },
+        upsertOpts,
+        upsertCb(cbName)
+  );
+}
+
 var handlers = {
 
   "SparkListenerApplicationStart": function(e) {
     var o = {
       name: e['App Name'],
-      time: { start: e['Timestamp'] },
+      'time.start': e['Timestamp'],
       user: e['User']
     };
     if (e['App Attempt ID']) {
       o.attempt = e['App Attempt ID'];
     }
-    Applications.findOneAndUpdate(
-          { id: e['App ID'] },
-          { $set: o },
-          upsertOpts,
-          upsertCb("SparkListenerApplicationStart")
-    );
+    upsert(Applications, "SparkListenerApplicationStart", { id: e['App ID'] }, o);
   },
 
   "SparkListenerApplicationEnd": function(e) {
-    Applications.findOneAndUpdate(
+    upsert(
+          Applications,
+          "SparkListenerApplicationEnd",
           { id: e['appId'] },
-          { time: { end: e['Timestamp'] } },
-          upsertOpts,
-          upsertCb("SparkListenerApplicationEnd")
+          { 'time.end': e['Timestamp'] }
     );
   },
 
@@ -58,46 +66,62 @@ var handlers = {
     var stageInfos = e['Stage Infos'];
 
     var rddInfos = {};
+    var numTasks = 0;
     stageInfos.forEach(function(si) {
+
       si['RDD Info'].map(function(ri) {
         rddInfos[ri['RDD ID']] = ri;
       });
-    });
 
-    Jobs.findOneAndUpdate(
-          { appId: e['appId'], id: e['Job ID'] },
-          {
-            $set: {
-              time: { start: e['Submission Time'] },
-              properties: e['Properties'],
-              stageIDs: stageIDs
-            }
-          },
-          upsertOpts,
-          upsertCb("SparkListenerJobStart")
-    );
+      var o = {
+        name: si['Stage Name'],
+        'taskCounts.num': si['Number of Tasks'],
+        rddIDs: si['RDD Info'].map(function (ri) {
+          return ri['RDD ID]'];
+        }),
+        parents: si['Parent IDs'],
+        details: si['Details'],
+        //time: { start: si['Submission Time'], end: si['Completion Time'] },
+        failureReason: si['Failure Reason'],
+        accumulables: si['Accumulables']
+      };
 
-    stageInfos.forEach(function(si) {
-      Stages.findOneAndUpdate(
+      if (si['Submission Time']) {
+        o['time.start'] = si['Submission Time'];
+      }
+      if (si['Completion Time']) {
+        o['time.end'] = si['Completion Time'];
+      }
+
+      upsert(
+            Stages,
+            "SparkListenerJobStart -> Stage",
             { appId: e['appId'], id: si['Stage ID'], attempt: si['Stage Attempt ID'] },
-            {
-              name: si['Stage Name'],
-              numTasks: si['Number of Tasks'],
-              rddIDs: si['RDD Info'].map(function(ri) { return ri['RDD ID]']; }),
-              parents: si['Parent IDs'],
-              details: si['Details'],
-              time: { start: si['Submission Time'], end: si['Completion Time'] },
-              failureReason: si['Failure Reason'],
-              accumulables: si['Accumulables']
-            },
-            upsertOpts, upsertCb("SparkListenerJobStart -> Stage")
+            o
       );
+
+      numTasks += si['Number of Tasks'];
     });
+
+    var o = {
+      'time.start': e['Submission Time'],
+      stageIDs: stageIDs,
+      started: true,
+      'taskCounts.num': numTasks,
+      'stageCounts.num': stageIDs.length
+    };
+    if (!isEmptyObject(e['Properties'])) {
+      o.properties = e['Properties'];
+    }
+
+    upsert(Jobs, "SparkListenerJobStart", { appId: e['appId'], id: e['Job ID'] }, o);
 
     var rid;
     for (rid in rddInfos) {
       var ri = rddInfos[rid];
-      RDDs.findOneAndUpdate(
+      upsert(
+            RDDs,
+            "SparkListenerJobStart -> RDD",
             { appId: e['appId'], id: rid },
             {
               name: ri['Name'],
@@ -109,21 +133,23 @@ var handlers = {
               externalBlockStoreSize: ri['ExternalBlockStore Size'],
               diskSize: ri['Disk Size'],
               scope: ri['Scope']
-            },
-            upsertOpts, upsertCb("SparkListenerJobStart -> RDD")
+            }
       );
     }
 
   },
 
   "SparkListenerJobEnd": function(e) {
-    Jobs.findOneAndUpdate(
+    upsert(
+          Jobs,
+          "SparkListenerJobEnd",
           { appId: e['appId'], id: e['Job ID'] },
           {
-            time: { end: e['Completion Time'] },
-            result: e['Job Result']
-          },
-          upsertOpts, upsertCb("SparkListenerJobEnd")
+            'time.end': e['Completion Time'],
+            result: e['Job Result'],
+            succeeded: e['Job Result']['Result'] == 'JobSucceeded',
+            ended: true
+          }
     );
   },
 
