@@ -26,21 +26,33 @@ var upsertCb = function(event) {
 };
 
 var handlers = {
-  "SparkListenerStageSubmitted": function(e) {
 
+  "SparkListenerApplicationStart": function(e) {
+    var o = {
+      name: e['App Name'],
+      time: { start: e['Timestamp'] },
+      user: e['User']
+    };
+    if (e['App Attempt ID']) {
+      o.attempt = e['App Attempt ID'];
+    }
+    Applications.findOneAndUpdate(
+          { id: e['App ID'] },
+          { $set: o },
+          upsertOpts,
+          upsertCb("SparkListenerApplicationStart")
+    );
   },
-  "SparkListenerStageCompleted": function(e) {
 
+  "SparkListenerApplicationEnd": function(e) {
+    Applications.findOneAndUpdate(
+          { id: e['appId'] },
+          { time: { end: e['Timestamp'] } },
+          upsertOpts,
+          upsertCb("SparkListenerApplicationEnd")
+    );
   },
-  "SparkListenerTaskStart": function(e) {
 
-  },
-  "SparkListenerTaskGettingResult": function(e) {
-
-  },
-  "SparkListenerTaskEnd": function(e) {
-
-  },
   "SparkListenerJobStart": function(e) {
     var stageIDs = e['Stage IDs'];
     var stageInfos = e['Stage Infos'];
@@ -53,7 +65,7 @@ var handlers = {
     });
 
     Jobs.findOneAndUpdate(
-          { app: e['appId'], id: e['Job ID'] },
+          { appId: e['appId'], id: e['Job ID'] },
           {
             $set: {
               time: { start: e['Submission Time'] },
@@ -67,7 +79,7 @@ var handlers = {
 
     stageInfos.forEach(function(si) {
       Stages.findOneAndUpdate(
-            { app: e['appId'], id: si['Stage ID'], attempt: si['Stage Attempt ID'] },
+            { appId: e['appId'], id: si['Stage ID'], attempt: si['Stage Attempt ID'] },
             {
               name: si['Stage Name'],
               numTasks: si['Number of Tasks'],
@@ -86,7 +98,7 @@ var handlers = {
     for (rid in rddInfos) {
       var ri = rddInfos[rid];
       RDDs.findOneAndUpdate(
-            { app: e['appId'], id: rid },
+            { appId: e['appId'], id: rid },
             {
               name: ri['Name'],
               parents: ri['Parent IDs'],
@@ -103,9 +115,10 @@ var handlers = {
     }
 
   },
+
   "SparkListenerJobEnd": function(e) {
     Jobs.findOneAndUpdate(
-          { app: e['appId'], id: e['Job ID'] },
+          { appId: e['appId'], id: e['Job ID'] },
           {
             time: { end: e['Completion Time'] },
             result: e['Job Result']
@@ -113,6 +126,24 @@ var handlers = {
           upsertOpts, upsertCb("SparkListenerJobEnd")
     );
   },
+
+  "SparkListenerStageSubmitted": function(e) {
+
+  },
+  "SparkListenerStageCompleted": function(e) {
+
+  },
+
+  "SparkListenerTaskStart": function(e) {
+
+  },
+  "SparkListenerTaskGettingResult": function(e) {
+
+  },
+  "SparkListenerTaskEnd": function(e) {
+
+  },
+
   "SparkListenerEnvironmentUpdate": function(e) {
 
   },
@@ -124,30 +155,6 @@ var handlers = {
   },
   "SparkListenerUnpersistRDD": function(e) {
 
-  },
-  "SparkListenerApplicationStart": function(e) {
-    var o = {
-      name: e['App Name'],
-      time: { start: e['Timestamp'] },
-      user: e['User']
-    };
-    if (e['App Attempt ID']) {
-      o.attempt = e['App Attempt ID'];
-    }
-    Applications.findOneAndUpdate(
-          { id: e['App ID'] },
-          { $set: o },
-          upsertOpts,
-          upsertCb("SparkListenerApplicationStart")
-    );
-  },
-  "SparkListenerApplicationEnd": function(e) {
-    Applications.findOneAndUpdate(
-          { id: e['appId'] },
-          { time: { end: e['Timestamp'] } },
-          upsertOpts,
-          upsertCb("SparkListenerApplicationEnd")
-    );
   },
   "SparkListenerExecutorAdded": function(e) {
 
