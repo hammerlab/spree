@@ -8,7 +8,24 @@ const SPARK_LISTENER_PORT=8123;
 
 var activeAppId = null;
 
+// Mongo collection placeholders.
 var Applications = null;
+var Jobs = null;
+var Stages = null;
+var RDDs = null;
+var Executors = null;
+var Tasks = null;
+
+var upsertOpts = { upsert: true, new: true };
+var upsertCb = function(event) {
+  return function(err, val) {
+    if (err) {
+      console.error("ERROR (" + event + "): ", err);
+    } else {
+      console.log("Added " + event + ": ", app);
+    }
+  }
+};
 
 var handlers = {
   "SparkListenerStageSubmitted": function(e) {
@@ -27,10 +44,76 @@ var handlers = {
 
   },
   "SparkListenerJobStart": function(e) {
+    var stageIDs = e['Stage IDs'];
+    var stageInfos = e['Stage Infos'];
+
+    var rddInfos = {};
+    stageInfos.forEach(function(si) {
+      si['RDD Info'].map(function(ri) {
+        rddInfos[ri['RDD ID']] = ri;
+      });
+    });
+
+    Jobs.findOneAndUpdate(
+          { id: e['Job ID'] },
+          {
+            $set: {
+              time: { start: e['Submission Time'] },
+              properties: e['Properties'],
+              stageIDs: stageIDs
+            }
+          },
+          upsertOpts,
+          upsertCb("SparkListenerJobStart")
+    );
+
+    stageInfos.forEach(function(si) {
+      Stages.findOneAndUpdate(
+            { id: si['Stage ID'], attempt: si['Stage Attempt ID'] },
+            {
+              name: si['Stage Name'],
+              numTasks: si['Number of Tasks'],
+              rddIDs: si['RDD Info'].map(function(ri) { return ri['RDD ID]']; }),
+              parents: si['Parent IDs'],
+              details: si['Details'],
+              time: { start: si['Submission Time'], end: si['Completion Time'] },
+              failureReason: si['Failure Reason'],
+              accumulables: si['Accumulables']
+            },
+            upsertOpts, upsertCb("SparkListenerJobStart -> Stage")
+      );
+    });
+
+    var rid;
+    for (rid in rddInfos) {
+      var ri = rddInfos[rid];
+      RDDs.findOneAndUpdate(
+            { id: rid },
+            {
+              name: ri['Name'],
+              parents: ri['Parent IDs'],
+              storageLevel: ri['Storage Level'],
+              numPartitions: ri['Number of Partitions'],
+              numCachedPartitions: ri['Number of Cached Partitions'],
+              memSize: ri['Memory Size'],
+              externalBlockStoreSize: ri['ExternalBlockStore Size'],
+              diskSize: ri['Disk Size'],
+              scope: ri['Scope']
+            },
+            upsertOpts, upsertCb("SparkListenerJobStart -> RDD")
+      );
+    }
 
   },
   "SparkListenerJobEnd": function(e) {
-
+    Jobs.findOneAndUpdate(
+          { id: e['Job ID'] },
+          {
+            time: { end: e['Completion Time'] },
+            result: e['Job Result']
+          },
+          upsertOpts, upsertCb("SparkListenerJobEnd")
+    );
   },
   "SparkListenerEnvironmentUpdate": function(e) {
 
@@ -57,28 +140,16 @@ var handlers = {
     Applications.findOneAndUpdate(
           { id: e['App ID'] },
           { $set: o },
-          { upsert: true, new: true },
-          function(err, app) {
-            if (err) {
-              console.error("Error adding application start: ", err);
-            } else {
-              console.log("Added application start: %O", app);
-            }
-          }
+          upsertOpts,
+          upsertCb("SparkListenerApplicationStart")
     );
   },
   "SparkListenerApplicationEnd": function(e) {
     Applications.findOneAndUpdate(
           { id: activeAppId },
           { time: { end: e['Timestamp'] } },
-          { upsert: true, new: true },
-          function(err, app) {
-            if (err) {
-              console.error("Error adding application end: %O", err);
-            } else {
-              console.log("Added application end: %O", app);
-            }
-          }
+          upsertOpts,
+          upsertCb("SparkListenerApplicationEnd")
     );
   },
   "SparkListenerExecutorAdded": function(e) {
@@ -116,6 +187,11 @@ MongoClient.connect(url, function(err, db) {
   console.log("Connected correctly to server");
 
   Applications = db.collection('applications');
+  Jobs = db.collection('jobs');
+  Stages = db.collection('stages');
+  RDDs = db.collection('rdds');
+  Executors = db.collection('executors');
+  Tasks = db.collection('tasks');
 
   var server = http.createServer(handleRequest);
 
