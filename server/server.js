@@ -20,7 +20,7 @@ var upsertCb = function(event) {
     if (err) {
       console.error("ERROR (" + event + "): ", err);
     } else {
-      console.log("Added " + event + ": ", app);
+      console.log("Added " + event + ": ", val);
     }
   }
 };
