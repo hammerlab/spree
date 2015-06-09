@@ -29,10 +29,12 @@ Either way, Meteor will print out the URL of the Mongo instance it's using when 
 You can build `Spear` from within this repo:
 
 ```
-$ cd .submodules/spear && sbt assembly
+$ cd spear && sbt assembly
 ```
 
-You'll need to have cloned with `git clone --recursive` or run `git submodule update` in order to have `.submodules/spear` cloned.
+A shaded JAR can then be found at `spear/target/scala-2.10/spear-with-dependencies-1.0.0-SNAPSHOT.jar`.
+
+You'll need to have cloned with `git clone --recursive` or run `git submodule update` in order to have `spear` cloned.
 
 ### Configure [`Spear`][]
 
