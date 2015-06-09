@@ -1,5 +1,7 @@
 # spruit
-Spark UI built with MeteorJS. Updates in real-time from a MongoDB store populated by [`Spear`][]:
+Spark UI built with MeteorJS. Updates in real-time from a MongoDB store populated by [`Spear`][].
+
+**This code is very much pre-release**; not all Spark UI pages are implemented, and `Spear` does not perform well under heavy load. Large refactors are underway, though you are free to try the code out as is.
 
 ![](http://f.cl.ly/items/1U1Y0x003p0Q1S1J0j3B/spark.gif)
 
@@ -10,6 +12,7 @@ Spark UI built with MeteorJS. Updates in real-time from a MongoDB store populate
 ### Start Spruit
 Simply run:
 ```
+$ cd ui   # this directory contains the Meteor app that is the main feature of this repo.
 $ meteor
 ```
 
@@ -18,7 +21,7 @@ You can now see your (presumably blank) `spruit` dashboard at [http://localhost:
 You can also use the handy `./start` script to start Meteor pointing at an existing Mongo instance:
 
 ```
-$ ./start -h <mongo host> -p <mongo port> -d <mongo db> --port <meteor port>
+$ ui/start -h <mongo host> -p <mongo port> -d <mongo db> --port <meteor port>
 ```
 
 Either way, Meteor will print out the URL of the Mongo instance it's using when it starts up.
