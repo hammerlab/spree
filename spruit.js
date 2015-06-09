@@ -4,6 +4,7 @@ Jobs = new Mongo.Collection("jobs");
 Stages = new Mongo.Collection("stages");
 Tasks = new Mongo.Collection("tasks");
 Executors = new Mongo.Collection("executors");
+RDDs = new Mongo.Collection("rdds");
 
 function parseMongoUrl(url) {
   var m = url.match("^mongodb://([^:]+):([0-9]+)/(.*)$")
@@ -62,6 +63,20 @@ if (Meteor.isServer) {
   });
   Meteor.publish("tasks", function(appId, stageId, attemptId) {
     return Tasks.find({ appId: appId, stageId: stageId, stageAttemptId: attemptId });
+  });
+
+  // Storage page
+  Meteor.publish("rdds", function(appId) {
+    return RDDs.find({
+      appId: appId,
+      $or: [
+        { "storageLevel.useDisk": true },
+        { "storageLevel.useMemory": true },
+        { "storageLevel.useOffHeap": true },
+        { "storageLevel.deserialized": true },
+        { "storageLevel.replication": { $ne: 1} }
+      ]
+    });
   });
 }
 
@@ -167,3 +182,16 @@ Router.route("/a/:_appId/stage/:_stageId", function() {
     }
   });
 });
+
+Router.route("/a/:_appId/storage", function() {
+  var appId = this.params._appId;
+  Meteor.subscribe("rdds", appId);
+  this.render('storagePage', {
+    data: {
+      appId: appId,
+      rdds: RDDs.find(),
+      storageTab: 1
+    }
+  })
+});
+

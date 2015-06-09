@@ -312,3 +312,72 @@
     <td>{{stats.[4]}}</td>
   </tr>
 </template>
+
+<template name="storagePage">
+  {{>navbar}}
+  {{log this}}
+  <div class="container-fluid">
+    <h3>Storage</h3>
+    <table class="table table-bordered table-striped table-condensed sortable">
+      <thead>
+      <tr>
+        <th>RDD Name (ID)</th>
+        <th>Storage Level</th>
+        <th>Cached Partitions</th>
+        <th>Fraction Cached</th>
+        <th>Size in Memory</th>
+        <th>Size in Tachyon</th>
+        <th>Size on Disk</th>
+      </tr>
+      </thead>
+      <tbody>
+      {{#each rdds}}
+      <tr>
+        <td><a href="/a/{{../appId}}/rdd/{{id}}">{{name}} ({{id}})</a></td>
+        <td>{{getStorageLevel storageLevel}}</td>
+        <td>{{numCachedPartitions}}</td>
+        <td>{{cachedFraction}}</td>
+        <td>{{formatBytes memSize}}</td>
+        <td>{{formatBytes tachyonSize}}</td>
+        <td>{{formatBytes diskSize}}</td>
+      </tr>
+      {{/each}}
+      </tbody>
+    </table>
+  </div>
+</template>
+
+<template name="environmentPage">
+  {{>navbar}}
+  {{log this}}
+  <div class="container-fluid">
+    <h3>Environment</h3>
+    <h4>Runtime Information</h4>
+    <table class="table table-bordered table-striped table-condensed sortable">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+    <h4>Spark Properties</h4>
+    <h4>System Properties</h4>
+    <h4>Classpath Entries</h4>
+  </div>
+</template>
+
+<template name="environmentTable">
+  <table class="table table-bordered table-striped table-condensed sortable">
+    <thead>
+    <tr>
+      <th>Name</th>
+      <th>Value</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+</template>
