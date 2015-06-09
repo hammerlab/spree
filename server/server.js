@@ -1,10 +1,14 @@
-//Lets require/import the HTTP module
-var http = Npm.require('http');
+var http = require('http');
+var assert = require('assert');
 
-//Lets define a port we want to listen to
-const PORT=8123;
+var MongoClient = require('mongodb').MongoClient;
+var url = 'mongodb://localhost:27017/spruit';
+
+const SPARK_LISTENER_PORT=8123;
 
 var activeAppId = null;
+
+var Applications = null;
 
 var handlers = {
   "SparkListenerStageSubmitted": function(e) {
@@ -42,22 +46,40 @@ var handlers = {
   },
   "SparkListenerApplicationStart": function(e) {
     var o = {
-      id: e['App ID'],
       name: e['App Name'],
-      time: { $set: { start: e['Timestamp'] } },
+      time: { start: e['Timestamp'] },
       user: e['User']
-    }
+    };
     if (e['App Attempt ID']) {
       o.attempt = e['App Attempt ID'];
     }
     activeAppId = o.id;
-    Applications.upsert(o);
+    Applications.findOneAndUpdate(
+          { id: e['App ID'] },
+          { $set: o },
+          { upsert: true, new: true },
+          function(err, app) {
+            if (err) {
+              console.error("Error adding application start: ", err);
+            } else {
+              console.log("Added application start: %O", app);
+            }
+          }
+    );
   },
   "SparkListenerApplicationEnd": function(e) {
-    Applications.upsert({
-      id: activeAppId,
-      time: { $set: { end: e['Timestamp'] } }
-    });
+    Applications.findOneAndUpdate(
+          { id: activeAppId },
+          { time: { end: e['Timestamp'] } },
+          { upsert: true, new: true },
+          function(err, app) {
+            if (err) {
+              console.error("Error adding application end: %O", err);
+            } else {
+              console.log("Added application end: %O", app);
+            }
+          }
+    );
   },
   "SparkListenerExecutorAdded": function(e) {
 
@@ -89,11 +111,18 @@ function handleRequest(request, response) {
   });
 }
 
-//Create a server
-var server = http.createServer(handleRequest);
+MongoClient.connect(url, function(err, db) {
+  assert.equal(null, err);
+  console.log("Connected correctly to server");
 
-//Lets start our server
-server.listen(PORT, function(){
-  //Callback triggered when server is successfully listening. Hurray!
-  console.log("Server listening on: http://localhost:%s", PORT);
+  Applications = db.collection('applications');
+
+  var server = http.createServer(handleRequest);
+
+  server.listen(SPARK_LISTENER_PORT, function() {
+    //Callback triggered when server is successfully listening. Hurray!
+    console.log("Server listening on: http://localhost:%s", SPARK_LISTENER_PORT);
+  });
+
+  //db.close();
 });
