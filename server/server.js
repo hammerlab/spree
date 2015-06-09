@@ -6,8 +6,6 @@ var url = 'mongodb://localhost:27017/spruit';
 
 const SPARK_LISTENER_PORT=8123;
 
-var activeAppId = null;
-
 // Mongo collection placeholders.
 var Applications = null;
 var Jobs = null;
@@ -55,7 +53,7 @@ var handlers = {
     });
 
     Jobs.findOneAndUpdate(
-          { id: e['Job ID'] },
+          { app: e['appId'], id: e['Job ID'] },
           {
             $set: {
               time: { start: e['Submission Time'] },
@@ -69,7 +67,7 @@ var handlers = {
 
     stageInfos.forEach(function(si) {
       Stages.findOneAndUpdate(
-            { id: si['Stage ID'], attempt: si['Stage Attempt ID'] },
+            { app: e['appId'], id: si['Stage ID'], attempt: si['Stage Attempt ID'] },
             {
               name: si['Stage Name'],
               numTasks: si['Number of Tasks'],
@@ -88,7 +86,7 @@ var handlers = {
     for (rid in rddInfos) {
       var ri = rddInfos[rid];
       RDDs.findOneAndUpdate(
-            { id: rid },
+            { app: e['appId'], id: rid },
             {
               name: ri['Name'],
               parents: ri['Parent IDs'],
@@ -107,7 +105,7 @@ var handlers = {
   },
   "SparkListenerJobEnd": function(e) {
     Jobs.findOneAndUpdate(
-          { id: e['Job ID'] },
+          { app: e['appId'], id: e['Job ID'] },
           {
             time: { end: e['Completion Time'] },
             result: e['Job Result']
@@ -136,7 +134,6 @@ var handlers = {
     if (e['App Attempt ID']) {
       o.attempt = e['App Attempt ID'];
     }
-    activeAppId = o.id;
     Applications.findOneAndUpdate(
           { id: e['App ID'] },
           { $set: o },
@@ -146,7 +143,7 @@ var handlers = {
   },
   "SparkListenerApplicationEnd": function(e) {
     Applications.findOneAndUpdate(
-          { id: activeAppId },
+          { id: e['appId'] },
           { time: { end: e['Timestamp'] } },
           upsertOpts,
           upsertCb("SparkListenerApplicationEnd")
