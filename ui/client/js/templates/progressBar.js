@@ -4,12 +4,10 @@ Template.progressBar.helpers({
     return (counts.succeeded || 0) + "/" + counts.num + (counts.running ? (" (" + counts.running + " running)") : "");
   },
   completedPercentage: function(bar) {
-    var p = (bar.succeeded / bar.num) * 100 + '%';
-    return p;
+    return (bar.succeeded / bar.num) * 100 + '%';
   },
   runningPercentage: function(bar) {
-    var p = (bar.running / bar.num) * 100 + '%';
-    return p;
+    return (bar.running / bar.num) * 100 + '%';
   }
 });
 

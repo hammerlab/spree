@@ -32,7 +32,7 @@ Meteor.publish("jobs", function(appId) {
 Meteor.publish("last-stages", function(appId, jobIds) {
   var jobs = Jobs.find({ appId: appId, id: { $in: jobIds }});
   var lastStageIDs = jobs.map(function(job) {
-    return Math.max.apply(null, job.stageIDs);;
+    return Math.max.apply(null, job.stageIDs);
   });
   return Stages.find({ appId: appId, id: { $in: lastStageIDs }});
 });
