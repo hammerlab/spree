@@ -4,8 +4,9 @@ Template.jobPage.helpers({
     return (stageCounts && (stageCounts.num - stageCounts.running)) || 0;
   },
   setTitle: function(data) {
-    console.log("setting job page title! %O", data);
-    document.title = "Job " + data.job.id + " - Spark";
+    if (data && data.job && data.job.id !== undefined) {
+      document.title = "Job " + data.job.id + " - Spark";
+    }
   }
 });
 
