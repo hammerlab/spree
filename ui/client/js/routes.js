@@ -31,12 +31,14 @@ Router.route("/a/:_appId/job/:_jobId", function() {
 
   Meteor.subscribe("job", appId, jobId);
   Meteor.subscribe("job-stages", appId, jobId);
+  Meteor.subscribe("job-stage-attempts", appId, jobId);
 
   this.render('jobPage', {
     data: {
       appId: appId,
       job: Jobs.findOne(),
       stages: Stages.find({}, { sort: { id: -1 } }),
+      attempts: StageAttempts.find({}, { sort: { stageId: -1, id: -1 }}),
       jobsTab: 1
     }
   });

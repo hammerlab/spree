@@ -1,6 +1,6 @@
 
 completedStages = function() {
-  return Stages.find({
+  return StageAttempts.find({
     $or: [
       { ended: true },
       { skipped: true },
@@ -8,13 +8,13 @@ completedStages = function() {
     ]
   }, { sort: { id: -1 }});
 };
-Template.registerHelper("completedStages", completedStages);
+Template.registerHelper("completedStages", function() { return attachStagesToAttempts(completedStages()); });
 Template.registerHelper("numCompletedStages", function() {
   return completedStages().count();
 });
 
 activeStages = function() {
-  return Stages.find({
+  return StageAttempts.find({
     $or: [
       { started: true },
       { "time.start": { $exists: true } }
@@ -24,13 +24,13 @@ activeStages = function() {
     "time.end": { $exists: false }
   }, { sort: { id: -1 }});
 };
-Template.registerHelper("activeStages", activeStages);
+Template.registerHelper("activeStages", function() { return attachStagesToAttempts(activeStages()); });
 Template.registerHelper("numActiveStages", function() {
   return activeStages().count();
 });
 
 pendingStages = function() {
-  return Stages.find({
+  return StageAttempts.find({
     started: { $not: true },
     "time.start": { $exists: false },
     ended: { $not: true },
@@ -38,17 +38,23 @@ pendingStages = function() {
     "time.end": { $exists: false }
   }, { sort: { id: -1 }});
 };
-Template.registerHelper("pendingStages", pendingStages);
+Template.registerHelper("pendingStages", function() { return attachStagesToAttempts(pendingStages()); });
 Template.registerHelper("numPendingStages", function() {
   return pendingStages().count();
 });
 
+attachStagesToAttempts = function(attempts) {
+  return attempts.map(function(stageAttempt) {
+    return { attempt: stageAttempt, stage: Stages.findOne({ id: stageAttempt.stageId }) };
+  });
+};
+
 skippedStages = function() {
-  return Stages.find({
+  return StageAttempts.find({
     skipped: true
   });
 };
-Template.registerHelper("skippedStages", skippedStages);
+Template.registerHelper("skippedStages", function() { return attachStagesToAttempts(skippedStages()); });
 Template.registerHelper("numSkippedStages", function() {
   return skippedStages().count();
 });

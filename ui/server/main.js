@@ -45,6 +45,10 @@ Meteor.publish("job", function(appId, jobId) {
 Meteor.publish("job-stages", function(appId, jobId) {
   return Stages.find({ appId: appId, jobId: jobId }, { sort: { id: -1 }});
 });
+Meteor.publish("job-stage-attempts", function(appId, jobId) {
+  var stageIDs = Stages.find({ appId: appId, jobId: jobId }, { fields: { id: 1 } }).map(function(stage) { return stage.id; });
+  return StageAttempts.find({ appId: appId, stageId: { $in: stageIDs }});
+});
 
 
 // Stages page
