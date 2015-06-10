@@ -18,14 +18,6 @@ function Stage(appId, id) {
   this.toSyncObj = {};
 
   this.attempts = {};
-  //this.set({
-  //  attempts: {},
-  //  numAttempts: 0,
-  //  'attemptCounts.running': 0,
-  //  'attemptCounts.failed': 0,
-  //  'attemptCounts.succeeded': 0
-  //});
-
 }
 
 mixinMongoMethods(Stage, "Stage", "Stages");
@@ -43,29 +35,6 @@ Stage.prototype.fromStageInfo = function(si) {
     accumulables: si['Accumulables']
   });
 };
-
-//Stage.prototype.processAttemptRunning = function(attemptId) {
-//  var status = this.get('status');
-//  if (status != SUCCEEDED) {
-//    return this.set('status', RUNNING, true);
-//  }
-//  console.log("Ignoring attempt " + attemptId + " RUNNING because stage " + this.id + " already SUCCEEDED");
-//  return this;
-//};
-//
-//Stage.prototype.processAttemptSucceeded = function(attemptId) {
-//  this.set('status', SUCCEEDED, true);
-//};
-//
-//Stage.prototype.markFailed = function(attemptId) {
-//  if (this.get('status') == SUCCEEDED) {
-//  } else {
-//    this.set('status', FAILED);
-//  }
-//
-//  this.set('attempts.' + attemptId, RUNNING);
-//  this.inc('numRunning', 1);
-//};
 
 Stage.prototype.getAttempt = function(attemptId) {
   if (typeof attemptId == 'object') {

@@ -19,13 +19,6 @@ function App(id) {
   this.rdds = {};
   this.executors = {};
 
-  //this.set({
-  //  jobs: {},
-  //  stages: {},
-  //  rdds: {},
-  //  executors: {}
-  //});
-
   this.stageIDstoJobIDs = {};
 }
 

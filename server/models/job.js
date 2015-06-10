@@ -8,8 +8,6 @@ function Job(appId, id) {
   this.propsObj = {};
   this.toSyncObj = {};
   this.dirty = true;
-
-  //this.set({ stages: {}, tasks: {} });
 }
 
 mixinMongoMethods(Job, "Job", "Jobs");

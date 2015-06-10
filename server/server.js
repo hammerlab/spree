@@ -84,10 +84,6 @@ var handlers = {
     var si = e['Stage Info'];
 
     var stage = app.getStage(si);
-    //var attemptId = si['Stage Attempt ID'];
-    //if (attemptId in stage.attempts) {
-    //  throw new Error("Got stage-attempt submitted event for extant attempt " + stage.id + "." + attemptId);
-    //}
     var attempt = stage.getAttempt(si);
     var prevStatus = attempt.get('status');
     if (prevStatus) {
