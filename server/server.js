@@ -38,7 +38,7 @@ var handlers = {
       var stage = app.getStage(si['Stage ID']).fromStageInfo(si).set('jobId', job.id).upsert();
       app.stageIDstoJobIDs[si['Stage ID']] = job.id;
 
-      var attempt = stage.getAttempt(stage.id).fromStageInfo(si).upsert();
+      var attempt = stage.getAttempt(si['Stage Attempt ID']).fromStageInfo(si).upsert();
 
       si['RDD Info'].forEach(function(ri) {
         app.getRDD(ri['RDD ID']).fromRDDInfo(ri).upsert();
