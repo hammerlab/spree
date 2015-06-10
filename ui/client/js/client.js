@@ -33,7 +33,6 @@ function formatTime(ms) {
             var v = Math.floor(ms / level[0]);
             ms -= v*level[0];
             return v+level[1];
-            return v;
           }
         });
 
@@ -214,7 +213,7 @@ Template.progressBar.helpers({
     return (counts.succeeded || 0) + "/" + counts.num + (counts.running ? (" (" + counts.running + " running)") : "");
   },
   completedPercentage: function(bar) {
-    var p = (bar.succeeded / bar.num) * 100 + '%'
+    var p = (bar.succeeded / bar.num) * 100 + '%';
     return p;
   },
   runningPercentage: function(bar) {

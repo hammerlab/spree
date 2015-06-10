@@ -1,162 +1,156 @@
-var http = require('http');
-var assert = require('assert');
 
-var MongoClient = require('mongodb').MongoClient;
+var http = require('http');
+var extend = require('node.extend');
+
 var url = 'mongodb://localhost:27017/spruit';
 
-const SPARK_LISTENER_PORT=8123;
+var getApp = require('./models/app').getApp;
+var colls = require('./collections');
 
-// Mongo collection placeholders.
-var Applications = null;
-var Jobs = null;
-var Stages = null;
-var RDDs = null;
-var Executors = null;
-var Tasks = null;
+var utils = require("./utils");
 
-var upsertOpts = { upsert: true, new: true };
-var upsertCb = function(event) {
-  return function(err, val) {
-    if (err) {
-      console.error("ERROR (" + event + "): ", err);
-    } else {
-      console.log("Added " + event + ": ", val);
-    }
-  }
-};
+var l = require('./log').l;
 
-function isEmptyObject(obj) {
-  return !Object.keys(obj).length;
-}
-
-function upsert(collection, cbName, find, $set) {
-  collection.findOneAndUpdate(
-        find,
-        { $set: $set },
-        upsertOpts,
-        upsertCb(cbName)
-  );
-}
+var RUNNING = utils.RUNNING;
+var FAILED = utils.FAILED;
+var SUCCEEDED = utils.SUCCEEDED;
+var SKIPPED = utils.SKIPPED;
 
 var handlers = {
 
   SparkListenerApplicationStart: function(e) {
-    var o = {
-      name: e['App Name'],
-      'time.start': e['Timestamp'],
-      user: e['User']
-    };
-    if (e['App Attempt ID']) {
-      o.attempt = e['App Attempt ID'];
-    }
-    upsert(Applications, "SparkListenerApplicationStart", { id: e['App ID'] }, o);
+    getApp(e['appId']).fromEvent(e).upsert();
   },
 
   SparkListenerApplicationEnd: function(e) {
-    upsert(
-          Applications,
-          "SparkListenerApplicationEnd",
-          { id: e['appId'] },
-          { 'time.end': e['Timestamp'] }
-    );
+    getApp(e).set('time.end', e['Timestamp']).upsert();
   },
 
   SparkListenerJobStart: function(e) {
-    var stageIDs = e['Stage IDs'];
+    var app = getApp(e);
+    var job = app.getJob(e);
+    var numTasks = 0;
+
     var stageInfos = e['Stage Infos'];
 
-    var rddInfos = {};
-    var numTasks = 0;
     stageInfos.forEach(function(si) {
 
-      si['RDD Info'].map(function(ri) {
-        rddInfos[ri['RDD ID']] = ri;
-      });
+      var stage = app.getStage(si['Stage ID']).fromStageInfo(si).set('jobId', job.id).upsert();
+      app.stageIDstoJobIDs[si['Stage ID']] = job.id;
 
-      var o = {
-        name: si['Stage Name'],
-        'taskCounts.num': si['Number of Tasks'],
-        rddIDs: si['RDD Info'].map(function (ri) {
-          return ri['RDD ID]'];
-        }),
-        parents: si['Parent IDs'],
-        details: si['Details'],
-        //time: { start: si['Submission Time'], end: si['Completion Time'] },
-        failureReason: si['Failure Reason'],
-        accumulables: si['Accumulables']
-      };
+      var attempt = stage.getAttempt(stage.id).fromStageInfo(si).upsert();
 
-      if (si['Submission Time']) {
-        o['time.start'] = si['Submission Time'];
-      }
-      if (si['Completion Time']) {
-        o['time.end'] = si['Completion Time'];
-      }
-
-      upsert(
-            Stages,
-            "SparkListenerJobStart -> Stage",
-            { appId: e['appId'], id: si['Stage ID'], attempt: si['Stage Attempt ID'] },
-            o
-      );
+      si['RDD Info'].forEach(function(ri) {
+        app.getRDD(ri['RDD ID']).fromRDDInfo(ri).upsert();
+      }.bind(this));
 
       numTasks += si['Number of Tasks'];
     });
 
-    var o = {
+    job.set({
       'time.start': e['Submission Time'],
-      stageIDs: stageIDs,
-      started: true,
+      stageIDs: e['Stage IDs'],
       'taskCounts.num': numTasks,
-      'stageCounts.num': stageIDs.length
-    };
-    if (!isEmptyObject(e['Properties'])) {
-      o.properties = e['Properties'];
-    }
-
-    upsert(Jobs, "SparkListenerJobStart", { appId: e['appId'], id: e['Job ID'] }, o);
-
-    var rid;
-    for (rid in rddInfos) {
-      var ri = rddInfos[rid];
-      upsert(
-            RDDs,
-            "SparkListenerJobStart -> RDD",
-            { appId: e['appId'], id: rid },
-            {
-              name: ri['Name'],
-              parents: ri['Parent IDs'],
-              storageLevel: ri['Storage Level'],
-              numPartitions: ri['Number of Partitions'],
-              numCachedPartitions: ri['Number of Cached Partitions'],
-              memSize: ri['Memory Size'],
-              externalBlockStoreSize: ri['ExternalBlockStore Size'],
-              diskSize: ri['Disk Size'],
-              scope: ri['Scope']
-            }
-      );
-    }
+      'stageCounts.num': e['Stage IDs'].length,
+      properties: e['Properties']
+    }).upsert();
 
   },
 
   SparkListenerJobEnd: function(e) {
-    upsert(
-          Jobs,
-          "SparkListenerJobEnd",
-          { appId: e['appId'], id: e['Job ID'] },
-          {
-            'time.end': e['Completion Time'],
-            result: e['Job Result'],
-            succeeded: e['Job Result']['Result'] == 'JobSucceeded',
-            ended: true
-          }
-    );
+    var app = getApp(e);
+    var job = app.getJob(e);
+
+    job.set({
+      'time.end': e['Completion Time'],
+      result: e['Job Result'],
+      succeeded: e['Job Result']['Result'] == 'JobSucceeded',
+      ended: true
+    }).upsert();
+
+    job.get('stageIDs').map(function(sid) {
+      var stage = app.getStage(sid);
+      var status = stage.get('status');
+      if (status == RUNNING || status == FAILED) {
+        l.err("Found unexpected status " + status + " for stage " + stage.id + " when marking job " + job.id + " complete.");
+      } else if (!status) {
+        stage.set('status', SKIPPED).upsert();
+      }
+    });
   },
 
   SparkListenerStageSubmitted: function(e) {
+    var app = getApp(e);
+    var si = e['Stage Info'];
 
+    var stage = app.getStage(si);
+    //var attemptId = si['Stage Attempt ID'];
+    //if (attemptId in stage.attempts) {
+    //  throw new Error("Got stage-attempt submitted event for extant attempt " + stage.id + "." + attemptId);
+    //}
+    var attempt = stage.getAttempt(si);
+    var prevStatus = attempt.get('status');
+    if (prevStatus) {
+      l.err(
+            "Stage " + id + " marking attempt " + attempt.id + " as RUNNING despite extant status " + prevStatus
+      );
+    }
+
+    // Crashes if extant status found.
+    attempt.fromStageInfo(si).set({ started: true, status: RUNNING }).upsert();
+
+    app.getJobByStageId(stage.id).inc('stageCounts.running', 1).upsert();
+
+    stage.fromStageInfo(si).set({ properties: e['Properties'] }).inc('attempts.num', 1).inc('attempts.running', 1).upsert();
   },
+
   SparkListenerStageCompleted: function(e) {
+    var app = getApp(e);
+    var si = e['Stage Info'];
+
+    var stage = app.getStage(si);
+    stage.fromStageInfo(si);
+    var prevStageStatus = stage.get('status');
+
+    var attempt = stage.getAttempt(si);
+
+    var prevAttemptStatus = attempt.get('status');
+    var newAttemptStatus = si['Failure Reason'] ? FAILED : SUCCEEDED;
+
+    attempt.fromStageInfo(si).set({ ended: true }).set('status', newAttemptStatus, true).upsert();
+
+    var job = app.getJobByStageId(stage.id);
+
+    if (prevAttemptStatus == RUNNING) {
+      stage.dec('attempts.running', 1);
+      l.info("before dec: " + job.get('stageCounts.running'));
+      job.dec('stageCounts.running', 1);
+      l.info("after dec: " + job.get('stageCounts.running'));
+    } else {
+      l.err(
+            "Got status " + newAttemptStatus + " for stage " + stage.id + " attempt " + attempt.id + " with existing status " + prevAttemptStatus
+      );
+    }
+    if (newAttemptStatus == SUCCEEDED) {
+      if (prevStageStatus == SUCCEEDED) {
+        l.info("Ignoring attempt " + attempt.id + " SUCCEEDED in stage " + stage.id + " that is already SUCCEEDED");
+      } else {
+        stage.set('status', newAttemptStatus).inc('attempts.succeeded', 1);
+        job.inc('stageCounts.succeeded', 1);
+      }
+    } else {
+      // FAILED
+      if (prevStageStatus == SUCCEEDED) {
+        l.info("Ignoring attempt " + attempt.id + " FAILED in stage " + stage.id + " that is already SUCCEEDED");
+      } else {
+        stage.set('status', newAttemptStatus).inc('attempts.failed', 1);
+        job.inc('stageCounts.failed', 1);
+      }
+    }
+
+    stage.upsert();
+    attempt.upsert();
+    job.upsert();
 
   },
 
@@ -205,30 +199,20 @@ function handleRequest(request, response) {
   request.on('end', function() {
     if (d) {
       var e = JSON.parse(d);
-      console.log('Got data: ' + d);
+      l.info('Got data: ' + d);
       handlers[e['Event']](e)
     }
     response.end('OK');
   });
 }
 
-MongoClient.connect(url, function(err, db) {
-  assert.equal(null, err);
-  console.log("Connected correctly to server");
+const SPARK_LISTENER_PORT=8123;
 
-  Applications = db.collection('apps');
-  Jobs = db.collection('jobs');
-  Stages = db.collection('stages');
-  RDDs = db.collection('rdds');
-  Executors = db.collection('executors');
-  Tasks = db.collection('tasks');
-
+colls.init(url, function(db) {
   var server = http.createServer(handleRequest);
 
   server.listen(SPARK_LISTENER_PORT, function() {
     //Callback triggered when server is successfully listening. Hurray!
-    console.log("Server listening on: http://localhost:%s", SPARK_LISTENER_PORT);
+    l.info("Server listening on: http://localhost:%s", SPARK_LISTENER_PORT);
   });
-
-  //db.close();
 });
