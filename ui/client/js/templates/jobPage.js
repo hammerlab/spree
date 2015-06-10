@@ -9,3 +9,11 @@ Template.jobPage.helpers({
   }
 });
 
+Template.registerHelper("jobStatus", function(job) {
+  if (!job) { return ""; }
+  if (job.succeeded) return "SUCCEEDED";
+  if (job.failed) return "FAILED";
+  if (job.inProgress) return "RUNNING";
+  return "UNKNOWN";
+});
+

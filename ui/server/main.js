@@ -1,6 +1,18 @@
 
 console.log("Starting server with Mongo URL: " + process.env.MONGO_URL);
 
+function parseMongoUrl(url) {
+  var m = url.match("^mongodb://([^:]+):([0-9]+)/(.*)$")
+  if (!m) return {};
+  return {
+    host: m[1],
+    port: parseInt(m[2]),
+    db: m[3],
+    url: url,
+    shortUrl: url.substr("mongodb://".length)
+  };
+}
+
 Meteor.publish('mongoUrl', function () {
   this.added('mongoUrl', '1', parseMongoUrl(process.env.MONGO_URL));
   this.ready();

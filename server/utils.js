@@ -93,3 +93,22 @@ module.exports.mixinMongoMethods = function(clazz, className, collectionName) {
   addGetProp(clazz);
   addUpsert(clazz, className, collectionName);
 };
+
+function sortNumber(a,b) {
+  return a - b;
+}
+
+function makeSummaryStats(name, arr) {
+  var n = arr.length;
+  return {
+    name: name,
+    stats: [
+      arr[0],
+      arr[Math.floor(n/4)],
+      arr[Math.floor(n/2)],
+      arr[Math.floor(3*n/4)],
+      arr[n-1]
+    ]
+  }
+}
+
