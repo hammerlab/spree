@@ -1,0 +1,33 @@
+
+<template name="appsPage">
+  {{setTitle "Applications - Spark"}}
+  {{>navbar}}
+  <div class="container-fluid">
+    <h3>Spark Applications</h3>
+    <table class="table table-bordered table-striped table-condensed sortable">
+      <thead>
+      <tr>
+        <th>App ID</th>
+        <th>App Name</th>
+        <th>Started</th>
+        <th>Completed</th>
+        <th>Duration</th>
+        <th>User</th>
+      </tr>
+      </thead>
+      <tbody>
+      {{#each applications}}
+      <tr>
+        <td><a href="/a/{{id}}">{{id}}</a></td>
+        <td>{{name}}</td>
+        <td>{{formatDateTime time.start}}</td>
+        <td>{{formatDateTime time.end}}</td>
+        <td>{{formatDuration time.start time.end}}</td>
+        <td>{{user}}</td>
+      </tr>
+      {{/each}}
+      </tbody>
+    </table>
+  </div>
+</template>
+

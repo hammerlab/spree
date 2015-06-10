@@ -1,0 +1,123 @@
+
+<template name="stagePage">
+  {{>navbar}}
+  {{setTitle this}}
+  {{log this}}
+  <div class="container-fluid">
+    <h3>Details for Stage {{stage.id}}, Attempt {{stage.attempt}}</h3>
+    <div><strong>Total time across all tasks:</strong> {{totalTime tasks}}</div>
+
+    {{#with stage.metrics.inputMetrics}}
+    {{#if shouldShow bytesRead recordsRead}}
+    <div>
+      <strong>Input Size / Records:</strong> {{formatBytes bytesRead}} / {{recordsRead}}
+    </div>
+    {{/if}}
+    {{/with}}
+
+    {{#with stage.metrics.outputMetrics}}
+    {{#if shouldShow bytesWritten recordsWritten}}
+    <div>
+      <strong>Output Size / Records:</strong> {{formatBytes bytesWritten}} / {{recordsWritten}}
+    </div>
+    {{/if}}
+    {{/with}}
+
+    {{#with stage.metrics.shuffleReadMetrics}}
+    {{#if shouldShow shuffleBytesRead shuffleRecordsRead}}
+    <div>
+      <strong>Shuffle read:</strong> {{formatBytes shuffleBytesRead}} / {{shuffleRecordsRead}}
+    </div>
+    {{/if}}
+    {{/with}}
+
+    {{#with stage.metrics.shuffleWriteMetrics}}
+    {{#if shouldShow shuffleBytesWritten shuffleRecordsWritten}}
+    <div>
+      <strong>Shuffle write:</strong> {{formatBytes shuffleBytesWritten}} / {{shuffleRecordsWritten}}
+    </div>
+    {{/if}}
+    {{/with}}
+    <h4>Summary Metrics for {{numCompletedTasks stage.taskCounts}} Completed Tasks</h4>
+    <table class="table table-bordered table-striped table-condensed sortable">
+      <thead>
+      <tr>
+        <th>Metric</th>
+        <th>Min</th>
+        <th>25th Percentile</th>
+        <th>Median</th>
+        <th>75th Percentile</th>
+        <th>Max</th>
+      </tr>
+      </thead>
+      <tbody>
+      {{> summaryRow durations}}
+      </tbody>
+    </table>
+
+    <h4>Aggregated Metrics by Executor</h4>
+    <table class="table table-bordered table-striped table-condensed sortable">
+      <thead>
+      <tr>
+        <th>Executor ID</th>
+        <th>Address</th>
+        <th>Task Time</th>
+        <th>Total Tasks</th>
+        <th>Failed Tasks</th>
+        <th>Succeeded Tasks</th>
+        <th>Input Size / Records</th>
+      </tr>
+      </thead>
+      <tbody>
+
+      </tbody>
+    </table>
+
+    <h4>Tasks</h4>
+    <table class="table table-bordered table-striped table-condensed sortable">
+      <thead>
+      <tr>
+        <th>Index</th>
+        <th>ID</th>
+        <th>Attempt</th>
+        <th>Status</th>
+        <th>Locality Level</th>
+        <th>Exec ID</th>
+        <th>Host</th>
+        <th>Launch Time</th>
+        <th>Duration</th>
+        <th>GC Time</th>
+        <th>Input Size / Records</th>
+        <th>Errors</th>
+      </tr>
+      </thead>
+      <tbody>
+      {{#each tasks}}
+      <tr>
+        <td>{{index}}</td>
+        <td>{{id}}</td>
+        <td>{{attempt}}</td>
+        <td>{{status this}}</td>
+        <td>{{localityLevel taskLocality}}</td>
+        <td>{{execId}}</td>
+        <td>{{#with lastMetrics this}}{{hostname}}{{/with}}</td>
+        <td>{{formatDateTime time.start}}</td>
+        <td>{{formatDuration time.start time.end true}}</td>
+        {{#with lastMetrics this}}
+        <td>{{#if jvmGCTime}}{{jvmGCTime}}{{/if}}</td>
+        <td>
+          {{#with inputMetrics}}
+          {{#if shouldShow bytesRead recordsRead}}
+          {{formatBytes bytesRead}} / {{recordsRead}}
+          {{/if}}
+          {{/with}}
+        </td>
+        {{/with}}
+        <td>{{reason taskEndReason}}</td>
+      </tr>
+      {{/each}}
+      </tbody>
+    </table>
+  </div>
+</template>
+

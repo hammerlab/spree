@@ -1,0 +1,36 @@
+
+<template name="environmentPage">
+  {{>navbar}}
+  {{setTitle "Environment - Spark"}}
+  {{log this}}
+  <div class="container-fluid">
+    <h3>Environment</h3>
+    <h4>Runtime Information</h4>
+    <table class="table table-bordered table-striped table-condensed sortable">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+    <h4>Spark Properties</h4>
+    <h4>System Properties</h4>
+    <h4>Classpath Entries</h4>
+  </div>
+</template>
+
+<template name="environmentTable">
+  <table class="table table-bordered table-striped table-condensed sortable">
+    <thead>
+    <tr>
+      <th>Name</th>
+      <th>Value</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+</template>

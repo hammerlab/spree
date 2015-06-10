@@ -7,9 +7,9 @@ sigFigs = function(m, n) {
   n = n || 3;
   var leftOfDecimal = Math.ceil(Math.log(m) / Math.log(10));
   return m.toFixed(Math.max(0, n - leftOfDecimal));
-}
+};
 
-function formatTime(ms) {
+formatTime = function(ms) {
   var S = 1000;
   var M = 60*S;
   var H = 60*M;
@@ -37,7 +37,12 @@ function formatTime(ms) {
         });
 
   return [r[highestLevel], r[highestLevel+1]].join('');
-}
+};
+
+Template.registerHelper("setTitle", function(title) {
+  document.title = title;
+  return null;
+});
 
 Template.registerHelper("formatTime", formatTime);
 
@@ -85,7 +90,7 @@ activeStages = function() {
     skipped: { $not: true },
     "time.end": { $exists: false }
   }, { sort: { id: -1 }});
-}
+};
 Template.registerHelper("activeStages", activeStages);
 Template.registerHelper("numActiveStages", function() {
   return activeStages().count();
@@ -99,7 +104,7 @@ pendingStages = function() {
     skipped: { $not: true },
     "time.end": { $exists: false }
   }, { sort: { id: -1 }});
-}
+};
 Template.registerHelper("pendingStages", pendingStages);
 Template.registerHelper("numPendingStages", function() {
   return pendingStages().count();
@@ -109,7 +114,7 @@ skippedStages = function() {
   return Stages.find({
     skipped: true
   });
-}
+};
 Template.registerHelper("skippedStages", skippedStages);
 Template.registerHelper("numSkippedStages", function() {
   return skippedStages().count();
@@ -154,41 +159,6 @@ Template.registerHelper("formatDuration", formatDuration);
 Template.appsPage.helpers({
   applications: function() {
     return Applications.find();
-  }
-});
-
-Template.jobsPage.helpers({
-
-  rowClass: function(job) {
-    if (job.succeeded) {
-      return "succeeded";
-    } else if (job.inProgress) {
-      return "in-progress";
-    } else if (job.failed) {
-      return "failed";
-    } else {
-      return "";
-    }
-  },
-
-  getJobName: function(job) {
-    // NOTE(ryan): this sort presumably does not use my {appId:1,jobId:1} index on Stages.
-    var stage = Stages.findOne({ jobId: job.id }, { sort: { id: -1 } });
-    return stage && stage.name || "";
-  },
-
-  getJobDuration: function(job) {
-    return job.time.end ?
-          formatTime(job.time.end - job.time.start) :
-          (formatTime(Math.max(0, moment().unix()*1000 - job.time.start)) + '...')
-          ;
-  }
-
-});
-
-Template.jobPage.helpers({
-  completed: function(stageCounts) {
-    return (stageCounts && (stageCounts.num - stageCounts.running)) || 0;
   }
 });
 
@@ -238,67 +208,3 @@ var LocalityLevels = [
   "PROCESS_LOCAL", "NODE_LOCAL", "NO_PREF", "RACK_LOCAL", "ANY"
 ];
 
-Template.stagePage.helpers({
-  totalTime: function(tasks) {
-    var totalMs = 0;
-    tasks.forEach(function(t) {
-      totalMs += (t.time.end - t.time.start) || 0;
-    });
-    return formatTime(totalMs);
-  },
-
-  numCompletedTasks: function(taskCounts) {
-    return taskCounts && (taskCounts.succeeded + taskCounts.failed) || 0;
-  },
-
-  status: function(task) {
-    var started = !!(task.time.start || task.started);
-    var ended = !!(task.time.end || task.ended);
-    if (started && !ended) {
-      return "RUNNING";
-    }
-    if (ended) {
-      if (task.taskEndReason.tpe == 1)
-        return "SUCCESS"
-      return "FAILED";
-    }
-    if (!started)
-      return "PENDING";
-    return "";
-  },
-
-  localityLevel: function(taskLocality) {
-    return LocalityLevels[taskLocality ];
-  },
-
-  lastMetrics: function(task) {
-    return task.metrics && task.metrics[task.metrics.length - 1] || {};
-  },
-
-  getHost: function(task, appId, commonHostSuffix) {
-    var e = Executors.findOne({ appId: appId, id: task.execId });
-    return e && (commonHostSuffix ? e.host.substr(0, e.host.length - commonHostSuffix.length) : e.host) || "";
-  },
-
-  reason: function(taskEndReason) {
-    return taskEndReason && TaskEndReasons[taskEndReason.tpe - 1] || "";
-  },
-
-  shouldShow: function(a, b) {
-    return a || b;
-  }
-});
-
-Template.storagePage.helpers({
-  getStorageLevel: function(sl) {
-    return [
-      (sl.useMemory ? "Memory" : (sl.useOffHeap ? "Tachyon" : (sl.useDisk ? "Disk" : "???"))),
-      sl.deserialized ? "Deserialized" : "Serialized",
-      sl.replication + "x Replicated"
-    ].join(" ");
-  },
-
-  fractionCached: function(rdd) {
-    return ((rdd.numCachedPartitions / rdd.numPartitions) || 0) * 100 + '%';
-  }
-});
