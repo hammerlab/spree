@@ -61,6 +61,9 @@ Meteor.publish("job-stage-attempts", function(appId, jobId) {
 Meteor.publish("stages", function(appId) {
   return Stages.find({ appId: appId });
 });
+Meteor.publish("stage-attempts", function(appId) {
+  return StageAttempts.find({ appId: appId });
+});
 
 
 // Stage page

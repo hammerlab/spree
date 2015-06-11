@@ -48,6 +48,7 @@ Router.route("/a/:_appId/job/:_jobId", function() {
 Router.route("/a/:_appId/stages", function() {
   var appId = this.params._appId;
   Meteor.subscribe("stages", appId);
+  Meteor.subscribe("stage-attempts", appId);
   this.render('stagesPage', {
     data: {
       appId: appId,
