@@ -36,6 +36,12 @@ Meteor.publish("last-stages", function(appId, jobIds) {
   });
   return Stages.find({ appId: appId, id: { $in: lastStageIDs }});
 });
+Meteor.publish("jobs-stages", function(appId, jobIds) {
+  var jobs = Jobs.find({ appId: appId, id: { $in: jobIds }});
+  var stageIDs = [];
+  jobs.forEach(function(job) { stageIDs = stageIDs.concat(job.stageIDs); });
+  return Stages.find({ appId: appId, id: { $in: stageIDs }});
+});
 
 
 // Job page

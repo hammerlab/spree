@@ -13,6 +13,21 @@ Template.jobsPage.helpers({
     }
   },
 
+  getTaskCounts: function(job) {
+    var stages = Stages.find({jobId: job.id}, { fields: { taskCounts: 1 } });
+    var running = 0;
+    var succeeded = 0;
+    stages.forEach(function(stage) {
+      running += stage.taskCounts ? stage.taskCounts.running : 0;
+      succeeded += stage.taskCounts ? stage.taskCounts.succeeded : 0;
+    });
+    return {
+      num: job.taskCounts.num,
+      running: running,
+      succeeded: succeeded
+    };
+  },
+
   getJobName: function(job) {
     // NOTE(ryan): this sort presumably does not use my {appId:1,jobId:1} index on Stages.
     var stage = Stages.findOne({ jobId: job.id }, { sort: { id: -1 } });

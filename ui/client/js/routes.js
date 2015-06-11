@@ -13,7 +13,7 @@ Router.route("/a/:_appId", function() {
   Meteor.subscribe("jobs", appId);
   var jobs = Jobs.find({}, { sort: { id: -1 } });
   var jobIDs = jobs.map(function(job) { return job.id; });
-  Meteor.subscribe("last-stages", appId, jobIDs);
+  Meteor.subscribe("jobs-stages", appId, jobIDs);
   this.render('jobsPage', {
     data: {
       appId: appId,
@@ -57,6 +57,7 @@ Router.route("/a/:_appId/stages", function() {
   });
 });
 
+// Stage page
 Router.route("/a/:_appId/stage/:_stageId", function() {
   var appId = this.params._appId;
   var stageId = parseInt(this.params._stageId);
@@ -86,6 +87,7 @@ Router.route("/a/:_appId/stage/:_stageId", function() {
   });
 });
 
+// Storage page
 Router.route("/a/:_appId/storage", function() {
   var appId = this.params._appId;
   Meteor.subscribe("rdds", appId);
