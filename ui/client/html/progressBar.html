@@ -1,0 +1,8 @@
+
+<template name="progressBar">
+  <div class="progress">
+    <span class="progress-label">{{label this}}</span>
+    <div class="bar bar-completed" style="width:{{completedPercentage this}}"></div>
+    <div class="bar bar-running" style="width:{{runningPercentage this}}"></div>
+  </div>
+</template>

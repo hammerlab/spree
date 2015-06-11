@@ -1,0 +1,61 @@
+
+<template name="stagesTables">
+  {{#if numActiveStages}}<div><a href="#active"><strong>Active Stages:</strong></a> {{numActiveStages}}</div>{{/if}}
+  {{#if numPendingStages}}<div><a href="#pending"><strong>Pending Stages:</strong></a> {{numPendingStages}}</div>{{/if}}
+  {{#if numCompletedStages}}<div><a href="#completed"><strong>Completed Stages:</strong></a> {{numCompletedStages}}</div>{{/if}}
+  {{#if numSkippedStages}}<div><a href="#skipped"><strong>Skipped Stages:</strong></a> {{numSkippedStages}}</div>{{/if}}
+  {{#if numActiveStages}}
+  <h4 id="active">Active Stages ({{numActiveStages}})</h4>
+  {{>stagesTable activeStages}}
+  {{/if}}
+  {{#if numPendingStages}}
+  <h4 id="pending">Pending Stages ({{numPendingStages}})</h4>
+  {{>stagesTable pendingStages}}
+  {{/if}}
+  {{#if numCompletedStages}}
+  <h4 id="completed">Completed Stages ({{numCompletedStages}})</h4>
+  {{>stagesTable completedStages}}
+  {{/if}}
+  {{#if numSkippedStages}}
+  <h4 id="skipped">Skipped Stages ({{numSkippedStages}})</h4>
+  {{>stagesTable skippedStages}}
+  {{/if}}
+</template>
+
+<template name="stagesTable">
+  <table class="table table-bordered table-striped table-condensed sortable">
+    <thead>
+    <tr>
+      <th>Stage ID</th>
+      <th>Description</th>
+      <th>Submitted</th>
+      <th>Duration</th>
+      <th>Tasks: Suceeded/Total</th>
+      <th>Input</th>
+      <th>Output</th>
+      <th>Shuffle Read</th>
+      <th>Shuffle Write</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{#each this}}
+    {{> stageRow this}}
+    {{/each}}
+    </tbody>
+  </table>
+</template>
+
+<template name="stageRow">
+  <tr class="{{getClass this}}">
+    <td>{{stage.id}}</td>
+    <td><a href="/a/{{appId}}/stage/{{id}}?attempt={{attempt}}">{{stage.name}}</a></td>
+    <td>{{formatDateTime attempt.time.start}}</td>
+    <td>{{formatDuration attempt.time.start attempt.time.end}}</td>
+    <td>{{> progressBar attempt.taskCounts}}</td>
+    <td>{{formatBytes attempt.metrics.inputMetrics.bytesRead}}</td>
+    <td>{{formatBytes attempt.metrics.outputMetrics.bytesWritten}}</td>
+    <td>{{shuffleRead attempt.metrics.shuffleReadMetrics}}</td>
+    <td>{{formatBytes attempt.metrics.shuffleWriteMetrics.shuffleBytesWritten}}</td>
+  </tr>
+</template>
+
