@@ -4,7 +4,7 @@
   {{setTitle this}}
   {{log this}}
   <div class="container-fluid">
-    <h3>Details for Stage {{stage.id}}, Attempt {{stage.attempt}}</h3>
+    <h3>Details for Stage {{stage.id}}, Attempt {{stageAttempt.id}}</h3>
     <div><strong>Total time across all tasks:</strong> {{totalTime tasks}}</div>
 
     {{#with stage.metrics.inputMetrics}}
@@ -92,13 +92,13 @@
       </tr>
       </thead>
       <tbody>
-      {{#each tasks}}
+      {{#each taskAttempts}}
       <tr>
         <td>{{index}}</td>
         <td>{{id}}</td>
         <td>{{attempt}}</td>
         <td>{{status this}}</td>
-        <td>{{localityLevel taskLocality}}</td>
+        <td>{{locality}}</td>
         <td>{{execId}}</td>
         <td>{{#with lastMetrics this}}{{hostname}}{{/with}}</td>
         <td>{{formatDateTime time.start}}</td>

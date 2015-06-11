@@ -1,5 +1,5 @@
 
-var TaskEndReasons = [
+TaskEndReasons = [
   "SUCCESS",
   "RESUBMITTED",
   "TASK_RESULT_LOST",
@@ -11,7 +11,7 @@ var TaskEndReasons = [
   "UNKNOWN_REASON"
 ];
 
-var LocalityLevels = [
+LocalityLevels = [
   "PROCESS_LOCAL", "NODE_LOCAL", "NO_PREF", "RACK_LOCAL", "ANY"
 ];
 

@@ -48,7 +48,7 @@
 <template name="stageRow">
   <tr class="{{getClass this}}">
     <td>{{stage.id}}</td>
-    <td><a href="/a/{{appId}}/stage/{{id}}?attempt={{attempt}}">{{stage.name}}</a></td>
+    <td><a href="/a/{{appId}}/stage/{{stage.id}}?attempt={{attempt.id}}">{{stage.name}}</a></td>
     <td>{{formatDateTime attempt.time.start}}</td>
     <td>{{formatDuration attempt.time.start attempt.time.end}}</td>
     <td>{{> progressBar attempt.taskCounts}}</td>

@@ -72,6 +72,9 @@ Template.stageRow.helpers({
   },
   shuffleRead: function(shuffleReadMetrics) {
     return shuffleReadMetrics && formatBytes(shuffleReadMetrics.localBytesRead + shuffleReadMetrics.remoteBytesRead) || "";
+  },
+  appId: function() {
+    return Applications.findOne({}, { fields: { id: 1 } }).id;
   }
 });
 

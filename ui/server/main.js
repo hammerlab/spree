@@ -25,6 +25,10 @@ Meteor.publish("apps", function() {
 });
 
 
+Meteor.publish("app", function(appId) {
+  return Applications.find({ id: appId });
+});
+
 // Jobs page
 Meteor.publish("jobs", function(appId) {
   return Jobs.find({appId: appId}, { sort: { id: -1 } });
@@ -66,12 +70,21 @@ Meteor.publish("stage-attempts", function(appId) {
 });
 
 
-// Stage page
-Meteor.publish("stage", function(appId, stageId, attemptId) {
-  return Stages.find({ appId: appId, id: stageId, attempt: attemptId });
+// StageAttempt page
+Meteor.publish("stage-attempt-stage", function(appId, stageId) {
+  return Stages.find({ appId: appId, id: stageId });
 });
-Meteor.publish("tasks", function(appId, stageId, attemptId) {
-  return Tasks.find({ appId: appId, stageId: stageId, stageAttemptId: attemptId });
+Meteor.publish("stage-attempt", function(appId, stageId, attemptId) {
+  return StageAttempts.find({ appId: appId, stageId: stageId, id: attemptId });
+});
+Meteor.publish("tasks", function(appId, stageId) {
+  return Tasks.find({ appId: appId, stageId: stageId });
+});
+Meteor.publish("task-attempts", function(appId, stageId, attemptId) {
+  return TaskAttempts.find({ appId: appId, stageId: stageId, stageAttemptId: attemptId });
+});
+Meteor.publish("executors", function(appId) {
+  return Executors.find({ appId: appId });
 });
 
 
