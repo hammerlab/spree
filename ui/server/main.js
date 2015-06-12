@@ -24,7 +24,6 @@ Meteor.publish("apps", function() {
   return Applications.find();
 });
 
-
 Meteor.publish("app", function(appId) {
   return Applications.find({ id: appId });
 });
@@ -100,4 +99,10 @@ Meteor.publish("rdds", function(appId) {
       { "storageLevel.replication": { $ne: 1} }
     ]
   });
+});
+
+
+// Environment Page
+Meteor.publish("environment", function(appId) {
+  return Environment.find({ appId: appId });
 });

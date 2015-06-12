@@ -128,3 +128,15 @@ Router.route("/a/:_appId/storage", function() {
   })
 });
 
+// Environment Page
+Router.route("/a/:_appId/environment", function() {
+  var appId = this.params._appId;
+  Meteor.subscribe("environment", appId);
+  this.render("environmentPage", {
+    data: {
+      appId: appId,
+      env: Environment.findOne(),
+      environmentTab: 1
+    }
+  });
+});

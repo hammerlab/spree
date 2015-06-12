@@ -7,4 +7,4 @@ Tasks = new Mongo.Collection("tasks");
 TaskAttempts = new Mongo.Collection("task_attempts");
 Executors = new Mongo.Collection("executors");
 RDDs = new Mongo.Collection("rdds");
-
+Environment = new Mongo.Collection("environment");
