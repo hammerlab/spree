@@ -29,6 +29,7 @@ Router.route("/a/:_appId/job/:_jobId", function() {
   var appId = this.params._appId;
   var jobId = parseInt(this.params._jobId);
 
+  Meteor.subscribe("app", appId);
   Meteor.subscribe("job", appId, jobId);
   Meteor.subscribe("job-stages", appId, jobId);
   Meteor.subscribe("job-stage-attempts", appId, jobId);
@@ -85,6 +86,7 @@ Router.route("/a/:_appId/stage/:_stageId", function() {
   var stageId = parseInt(this.params._stageId);
   var attemptId = this.params.query.attempt ? parseInt(this.params.query.attempt) : 0;
   console.log("looking up stage %d.%d", stageId, attemptId);
+  Meteor.subscribe("app", appId);
   Meteor.subscribe("stage-attempt", appId, stageId, attemptId);
   Meteor.subscribe("stage-attempt-stage", appId, stageId);
   Meteor.subscribe("tasks", appId, stageId);

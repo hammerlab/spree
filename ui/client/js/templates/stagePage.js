@@ -37,9 +37,9 @@ Template.stagePage.helpers({
     return task.metrics && task.metrics[task.metrics.length - 1] || {};
   },
 
-  getHost: function(task, appId, commonHostSuffix) {
-    var e = Executors.findOne({ appId: appId, id: task.execId });
-    return e && (commonHostSuffix ? e.host.substr(0, e.host.length - commonHostSuffix.length) : e.host) || "";
+  getHost: function(appId, execId/*task, appId, commonHostSuffix*/) {
+    var e = Executors.findOne({ appId: appId, id: execId });
+    return e && e.host;
   },
 
   reason: function(taskEndReason) {
@@ -49,5 +49,6 @@ Template.stagePage.helpers({
   shouldShow: function(a, b) {
     return a || b;
   }
+
 });
 

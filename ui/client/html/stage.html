@@ -100,7 +100,7 @@
         <td>{{status this}}</td>
         <td>{{locality}}</td>
         <td>{{execId}}</td>
-        <td>{{#with lastMetrics this}}{{hostname}}{{/with}}</td>
+        <td>{{getHost appId execId}}</td>
         <td>{{formatDateTime time.start}}</td>
         <td>{{formatDuration time.start time.end true}}</td>
         {{#with lastMetrics this}}
