@@ -11,11 +11,11 @@
       <ul class="unstyled">
         <li>
           <strong>Memory:</strong>
-          //TODO
+          {{formatBytes app.MemorySize}} ({{formatBytes app.maxMem}} total)
         </li>
         <li>
           <strong>Disk:</strong>
-          //TODO
+          {{formatBytes app.DiskSize}}
         </li>
       </ul>
     </div>
@@ -48,18 +48,18 @@
               <td>{{id}}</td>
               <td>{{host}}</td>
               <td>{{port}}</td>
-              <td></td>
-              <td></td>
-              <td></td>
-              {{#with taskCounts}}
-                <td>{{running}}</td>
+              <td>{{orZero numBlocks}}</td>
+              <td>{{formatBytes MemorySize}} / {{formatBytes maxMem}}</td>
+              <td>{{formatBytes diskSize}}</td>
+              {{#with orEmpty taskCounts}}
+                <td>{{orZero running}}</td>
                 <td>{{orZero failed}}</td>
-                <td>{{succeeded}}</td>
-                <td>{{num}}</td>
+                <td>{{orZero succeeded}}</td>
+                <td>{{orZero num}}</td>
               {{/with}}
 
-              {{#with metrics}}
-                <td>{{ExecutorRunTime}}</td>
+              {{#with orEmpty metrics}}
+                <td>{{formatTime ExecutorRunTime}}</td>
                 <td>{{formatBytes InputMetrics.BytesRead}}</td>
                 <td>{{shuffleBytesReadStr ShuffleReadMetrics}}</td>
                 <td>{{formatBytes ShuffleWriteMetrics.ShuffleBytesWritten}}</td>

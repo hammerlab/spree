@@ -147,9 +147,11 @@ Router.route("/a/:_appId/environment", function() {
 Router.route("/a/:_appId/executors", function() {
   var appId = this.params._appId;
   Meteor.subscribe("executors", appId);
+  Meteor.subscribe("app", appId);
   this.render("executorsPage", {
     data: {
       appId: appId,
+      app: Applications.findOne(),
       executors: Executors.find(),
       executorsTab: 1
     }
