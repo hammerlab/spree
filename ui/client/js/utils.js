@@ -45,6 +45,7 @@ formatTime = function(ms) {
 };
 Template.registerHelper("formatTime", formatTime);
 
+Template.registerHelper("orZero", function(n) { return n || 0; });
 
 Template.registerHelper("formatDateTime", function(dt) {
   return dt && moment(dt).format("YYYY/MM/DD HH:mm:ss") || "-";

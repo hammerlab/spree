@@ -51,14 +51,20 @@
               <td></td>
               <td></td>
               <td></td>
-              <td>{{taskCounts.running}}</td>
-              <td>{{taskCounts.failed}}</td>
-              <td>{{taskCounts.succeeded}}</td>
-              <td>{{taskCounts.num}}</td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
+              {{#with taskCounts}}
+                <td>{{running}}</td>
+                <td>{{orZero failed}}</td>
+                <td>{{succeeded}}</td>
+                <td>{{num}}</td>
+              {{/with}}
+
+              {{#with metrics}}
+                <td>{{ExecutorRunTime}}</td>
+                <td>{{formatBytes InputMetrics.BytesRead}}</td>
+                <td>{{shuffleBytesReadStr ShuffleReadMetrics}}</td>
+                <td>{{formatBytes ShuffleWriteMetrics.ShuffleBytesWritten}}</td>
+              {{/with}}
+
               <td></td>
             </tr>
           {{/each}}
