@@ -36,14 +36,17 @@ Template.executorRow.helpers({
     });
     return formatTime(s);
   },
-  numTasks: function(id) {
-    return TaskAttempts.find({ execId: id }).count()
-  },
-  numFailedTasks: function(id) {
-    return TaskAttempts.find({ execId: id, status: 3 }).count()
-  },
-  numSucceededTasks: function(id) {
-    return TaskAttempts.find({ execId: id, status: 2 }).count()
+  taskCounts: function(execId) {
+    var stage = Stages.findOne();
+    var stageId = stage && stage.id;
+    var attempt = StageAttempts.findOne();
+    var attemptId = attempt && attempt.id;
+    var key = ['stages', stageId, attemptId, 'taskCounts'].join('.');
+    var fields = {};
+    fields[key] = 1;
+    var e = Executors.findOne({ id: execId }, { fields: fields });
+    console.log("got e for %s %d.%d: %O", execId, stageId, attemptId, e);
+    return e && e.stages && e.stages[stageId] && e.stages[stageId][attemptId] && e.stages[stageId][attemptId].taskCounts || {};
   }
 });
 

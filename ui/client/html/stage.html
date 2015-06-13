@@ -116,9 +116,10 @@
       <th>Executor ID</th>
       <th>Address</th>
       <th>Task Time</th>
-      <th>Total Tasks</th>
+      <th>Active Tasks</th>
       <th>Failed Tasks</th>
       <th>Succeeded Tasks</th>
+      <th>Total Tasks</th>
       <th>Input Size</th>
       <th>Records</th>
     </tr>
@@ -136,9 +137,12 @@
     <td>{{id}}</td>
     <td>{{>hostPort this}}</td>
     <td>{{taskTime id}}</td>
-    <td>{{numTasks id}}</td>
-    <td>{{numFailedTasks id}}</td>
-    <td>{{numSucceededTasks id}}</td>
+    {{#with taskCounts id}}
+    <td>{{running}}</td>
+    <td>{{failed}}</td>
+    <td>{{succeeded}}</td>
+    <td>{{num}}</td>
+    {{/with}}
     <td></td>
     <td></td>
   </tr>
