@@ -22,9 +22,9 @@ formatTime = function(ms) {
 
   if (ms < M) {
     if (ms < S) {
-      return ms + 'ms';
+      return ms + ' ms';
     }
-    return sigFigs(ms/1000) + 's';
+    return sigFigs(ms/1000) + ' s';
   }
 
   var highestLevel = -1;
@@ -41,7 +41,7 @@ formatTime = function(ms) {
           }
         });
 
-  return [r[highestLevel], r[highestLevel+1]].join('');
+  return [r[highestLevel], r[highestLevel+1]].join(' ');
 };
 Template.registerHelper("formatTime", formatTime);
 
@@ -58,16 +58,28 @@ function formatBytes(bytes) {
   for (var i = 0; i < levels.length; i++) {
     var order = levels[i];
     if (bytes < cutoff*base || order == 'PB') {
-      return sigFigs(bytes) + order;
+      return sigFigs(bytes) + ' ' + order;
     }
     bytes /= 1024;
   }
 }
 Template.registerHelper("formatBytes", formatBytes);
 
+shuffleBytesRead = function(shuffleReadMetrics) {
+  return shuffleReadMetrics && (shuffleReadMetrics.LocalBytesRead + shuffleReadMetrics.RemoteBytesRead) || 0;;
+};
+Template.registerHelper("shuffleBytesRead", shuffleBytesRead);
+
+shuffleBytesReadStr = function(shuffleReadMetrics) {
+  return formatBytes(shuffleBytesRead(shuffleReadMetrics));
+};
+Template.registerHelper("shuffleBytesReadStr", shuffleBytesReadStr);
+
 Template.registerHelper("formatDateTime", function(dt) {
   return dt && moment(dt).format("YYYY/MM/DD HH:mm:ss") || "-";
 });
+
+Template.registerHelper("shouldShow", function(a, b) { return a || b; });
 
 formatDuration = function(start, end, hideIncomplete) {
   if (start && end)

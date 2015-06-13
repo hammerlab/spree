@@ -47,15 +47,26 @@
 
 <template name="stageRow">
   <tr class="{{getClass this}}">
+
     <td>{{stage.id}}</td>
     <td><a href="/a/{{appId}}/stage/{{stage.id}}?attempt={{attempt.id}}">{{stage.name}}</a></td>
-    <td>{{formatDateTime attempt.time.start}}</td>
-    <td>{{formatDuration attempt.time.start attempt.time.end}}</td>
-    <td>{{> progressBar attempt.taskCounts}}</td>
-    <td>{{formatBytes attempt.metrics.inputMetrics.bytesRead}}</td>
-    <td>{{formatBytes attempt.metrics.outputMetrics.bytesWritten}}</td>
-    <td>{{shuffleRead attempt.metrics.shuffleReadMetrics}}</td>
-    <td>{{formatBytes attempt.metrics.shuffleWriteMetrics.shuffleBytesWritten}}</td>
+
+    {{#with attempt}}
+      {{#with time}}
+        <td>{{formatDateTime start}}</td>
+        <td>{{formatDuration start end}}</td>
+      {{/with}}
+
+      <td>{{> progressBar taskCounts}}</td>
+
+      {{#with metrics}}
+        <td>{{formatBytes InputMetrics.BytesRead}}</td>
+        <td>{{formatBytes OutputMetrics.BytesWritten}}</td>
+        <td>{{shuffleBytesReadStr ShuffleReadMetrics}}</td>
+        <td>{{formatBytes ShuffleWriteMetrics.ShuffleBytesWritten}}</td>
+      {{/with}}
+
+    {{/with}}
   </tr>
 </template>
 

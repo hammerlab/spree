@@ -5,38 +5,40 @@
   {{log this}}
   <div class="container-fluid">
     <h3>Details for Stage {{stage.id}}, Attempt {{stageAttempt.id}}</h3>
-    <div><strong>Total time across all tasks:</strong> {{totalTime tasks}}</div>
+    {{#with stageAttempt.metrics}}
+      <div><strong>Total time across all tasks:</strong> {{formatTime ExecutorRunTime}}</div>
 
-    {{#with stage.metrics.inputMetrics}}
-    {{#if shouldShow bytesRead recordsRead}}
-    <div>
-      <strong>Input Size / Records:</strong> {{formatBytes bytesRead}} / {{recordsRead}}
-    </div>
-    {{/if}}
-    {{/with}}
+      {{#with InputMetrics}}
+        {{#if hasInput}}
+        <div>
+          <strong>Input Size / Records:</strong> {{formatBytes BytesRead}} / {{RecordsRead}} records
+        </div>
+        {{/if}}
+      {{/with}}
 
-    {{#with stage.metrics.outputMetrics}}
-    {{#if shouldShow bytesWritten recordsWritten}}
-    <div>
-      <strong>Output Size / Records:</strong> {{formatBytes bytesWritten}} / {{recordsWritten}}
-    </div>
-    {{/if}}
-    {{/with}}
+      {{#with OutputMetrics}}
+        {{#if hasOutput}}
+        <div>
+          <strong>Output Size / Records:</strong> {{formatBytes BytesWritten}} / {{RecordsWritten}} records
+        </div>
+        {{/if}}
+      {{/with}}
 
-    {{#with stage.metrics.shuffleReadMetrics}}
-    {{#if shouldShow shuffleBytesRead shuffleRecordsRead}}
-    <div>
-      <strong>Shuffle read:</strong> {{formatBytes shuffleBytesRead}} / {{shuffleRecordsRead}}
-    </div>
-    {{/if}}
-    {{/with}}
+      {{#with ShuffleReadMetrics}}
+        {{#if hasShuffleRead}}
+        <div>
+          <strong>Shuffle read:</strong> {{shuffleBytesReadStr this}} / {{TotalRecordsRead}} records
+        </div>
+        {{/if}}
+      {{/with}}
 
-    {{#with stage.metrics.shuffleWriteMetrics}}
-    {{#if shouldShow shuffleBytesWritten shuffleRecordsWritten}}
-    <div>
-      <strong>Shuffle write:</strong> {{formatBytes shuffleBytesWritten}} / {{shuffleRecordsWritten}}
-    </div>
-    {{/if}}
+      {{#with ShuffleWriteMetrics}}
+        {{#if hasShuffleWrite}}
+        <div>
+          <strong>Shuffle write:</strong> {{formatBytes ShuffleBytesWritten}} / {{ShuffleRecordsWritten}} records
+        </div>
+        {{/if}}
+      {{/with}}
     {{/with}}
 
     {{> summaryMetricsTable this}}
@@ -46,7 +48,15 @@
 </template>
 
 <template name="summaryMetricsTable">
-  <h4>Summary Metrics for {{numCompletedTasks stage.taskCounts}} Completed Tasks</h4>
+  {{#with stage.taskCounts}}
+    <h4>
+      Summary Metrics for {{numCompletedTasks this}} Completed Tasks
+      ({{num}} total,
+        {{running}} active,
+        {{#if failed}}{{failed}}{{else}}0{{/if}} failed,
+        {{#if succeeded}}{{succeeded}}{{else}}0{{/if}} succeeded)
+    </h4>
+  {{/with}}
   <table class="table table-bordered table-striped table-condensed sortable">
     <thead>
     <tr>
@@ -91,8 +101,7 @@
       <th>Failed Tasks</th>
       <th>Succeeded Tasks</th>
       <th>Total Tasks</th>
-      <th>Input Size</th>
-      <th>Records</th>
+      {{>metricsHeaders}}
     </tr>
     </thead>
     <tbody>
@@ -103,19 +112,66 @@
   </table>
 </template>
 
+<template name="metricsHeaders">
+  {{#if hasInput}}
+    <th>Input Size</th>
+    <th>…Records</th>
+  {{/if}}
+  {{#if hasOutput}}
+    <th>Output Size</th>
+    <th>…Records</th>
+  {{/if}}
+  {{#if hasShuffleRead}}
+    <th>Shuffle Read Size</th>
+    <th>…Records</th>
+  {{/if}}
+  {{#if hasShuffleWrite}}
+    <th>Shuffle Write Size</th>
+    <th>…Records</th>
+  {{/if}}
+</template>
+
+<template name="metricsColumns">
+  {{#if hasInput}}
+    {{#with InputMetrics}}
+      <td>{{formatBytes BytesRead}}</td>
+      <td>{{RecordsRead}}</td>
+    {{/with}}
+  {{/if}}
+  {{#if hasOutput}}
+    {{#with OutputMetrics}}
+      <td>{{formatBytes BytesWritten}}</td>
+      <td>{{RecordsWritten}}</td>
+    {{/with}}
+  {{/if}}
+  {{#if hasShuffleRead}}
+    {{#with ShuffleReadMetrics}}
+      <td>{{shuffleBytesReadStr this}}</td>
+      <td>{{TotalRecordsRead}}</td>
+    {{/with}}
+  {{/if}}
+  {{#if hasShuffleWrite}}
+    {{#with ShuffleWriteMetrics}}
+      <td>{{formatBytes ShuffleBytesWritten}}</td>
+      <td>{{ShuffleRecordsWritten}}</td>
+    {{/with}}
+  {{/if}}
+</template>
+
 <template name="executorRow">
   <tr>
     <td>{{id}}</td>
     <td>{{>hostPort this}}</td>
     <td>{{taskTime id}}</td>
+
     {{#with taskCounts id}}
-    <td>{{running}}</td>
-    <td>{{failed}}</td>
-    <td>{{succeeded}}</td>
-    <td>{{num}}</td>
+      <td>{{running}}</td>
+      <td>{{#if failed}}{{failed}}{{else}}0{{/if}}</td>
+      <td>{{succeeded}}</td>
+      <td>{{num}}</td>
     {{/with}}
-    <td></td>
-    <td></td>
+
+    {{>metricsColumns metrics}}
   </tr>
 </template>
 
@@ -134,8 +190,7 @@
       <th>Launch Time</th>
       <th>Duration</th>
       <th>GC Time</th>
-      <th>Input Size</th>
-      <th>Records</th>
+      {{>metricsHeaders}}
       <th>Errors</th>
     </tr>
     </thead>
@@ -150,20 +205,11 @@
       <td>{{execId}}</td>
       <td>{{getHost appId execId}}</td>
       <td>{{formatDateTime time.start}}</td>
-      <td>{{formatDuration time.start time.end true}}</td>
 
-      {{#with lastMetrics this}}
-      <td>{{#if jvmGCTime}}{{jvmGCTime}}{{/if}}</td>
-      <td>
-        {{#with inputMetrics}}
-          {{formatBytes bytesRead}}
-        {{/with}}
-      </td>
-      <td>
-        {{#with inputMetrics}}
-          {{recordsRead}}
-        {{/with}}
-      </td>
+      {{#with metrics}}
+        <td>{{formatTime ExecutorRunTime}}</td>
+        <td>{{#if JVMGCTime}}{{JVMGCTime}}{{/if}}</td>
+        {{>metricsColumns this}}
       {{/with}}
 
       <td>

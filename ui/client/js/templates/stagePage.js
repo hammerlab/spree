@@ -2,9 +2,34 @@
 var statuses = {
   undefined: "PENDING",
   1: "RUNNING",
-  2: "SUCCEEDED",
+  2: "SUCCESS",
   3: "FAILED",
   4: "SKIPPED"
+};
+
+var hases = {
+  hasInput: function() {
+    var stage = Stages.findOne();
+    return stage && stage.metrics && stage.metrics.InputMetrics && stage.metrics.InputMetrics.BytesRead;
+  },
+
+  hasOutput: function() {
+    var stage = Stages.findOne();
+    return stage && stage.metrics && stage.metrics.OutputMetrics && stage.metrics.OutputMetrics.BytesWritten;
+  },
+
+  hasShuffleRead: function() {
+    var stage = Stages.findOne();
+    return stage && stage.metrics && shuffleBytesRead(stage.metrics.ShuffleReadMetrics);
+  },
+
+  hasShuffleWrite: function() {
+    var stage = Stages.findOne();
+    var ret = stage && stage.metrics && stage.metrics.ShuffleWriteMetrics && stage.metrics.ShuffleWriteMetrics.ShuffleBytesWritten;
+    //console.log("hasShuffleWrite: %O, %s", stage, ret);
+    return !!ret;
+  }
+
 };
 
 Template.stagePage.helpers({
@@ -24,8 +49,11 @@ Template.stagePage.helpers({
   localityLevel: function(taskLocality) {
     return LocalityLevels[taskLocality];
   }
-
 });
+
+Template.stagePage.helpers(hases);
+Template.metricsHeaders.helpers(hases);
+Template.metricsColumns.helpers(hases);
 
 Template.executorRow.helpers({
   taskTime: function(id) {
@@ -45,7 +73,6 @@ Template.executorRow.helpers({
     var fields = {};
     fields[key] = 1;
     var e = Executors.findOne({ id: execId }, { fields: fields });
-    console.log("got e for %s %d.%d: %O", execId, stageId, attemptId, e);
     return e && e.stages && e.stages[stageId] && e.stages[stageId][attemptId] && e.stages[stageId][attemptId].taskCounts || {};
   }
 });
@@ -75,7 +102,8 @@ Template.executorLostFailure.helpers({
 
 Template.summaryMetricsTable.helpers({
   numCompletedTasks: function(taskCounts) {
-    return taskCounts && (taskCounts.succeeded + taskCounts.failed) || 0;
+    console.log("numCompletedTasks: %O", taskCounts);
+    return taskCounts && ((taskCounts.succeeded || 0) + (taskCounts.failed || 0));
   }
 });
 

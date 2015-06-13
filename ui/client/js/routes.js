@@ -109,7 +109,7 @@ Router.route("/a/:_appId/stage/:_stageId", function() {
       stage: Stages.findOne(),
       stageAttempt: StageAttempts.findOne(),
       tasks: Tasks.find(),
-      taskAttempts: TaskAttempts.find(),
+      taskAttempts: TaskAttempts.find({}, { sort: { index: 1 } }),
       executors: Executors.find(),
       durations: makeSummaryStats("Duration", durations),
       stagesTab: 1
