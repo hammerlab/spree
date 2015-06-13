@@ -1,7 +1,7 @@
 
 Template.progressBar.helpers({
   label: function(counts) {
-    return (counts && counts.succeeded || "") + "/" + (counts && counts.num || "") +
+    return (counts && counts.succeeded || 0) + "/" + (counts && counts.num || "?") +
           (counts && counts.running ? (" (" + counts.running + " running)") : "");
   },
   completedPercentage: function(counts) {
