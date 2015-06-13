@@ -38,87 +38,63 @@
     </div>
     {{/if}}
     {{/with}}
-    <h4>Summary Metrics for {{numCompletedTasks stage.taskCounts}} Completed Tasks</h4>
-    <table class="table table-bordered table-striped table-condensed sortable">
-      <thead>
-      <tr>
-        <th>Metric</th>
-        <th>Min</th>
-        <th>25th Percentile</th>
-        <th>Median</th>
-        <th>75th Percentile</th>
-        <th>Max</th>
-      </tr>
-      </thead>
-      <tbody>
-      {{> summaryRow durations}}
-      </tbody>
-    </table>
 
-    <h4>Aggregated Metrics by Executor</h4>
-    <table class="table table-bordered table-striped table-condensed sortable">
-      <thead>
-      <tr>
-        <th>Executor ID</th>
-        <th>Address</th>
-        <th>Task Time</th>
-        <th>Total Tasks</th>
-        <th>Failed Tasks</th>
-        <th>Succeeded Tasks</th>
-        <th>Input Size / Records</th>
-      </tr>
-      </thead>
-      <tbody>
-
-      </tbody>
-    </table>
-
-    <h4>Tasks</h4>
-    <table class="table table-bordered table-striped table-condensed sortable">
-      <thead>
-      <tr>
-        <th>Index</th>
-        <th>ID</th>
-        <th>Attempt</th>
-        <th>Status</th>
-        <th>Locality Level</th>
-        <th>Exec ID</th>
-        <th>Host</th>
-        <th>Launch Time</th>
-        <th>Duration</th>
-        <th>GC Time</th>
-        <th>Input Size / Records</th>
-        <th>Errors</th>
-      </tr>
-      </thead>
-      <tbody>
-      {{#each taskAttempts}}
-      <tr>
-        <td>{{index}}</td>
-        <td>{{id}}</td>
-        <td>{{attempt}}</td>
-        <td>{{status this}}</td>
-        <td>{{locality}}</td>
-        <td>{{execId}}</td>
-        <td>{{getHost appId execId}}</td>
-        <td>{{formatDateTime time.start}}</td>
-        <td>{{formatDuration time.start time.end true}}</td>
-        {{#with lastMetrics this}}
-        <td>{{#if jvmGCTime}}{{jvmGCTime}}{{/if}}</td>
-        <td>
-          {{#with inputMetrics}}
-          {{#if shouldShow bytesRead recordsRead}}
-          {{formatBytes bytesRead}} / {{recordsRead}}
-          {{/if}}
-          {{/with}}
-        </td>
-        {{/with}}
-        <td>{{reason taskEndReason}}</td>
-      </tr>
-      {{/each}}
-      </tbody>
-    </table>
+    {{> summaryMetricsTable this}}
+    {{> executorTable this}}
+    {{> tasksTable this}}
   </div>
+</template>
+
+<template name="summaryMetricsTable">
+  <h4>Summary Metrics for {{numCompletedTasks stage.taskCounts}} Completed Tasks</h4>
+  <table class="table table-bordered table-striped table-condensed sortable">
+    <thead>
+    <tr>
+      <th>Metric</th>
+      <th>Min</th>
+      <th>25th Percentile</th>
+      <th>Median</th>
+      <th>75th Percentile</th>
+      <th>Max</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{> summaryRow durations}}
+    </tbody>
+  </table>
+</template>
+
+<template name="hostPort">
+  {{host}}:{{port}}
+</template>
+
+<template name="fetchFailure">
+  {{#if this}}
+    Fetch Failed, {{>hostPort BlockManagerAddress}}: {{message}}<br/>
+    Shuffle ID: {{ShuffleID}}<br/>
+    Map ID: {{MapID}}<br/>
+    Reduce ID: {{ReduceID}}
+  {{/if}}
+</template>
+
+<template name="exceptionFailure">
+  {{#if this}}
+    {{ClassName}}: {{Description}}<br/>
+    {{FullStackTrace}}
+    {{>stackTrace StackTrace}}
+  {{/if}}
+</template>
+
+<template name="stackTrace">
+  {{#each this}}
+    {{DeclaringClass}}.{{MethodName}} ({{FileName}}:{{LineNumber}})
+  {{/each}}
+</template>
+
+<template name="executorLostFailure">
+  {{#if this}}
+    {{reason}}: {{ExecutorID}} ({{getHostPort ExecutorID}}
+  {{/if}}
 </template>
 
 <template name="summaryRow">
@@ -132,3 +108,96 @@
   </tr>
 </template>
 
+<template name="executorTable">
+  <h4>Aggregated Metrics by Executor</h4>
+  <table class="table table-bordered table-striped table-condensed sortable">
+    <thead>
+    <tr>
+      <th>Executor ID</th>
+      <th>Address</th>
+      <th>Task Time</th>
+      <th>Total Tasks</th>
+      <th>Failed Tasks</th>
+      <th>Succeeded Tasks</th>
+      <th>Input Size</th>
+      <th>Records</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{#each executors}}
+      {{>executorRow}}
+    {{/each}}
+    </tbody>
+  </table>
+</template>
+
+<template name="executorRow">
+  <tr>
+    <td>{{id}}</td>
+    <td>{{>hostPort this}}</td>
+    <td>{{taskTime id}}</td>
+    <td>{{numTasks id}}</td>
+    <td>{{numFailedTasks id}}</td>
+    <td>{{numSucceededTasks id}}</td>
+    <td></td>
+    <td></td>
+  </tr>
+</template>
+
+<template name="tasksTable">
+  <h4>Tasks</h4>
+  <table class="table table-bordered table-striped table-condensed sortable">
+    <thead>
+    <tr>
+      <th>Index</th>
+      <th>ID</th>
+      <th>Attempt</th>
+      <th>Status</th>
+      <th>Locality Level</th>
+      <th>Exec ID</th>
+      <th>Host</th>
+      <th>Launch Time</th>
+      <th>Duration</th>
+      <th>GC Time</th>
+      <th>Input Size</th>
+      <th>Records</th>
+      <th>Errors</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{#each taskAttempts}}
+    <tr>
+      <td>{{index}}</td>
+      <td>{{id}}</td>
+      <td>{{attempt}}</td>
+      <td>{{status this}}</td>
+      <td>{{locality}}</td>
+      <td>{{execId}}</td>
+      <td>{{getHost appId execId}}</td>
+      <td>{{formatDateTime time.start}}</td>
+      <td>{{formatDuration time.start time.end true}}</td>
+
+      {{#with lastMetrics this}}
+      <td>{{#if jvmGCTime}}{{jvmGCTime}}{{/if}}</td>
+      <td>
+        {{#with inputMetrics}}
+          {{formatBytes bytesRead}}
+        {{/with}}
+      </td>
+      <td>
+        {{#with inputMetrics}}
+          {{recordsRead}}
+        {{/with}}
+      </td>
+      {{/with}}
+
+      <td>
+        {{>fetchFailure end}}
+        {{>exceptionFailure end}}
+        {{>executorLostFailure end}}
+      </td>
+    </tr>
+    {{/each}}
+    </tbody>
+  </table>
+</template>

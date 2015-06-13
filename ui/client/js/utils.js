@@ -69,12 +69,12 @@ Template.registerHelper("formatDateTime", function(dt) {
   return dt && moment(dt).format("YYYY/MM/DD HH:mm:ss") || "-";
 });
 
-function formatDuration(start, end, hideIncomplete) {
+formatDuration = function(start, end, hideIncomplete) {
   if (start && end)
     return formatTime(end - start);
   if (start && !hideIncomplete)
     return formatTime(moment().unix()*1000 - start) + '...';
   return "-";
-}
+};
 Template.registerHelper("formatDuration", formatDuration);
 

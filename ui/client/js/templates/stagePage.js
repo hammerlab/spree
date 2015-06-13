@@ -21,20 +21,51 @@ Template.stagePage.helpers({
     return formatTime(totalMs);
   },
 
-  numCompletedTasks: function(taskCounts) {
-    return taskCounts && (taskCounts.succeeded + taskCounts.failed) || 0;
-  },
-
-  status: function(task) {
-    return statuses[task.status];
-  },
-
   localityLevel: function(taskLocality) {
     return LocalityLevels[taskLocality];
-  },
+  }
 
-  lastMetrics: function(task) {
-    return task.metrics && task.metrics[task.metrics.length - 1] || {};
+});
+
+Template.executorRow.helpers({
+  taskTime: function(id) {
+    var s = 0;
+    TaskAttempts.find({execId: id}).forEach(function(t) {
+      if (t.time && t.time.end && t.time.start)
+        s += t.time.end - t.time.start;
+    });
+    return formatTime(s);
+  },
+  numTasks: function(id) {
+    return TaskAttempts.find({ execId: id }).count()
+  },
+  numFailedTasks: function(id) {
+    return TaskAttempts.find({ execId: id, status: 3 }).count()
+  },
+  numSucceededTasks: function(id) {
+    return TaskAttempts.find({ execId: id, status: 2 }).count()
+  }
+});
+
+Template.executorLostFailure.helpers({
+  getHostPort: function(execId) {
+    var e = Executors.findOne({ id: execId });
+    if (e) {
+      return e.host + ':' + e.port;
+    }
+    return null;
+  }
+});
+
+Template.summaryMetricsTable.helpers({
+  numCompletedTasks: function(taskCounts) {
+    return taskCounts && (taskCounts.succeeded + taskCounts.failed) || 0;
+  }
+});
+
+Template.tasksTable.helpers({
+  status: function(task) {
+    return statuses[task.status];
   },
 
   getHost: function(appId, execId/*task, appId, commonHostSuffix*/) {
@@ -42,13 +73,8 @@ Template.stagePage.helpers({
     return e && e.host;
   },
 
-  reason: function(taskEndReason) {
-    return taskEndReason && TaskEndReasons[taskEndReason.tpe - 1] || "";
-  },
-
-  shouldShow: function(a, b) {
-    return a || b;
+  lastMetrics: function(task) {
+    return task.metrics && task.metrics[task.metrics.length - 1] || {};
   }
 
 });
-
