@@ -142,3 +142,16 @@ Router.route("/a/:_appId/environment", function() {
     }
   });
 });
+
+// Executors Page
+Router.route("/a/:_appId/executors", function() {
+  var appId = this.params._appId;
+  Meteor.subscribe("executors", appId);
+  this.render("executorsPage", {
+    data: {
+      appId: appId,
+      executors: Executors.find(),
+      executorsTab: 1
+    }
+  });
+});

@@ -1,0 +1,70 @@
+
+<template name="executorsPage">
+  {{>navbar}}
+  {{setTitle "Executors"}}
+  {{log this}}
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <h3>Executors ({{numExecutors}})</h3>
+    </div>
+    <div class="row-fluid">
+      <ul class="unstyled">
+        <li>
+          <strong>Memory:</strong>
+          //TODO
+        </li>
+        <li>
+          <strong>Disk:</strong>
+          //TODO
+        </li>
+      </ul>
+    </div>
+
+    <div class="row">
+      <div class="span12">
+      <table class="table table-bordered table-striped table-condensed sortable">
+        <thead>
+        <tr>
+          <th>Executor ID</th>
+          <th>Host</th>
+          <th>Port</th>
+          <th>RDD Blocks</th>
+          <th>Memory Used</th>
+          <th>Disk Used</th>
+          <th>Active Tasks</th>
+          <th>Failed Tasks</th>
+          <th>Complete Tasks</th>
+          <th>Total Tasks</th>
+          <th>Task Time</th>
+          <th>Input</th>
+          <th>Shuffle Read</th>
+          <th>Shuffle Write</th>
+          <th>Thread Dump</th>
+        </tr>
+        </thead>
+        <tbody>
+          {{#each executors}}
+            <tr>
+              <td>{{id}}</td>
+              <td>{{host}}</td>
+              <td>{{port}}</td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td>{{taskCounts.running}}</td>
+              <td>{{taskCounts.failed}}</td>
+              <td>{{taskCounts.succeeded}}</td>
+              <td>{{taskCounts.num}}</td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+      </div>
+    </div>
+  </div>
+</template>
