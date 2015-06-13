@@ -68,35 +68,6 @@
   {{host}}:{{port}}
 </template>
 
-<template name="fetchFailure">
-  {{#if this}}
-    Fetch Failed, {{>hostPort BlockManagerAddress}}: {{message}}<br/>
-    Shuffle ID: {{ShuffleID}}<br/>
-    Map ID: {{MapID}}<br/>
-    Reduce ID: {{ReduceID}}
-  {{/if}}
-</template>
-
-<template name="exceptionFailure">
-  {{#if this}}
-    {{ClassName}}: {{Description}}<br/>
-    {{FullStackTrace}}
-    {{>stackTrace StackTrace}}
-  {{/if}}
-</template>
-
-<template name="stackTrace">
-  {{#each this}}
-    {{DeclaringClass}}.{{MethodName}} ({{FileName}}:{{LineNumber}})
-  {{/each}}
-</template>
-
-<template name="executorLostFailure">
-  {{#if this}}
-    {{reason}}: {{ExecutorID}} ({{getHostPort ExecutorID}}
-  {{/if}}
-</template>
-
 <template name="summaryRow">
   <tr>
     <td>{{name}}</td>
@@ -205,3 +176,33 @@
     </tbody>
   </table>
 </template>
+
+<template name="fetchFailure">
+  {{#if fetchFailure reason}}
+    Fetch Failed, {{>hostPort BlockManagerAddress}}: {{message}}<br/>
+    Shuffle ID: {{ShuffleID}}<br/>
+    Map ID: {{MapID}}<br/>
+    Reduce ID: {{ReduceID}}
+  {{/if}}
+</template>
+
+<template name="exceptionFailure">
+  {{#if exceptionFailure reason}}
+    {{ClassName}}: {{Description}}<br/>
+    {{FullStackTrace}}
+    {{>stackTrace StackTrace}}
+  {{/if}}
+</template>
+
+<template name="stackTrace">
+  {{#each this}}
+    {{DeclaringClass}}.{{MethodName}} ({{FileName}}:{{LineNumber}})
+  {{/each}}
+</template>
+
+<template name="executorLostFailure">
+  {{#if executorLostFailure reason}}
+    {{reason}}: {{ExecutorID}} ({{getHostPort ExecutorID}}
+  {{/if}}
+</template>
+

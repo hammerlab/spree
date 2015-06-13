@@ -50,7 +50,20 @@ Template.executorRow.helpers({
   }
 });
 
+Template.exceptionFailure.helpers({
+  exceptionFailure: function(reason) {
+    return reason == "ExceptionFailure"
+  }
+});
+Template.fetchFailure.helpers({
+  fetchFailure: function(reason) {
+    return reason == "FetchFailure"
+  }
+});
 Template.executorLostFailure.helpers({
+  executorLostFailure: function(reason) {
+    return reason == "ExecutorLostFailure"
+  },
   getHostPort: function(execId) {
     var e = Executors.findOne({ id: execId });
     if (e) {
