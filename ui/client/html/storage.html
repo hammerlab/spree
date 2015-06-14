@@ -23,10 +23,10 @@
         <td><a href="/a/{{../appId}}/rdd/{{id}}">{{name}} ({{id}})</a></td>
         <td>{{getStorageLevel storageLevel}}</td>
         <td>{{numCachedPartitions}}</td>
-        <td>{{cachedFraction}}</td>
-        <td>{{formatBytes memSize}}</td>
-        <td>{{formatBytes tachyonSize}}</td>
-        <td>{{formatBytes diskSize}}</td>
+        <td>{{fractionCached this}}</td>
+        <td>{{formatBytes MemorySize}}</td>
+        <td>{{formatBytes ExternalBlockStoreSize}}</td>
+        <td>{{formatBytes DiskSize}}</td>
       </tr>
       {{/each}}
       </tbody>
