@@ -101,6 +101,10 @@ Meteor.publish("rdds", function(appId) {
   });
 });
 
+Meteor.publish("rdd", function(appId, rddId) {
+  console.log("looking for rdd %s %d", appId, rddId);
+  return RDDs.find({ appId: appId, id: rddId });
+});
 
 // Environment Page
 Meteor.publish("environment", function(appId) {

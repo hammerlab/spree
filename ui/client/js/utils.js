@@ -52,7 +52,7 @@ Template.registerHelper("formatDateTime", function(dt) {
   return dt && moment(dt).format("YYYY/MM/DD HH:mm:ss") || "-";
 });
 
-function formatBytes(bytes) {
+formatBytes = function(bytes) {
   if (!bytes) return "-";
   var base = 1024;
   var cutoff = 2;

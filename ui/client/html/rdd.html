@@ -1,0 +1,104 @@
+
+<template name="rddPage">
+  {{>navbar}}
+  {{setTitle rdd}}
+  {{log this}}
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <h3>RDD {{rdd.name}} (ID {{rdd.id}})</h3>
+    </div>
+    <div class="row-fluid">
+      <div class="span12">
+        <ul class="unstyled">
+          <li>
+            <strong>Storage Level:</strong> {{getStorageLevel rdd.storageLevel}}
+          </li>
+          <li>
+            <strong>Cached Partitions</strong> {{rdd.numCachedPartitions}}
+          </li>
+          {{#if rdd.MemorySize}}
+            <li>
+              <strong>Memory Size</strong> {{formatBytes rdd.MemorySize}}
+            </li>
+          {{/if}}
+          {{#if rdd.DiskSize}}
+            <li>
+              <strong>Disk Size</strong> {{formatBytes rdd.DiskSize}}
+            </li>
+          {{/if}}
+          {{#if rdd.ExternalBlockStoreSize}}
+            <li>
+              <strong>Off-Heap Size</strong> {{formatBytes rdd.ExternalBlockStoreSize}}
+            </li>
+          {{/if}}
+        </ul>
+      </div>
+    </div>
+    <div class="row-fluid">
+      <div class="span12">
+        <h4>Data Distribution on {{numExecutors}} Executors</h4>
+        <table class="table table-bordered table-striped table-condensed sortable">
+          <thead>
+          <tr>
+            <th>Host</th>
+            <th>Port</th>
+            <th>Number of Cached Blocks</th>
+            {{#if rdd.MemorySize}}<th>Memory Usage</th>{{/if}}
+            {{#if rdd.DiskSize}}<th>Disk Usage</th>{{/if}}
+            {{#if rdd.ExternalBlockStoreSize}}<th>Off-Heap Usage</th>{{/if}}
+          </tr>
+          </thead>
+          <tbody>
+          {{#each executors}}
+          {{#with executorRDDBlocks this}}
+          <tr>
+            <td>{{executor.host}}</td>
+            <td>{{executor.port}}</td>
+            <td>{{execRDD.numBlocks}}</td>
+            {{log this}}
+            {{#if rdd.MemorySize}}<td>{{formatBytes execRDD.MemorySize}} ({{subtractBytes executor.maxMem execRDD.MemorySize}} remaining)</td>{{/if}}
+            {{#if rdd.DiskSize}}<td>{{formatBytes execRDD.DiskSize}}</td>{{/if}}
+            {{#if rdd.ExternalBlockStoreSize}}<td>{{formatBytes execRDD.ExternalBlockStoreSize}}</td>{{/if}}
+          </tr>
+          {{/with}}
+          {{/each}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="row-fluid">
+      <div class="span12">
+        <h4>{{rdd.numCachedPartitions}} Partitions</h4>
+        <table class="table table-bordered table-striped table-condensed sortable">
+          <thead>
+          <tr>
+            <th>Block Name</th>
+            <th>Storage Level</th>
+            {{#if rdd.MemorySize}}<th>Size in Memory</th>{{/if}}
+            {{#if rdd.DiskSize}}<th>Size on Disk</th>{{/if}}
+            {{#if rdd.ExternalBlockStoreSize}}<th>Executors</th>{{/if}}
+            <th>Executor</th>
+          </tr>
+          </thead>
+          <tbody>
+            {{#each executors}}
+            {{#with executorRDDBlocks this}}
+              {{#each keys execRDD.blocks rdd executor}}
+                <tr>
+                  <td>{{key}}</td>
+                  <td>{{getStorageLevel val.StorageLevel}}</td>
+                  {{#if rdd.MemorySize}}<td>{{formatBytes val.MemorySize}}</td>{{/if}}
+                  {{#if rdd.DiskSize}}<td>{{formatBytes val.DiskSize}}</td>{{/if}}
+                  {{#if rdd.ExternalBlockStoreSize}}<td>{{formatBytes val.ExternalBlockStoreSize}}</td>{{/if}}
+                  <td>{{executor.host}}:{{executor.port}}</td>
+                </tr>
+              {{/each}}
+            {{/with}}
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</template>

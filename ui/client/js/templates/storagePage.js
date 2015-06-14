@@ -1,12 +1,6 @@
 
 Template.storagePage.helpers({
-  getStorageLevel: function(sl) {
-    return [
-      (sl.UseMemory ? "Memory" : (sl.UseExternalBlockStore ? "Tachyon" : (sl.UseDisk ? "Disk" : "???"))),
-      sl.Deserialized ? "Deserialized" : "Serialized",
-      sl.Replication + "x Replicated"
-    ].join(" ");
-  },
+  getStorageLevel: getStorageLevel,
 
   fractionCached: function(rdd) {
     return ((rdd.numCachedPartitions / rdd.numPartitions) || 0) * 100 + '%';

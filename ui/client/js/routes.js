@@ -130,6 +130,24 @@ Router.route("/a/:_appId/storage", function() {
   })
 });
 
+// RDD Page
+Router.route("/a/:_appId/rdd/:_rddId", function() {
+  var appId = this.params._appId;
+  var rddId = parseInt(this.params._rddId);
+  Meteor.subscribe("rdd", appId, rddId);
+  Meteor.subscribe("executors", appId);
+  var rdd = RDDs.findOne();
+  console.log("rdd: %O", rdd);
+  this.render('rddPage', {
+    data: {
+      appId: appId,
+      rdd: RDDs.findOne(),
+      executors: Executors.find(),
+      storageTab: 1
+    }
+  });
+});
+
 // Environment Page
 Router.route("/a/:_appId/environment", function() {
   var appId = this.params._appId;
