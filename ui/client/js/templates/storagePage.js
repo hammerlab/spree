@@ -2,9 +2,9 @@
 Template.storagePage.helpers({
   getStorageLevel: function(sl) {
     return [
-      (sl.useMemory ? "Memory" : (sl.useOffHeap ? "Tachyon" : (sl.useDisk ? "Disk" : "???"))),
-      sl.deserialized ? "Deserialized" : "Serialized",
-      sl.replication + "x Replicated"
+      (sl.UseMemory ? "Memory" : (sl.UseExternalBlockStore ? "Tachyon" : (sl.UseDisk ? "Disk" : "???"))),
+      sl.Deserialized ? "Deserialized" : "Serialized",
+      sl.Replication + "x Replicated"
     ].join(" ");
   },
 
