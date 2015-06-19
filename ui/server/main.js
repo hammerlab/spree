@@ -40,12 +40,9 @@ lastApp = function() {
 Meteor.publish("jobs-page", function(appId) {
   apps = (appId == 'latest') ? lastApp() : Applications.find({ id: appId });
   appId = (appId == 'latest') ? apps.fetch()[0].id : appId;
-  var jobs = Jobs.find({appId: appId}, { sort: { id: -1 } });
-  var stageIDs = [];
-  jobs.forEach(function(job) { stageIDs = stageIDs.concat(job.stageIDs); });
   return [
-    jobs,
-    Stages.find({ appId: appId, id: { $in: stageIDs }})
+    Jobs.find({appId: appId }),
+    Stages.find({ appId: appId })
   ];
 });
 
