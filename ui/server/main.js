@@ -28,85 +28,99 @@ Meteor.publish("app", function(appId) {
   return Applications.find({ id: appId });
 });
 
+Meteor.publish("latest-app", function() {
+  return Applications.find({}, { sort: { _id: -1 }, limit: 1 });
+});
+
+lastApp = function() {
+  return Applications.find({}, { sort: { _id: -1 }, limit: 1 });
+};
+
 // Jobs page
-Meteor.publish("jobs", function(appId) {
-  return Jobs.find({appId: appId}, { sort: { id: -1 } });
-});
-Meteor.publish("last-stages", function(appId, jobIds) {
-  var jobs = Jobs.find({ appId: appId, id: { $in: jobIds }});
-  var lastStageIDs = jobs.map(function(job) {
-    return Math.max.apply(null, job.stageIDs);
-  });
-  return Stages.find({ appId: appId, id: { $in: lastStageIDs }});
-});
-Meteor.publish("jobs-stages", function(appId, jobIds) {
-  var jobs = Jobs.find({ appId: appId, id: { $in: jobIds }});
+Meteor.publish("jobs-page", function(appId) {
+  apps = (appId == 'latest') ? lastApp() : Applications.find({ id: appId });
+  appId = (appId == 'latest') ? apps.fetch()[0].id : appId;
+  var jobs = Jobs.find({appId: appId}, { sort: { id: -1 } });
   var stageIDs = [];
   jobs.forEach(function(job) { stageIDs = stageIDs.concat(job.stageIDs); });
-  return Stages.find({ appId: appId, id: { $in: stageIDs }});
+  return [
+    jobs,
+    Stages.find({ appId: appId, id: { $in: stageIDs }})
+  ];
 });
 
 
 // Job page
-Meteor.publish("job", function(appId, jobId) {
-  return Jobs.find({appId: appId, id: jobId});
-});
-Meteor.publish("job-stages", function(appId, jobId) {
-  return Stages.find({ appId: appId, jobId: jobId }, { sort: { id: -1 }});
-});
-Meteor.publish("job-stage-attempts", function(appId, jobId) {
-  var stageIDs = Stages.find({ appId: appId, jobId: jobId }, { fields: { id: 1 } }).map(function(stage) { return stage.id; });
-  return StageAttempts.find({ appId: appId, stageId: { $in: stageIDs }});
+Meteor.publish("job-page", function(appId, jobId) {
+  apps = (appId == 'latest') ? lastApp() : Applications.find({ id: appId });
+  appId = (appId == 'latest') ? apps.fetch()[0].id : appId;
+
+  var stages = Stages.find({ appId: appId, jobId: jobId }, { sort: { id: -1 }});
+  var stageIDs = stages.map(function(stage) { return stage.id; });
+
+  return [
+    Jobs.find({appId: appId, id: jobId}),
+    stages,
+    StageAttempts.find({ appId: appId, stageId: { $in: stageIDs }})
+  ];
 });
 
 
 // Stages page
-Meteor.publish("stages", function(appId) {
-  return Stages.find({ appId: appId });
-});
-Meteor.publish("stage-attempts", function(appId) {
-  return StageAttempts.find({ appId: appId });
+Meteor.publish("stages-page", function(appId) {
+  apps = (appId == 'latest') ? lastApp() : Applications.find({ id: appId });
+  appId = (appId == 'latest') ? apps.fetch()[0].id : appId;
+  return [
+    Stages.find({ appId: appId }),
+    StageAttempts.find({ appId: appId })
+  ]
 });
 
 
 // StageAttempt page
-Meteor.publish("stage-attempt-stage", function(appId, stageId) {
-  return Stages.find({ appId: appId, id: stageId });
-});
-Meteor.publish("stage-attempt", function(appId, stageId, attemptId) {
-  return StageAttempts.find({ appId: appId, stageId: stageId, id: attemptId });
-});
-Meteor.publish("tasks", function(appId, stageId) {
-  return Tasks.find({ appId: appId, stageId: stageId });
-});
-Meteor.publish("task-attempts", function(appId, stageId, attemptId) {
-  return TaskAttempts.find({ appId: appId, stageId: stageId, stageAttemptId: attemptId });
-});
-Meteor.publish("executors", function(appId) {
-  return Executors.find({ appId: appId });
+Meteor.publish("stage-page", function(appId, stageId, attemptId) {
+  apps = (appId == 'latest') ? lastApp() : Applications.find({ id: appId });
+  appId = (appId == 'latest') ? apps.fetch()[0].id : appId;
+  return [
+    Stages.find({ appId: appId, id: stageId }),
+    StageAttempts.find({ appId: appId, stageId: stageId, id: attemptId }),
+    Tasks.find({ appId: appId, stageId: stageId }),
+    TaskAttempts.find({ appId: appId, stageId: stageId, stageAttemptId: attemptId }),
+    Executors.find({ appId: appId })
+  ];
 });
 
 
 // Storage page
-Meteor.publish("rdds", function(appId) {
-  return RDDs.find({
-    appId: appId,
-    $or: [
-      { "storageLevel.UseDisk": true },
-      { "storageLevel.UseMemory": true },
-      { "storageLevel.UseExternalBlockStore": true },
-      { "storageLevel.Deserialized": true },
-      { "storageLevel.Replication": { $ne: 1} }
-    ]
-  });
+Meteor.publish("rdds-page", function(appId) {
+  apps = (appId == 'latest') ? lastApp() : Applications.find({ id: appId });
+  appId = (appId == 'latest') ? apps.fetch()[0].id : appId;
+  return [
+    RDDs.find({
+      appId: appId,
+      $or: [
+        { "storageLevel.UseDisk": true },
+        { "storageLevel.UseMemory": true },
+        { "storageLevel.UseExternalBlockStore": true },
+        { "storageLevel.Deserialized": true },
+        { "storageLevel.Replication": { $ne: 1} }
+      ]
+    })
+  ];
 });
 
-Meteor.publish("rdd", function(appId, rddId) {
-  console.log("looking for rdd %s %d", appId, rddId);
-  return RDDs.find({ appId: appId, id: rddId });
+Meteor.publish("rdd-page", function(appId, rddId) {
+  apps = (appId == 'latest') ? lastApp() : Applications.find({ id: appId });
+  appId = (appId == 'latest') ? apps.fetch()[0].id : appId;
+  return [
+    RDDs.find({ appId: appId, id: rddId }),
+    Executors.find({ appId: appId })
+  ];
 });
 
 // Environment Page
-Meteor.publish("environment", function(appId) {
+Meteor.publish("environment-page", function(appId) {
+  apps = (appId == 'latest') ? lastApp() : Applications.find({ id: appId });
+  appId = (appId == 'latest') ? apps.fetch()[0].id : appId;
   return Environment.find({ appId: appId });
 });
