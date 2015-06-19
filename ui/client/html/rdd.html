@@ -55,7 +55,6 @@
             <td>{{executor.host}}</td>
             <td>{{executor.port}}</td>
             <td>{{execRDD.numBlocks}}</td>
-            {{log this}}
             {{#if rdd.MemorySize}}<td>{{formatBytes execRDD.MemorySize}} ({{subtractBytes executor.maxMem execRDD.MemorySize}} remaining)</td>{{/if}}
             {{#if rdd.DiskSize}}<td>{{formatBytes execRDD.DiskSize}}</td>{{/if}}
             {{#if rdd.ExternalBlockStoreSize}}<td>{{formatBytes execRDD.ExternalBlockStoreSize}}</td>{{/if}}

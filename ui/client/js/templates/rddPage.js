@@ -1,6 +1,5 @@
 
 getStorageLevel = function(sl) {
-  console.log("getStorageLevel: %O", sl);
   return sl && [
     (sl.UseMemory ? "Memory" : (sl.UseExternalBlockStore ? "Tachyon" : (sl.UseDisk ? "Disk" : "???"))),
     sl.Deserialized ? "Deserialized" : "Serialized",
