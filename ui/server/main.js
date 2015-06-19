@@ -2,7 +2,7 @@
 console.log("Starting server with Mongo URL: " + process.env.MONGO_URL);
 
 function parseMongoUrl(url) {
-  var m = url.match("^mongodb://([^:]+):([0-9]+)/(.*)$")
+  var m = url.match("^mongodb://([^:]+):([0-9]+)/(.*)$");
   if (!m) return {};
   return {
     host: m[1],
@@ -33,7 +33,7 @@ Meteor.publish("latest-app", function() {
 });
 
 lastApp = function() {
-  return Applications.find({}, { sort: { _id: -1 }, limit: 1 });
+  return Applications.find({ id: { $exists: true } }, { sort: { _id: -1 }, limit: 1 });
 };
 
 // Jobs page
@@ -95,17 +95,19 @@ Meteor.publish("stage-page", function(appId, stageId, attemptId) {
 Meteor.publish("rdds-page", function(appId) {
   apps = (appId == 'latest') ? lastApp() : Applications.find({ id: appId });
   appId = (appId == 'latest') ? apps.fetch()[0].id : appId;
+  var rdds = RDDs.find({
+    appId: appId,
+    $or: [
+      { "storageLevel.UseDisk": true },
+      { "storageLevel.UseMemory": true },
+      { "storageLevel.UseExternalBlockStore": true },
+      { "storageLevel.Deserialized": true },
+      { "storageLevel.Replication": { $ne: 1} }
+    ],
+    unpersisted: { $ne: true }
+  });
   return [
-    RDDs.find({
-      appId: appId,
-      $or: [
-        { "storageLevel.UseDisk": true },
-        { "storageLevel.UseMemory": true },
-        { "storageLevel.UseExternalBlockStore": true },
-        { "storageLevel.Deserialized": true },
-        { "storageLevel.Replication": { $ne: 1} }
-      ]
-    })
+    rdds
   ];
 });
 

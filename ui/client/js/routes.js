@@ -108,7 +108,7 @@ Router.route("/a/:_appId/stage/:_stageId", {
 // Storage page
 Router.route("/a/:_appId/storage", {
   waitOn: function() {
-    Meteor.subscribe("rdds-page");
+    return Meteor.subscribe("rdds-page", this.params._appId);
   },
   action: function() {
     this.render('storagePage', {
@@ -124,7 +124,7 @@ Router.route("/a/:_appId/storage", {
 // RDD Page
 Router.route("/a/:_appId/rdd/:_rddId", {
   waitOn: function() {
-    return Meteor.subscribe('rdd-page', this.params._appId, this.params._rddId);
+    return Meteor.subscribe('rdd-page', this.params._appId, parseInt(this.params._rddId));
   },
   action: function() {
     this.render('rddPage', {
