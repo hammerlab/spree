@@ -155,16 +155,18 @@ Router.route("/a/:_appId/environment", {
 });
 
 // Executors Page
-Router.route("/a/:_appId/executors", function() {
-  var appId = getAppId(this);
-  Meteor.subscribe("executors", appId);
-  Meteor.subscribe("app", appId);
-  this.render("executorsPage", {
-    data: {
-      appId: appId,
-      app: Applications.findOne(),
-      executors: Executors.find(),
-      executorsTab: 1
-    }
-  });
+Router.route("/a/:_appId/executors", {
+  waitOn: function() {
+    return Meteor.subscribe('executors-page', this.params._appId);
+  },
+  action: function() {
+    this.render("executorsPage", {
+      data: {
+        appId: this.params._appId,
+        app: Applications.findOne(),
+        executors: Executors.find(),
+        executorsTab: 1
+      }
+    });
+  }
 });

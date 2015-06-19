@@ -124,3 +124,13 @@ Meteor.publish("environment-page", function(appId) {
   appId = (appId == 'latest') ? apps.fetch()[0].id : appId;
   return Environment.find({ appId: appId });
 });
+
+// Executors Page
+Meteor.publish('executors-page', function(appId) {
+  apps = (appId == 'latest') ? lastApp() : Applications.find({ id: appId });
+  appId = (appId == 'latest') ? apps.fetch()[0].id : appId;
+  return [
+    apps,
+    Executors.find({ appId: appId })
+  ];
+});
