@@ -58,6 +58,7 @@ Meteor.publish("job-page", function(appId, jobId) {
   var stageIDs = stages.map(function(stage) { return stage.id; });
 
   return [
+    apps,
     Jobs.find({appId: appId, id: jobId}),
     stages,
     StageAttempts.find({ appId: appId, stageId: { $in: stageIDs }})
@@ -70,6 +71,7 @@ Meteor.publish("stages-page", function(appId) {
   apps = (appId == 'latest') ? lastApp() : Applications.find({ id: appId });
   appId = (appId == 'latest') ? apps.fetch()[0].id : appId;
   return [
+    apps,
     Stages.find({ appId: appId }),
     StageAttempts.find({ appId: appId })
   ]
@@ -81,6 +83,7 @@ Meteor.publish("stage-page", function(appId, stageId, attemptId) {
   apps = (appId == 'latest') ? lastApp() : Applications.find({ id: appId });
   appId = (appId == 'latest') ? apps.fetch()[0].id : appId;
   return [
+    apps,
     Stages.find({ appId: appId, id: stageId }),
     StageAttempts.find({ appId: appId, stageId: stageId, id: attemptId }),
     Tasks.find({ appId: appId, stageId: stageId }),
@@ -106,6 +109,7 @@ Meteor.publish("rdds-page", function(appId) {
     unpersisted: { $ne: true }
   });
   return [
+    apps,
     rdds
   ];
 });
@@ -114,6 +118,7 @@ Meteor.publish("rdd-page", function(appId, rddId) {
   apps = (appId == 'latest') ? lastApp() : Applications.find({ id: appId });
   appId = (appId == 'latest') ? apps.fetch()[0].id : appId;
   return [
+    apps,
     RDDs.find({ appId: appId, id: rddId }),
     Executors.find({ appId: appId })
   ];
@@ -123,7 +128,10 @@ Meteor.publish("rdd-page", function(appId, rddId) {
 Meteor.publish("environment-page", function(appId) {
   apps = (appId == 'latest') ? lastApp() : Applications.find({ id: appId });
   appId = (appId == 'latest') ? apps.fetch()[0].id : appId;
-  return Environment.find({ appId: appId });
+  return [
+    apps,
+    Environment.find({ appId: appId })
+  ];
 });
 
 // Executors Page

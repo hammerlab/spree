@@ -39,6 +39,7 @@ Router.route("/a/:_appId/job/:_jobId", {
     this.render('jobPage', {
       data: {
         appId: this.params._appId,
+        app: Applications.findOne(),
         job: Jobs.findOne(),
         stages: Stages.find({}, { sort: { id: -1 } }),
         attempts: StageAttempts.find({}, { sort: { stageId: -1, id: -1 }}),
@@ -56,6 +57,7 @@ Router.route("/a/:_appId/stages", {
     this.render('stagesPage', {
       data: {
         appId: this.params._appId,
+        app: Applications.findOne(),
         stages: Stages.find(),
         attempts: StageAttempts.find(),
         stagesTab: 1
@@ -96,6 +98,7 @@ Router.route("/a/:_appId/stage/:_stageId", {
     this.render('stagePage', {
       data: {
         appId: this.params._appId,
+        app: Applications.findOne(),
         stage: Stages.findOne(),
         stageAttempt: StageAttempts.findOne(),
         tasks: Tasks.find(),
@@ -116,6 +119,7 @@ Router.route("/a/:_appId/storage", {
     this.render('storagePage', {
       data: {
         appId: this.params._appId,
+        app: Applications.findOne(),
         rdds: RDDs.find(),
         storageTab: 1
       }
@@ -132,6 +136,7 @@ Router.route("/a/:_appId/rdd/:_rddId", {
     this.render('rddPage', {
       data: {
         appId: this.params._appId,
+        app: Applications.findOne(),
         rdd: RDDs.findOne(),
         executors: Executors.find(),
         storageTab: 1
@@ -149,6 +154,7 @@ Router.route("/a/:_appId/environment", {
     this.render("environmentPage", {
       data: {
         appId: this.params._appId,
+        app: Applications.findOne(),
         env: Environment.findOne(),
         environmentTab: 1
       }
@@ -165,6 +171,7 @@ Router.route("/a/:_appId/executors", {
     this.render("executorsPage", {
       data: {
         appId: this.params._appId,
+        app: Applications.findOne(),
         app: Applications.findOne(),
         executors: Executors.find(),
         executorsTab: 1
