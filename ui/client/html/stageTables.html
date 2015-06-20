@@ -52,10 +52,8 @@
     <td><a href="/a/{{appId}}/stage/{{stage.id}}?attempt={{attempt.id}}">{{stage.name}}</a></td>
 
     {{#with attempt}}
-      {{#with time}}
-        <td>{{formatDateTime start}}</td>
-        <td>{{formatDuration start end}}</td>
-      {{/with}}
+      <td>{{formatDateTime time.start}}</td>
+      <td>{{formatDuration time.start time.end}}</td>
 
       <td>{{> progressBar taskCounts}}</td>
 
