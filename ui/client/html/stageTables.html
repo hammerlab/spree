@@ -6,19 +6,19 @@
   {{#if numSkippedStages}}<div><a href="#skipped"><strong>Skipped Stages:</strong></a> {{numSkippedStages}}</div>{{/if}}
   {{#if numActiveStages}}
   <h4 id="active">Active Stages ({{numActiveStages}})</h4>
-  {{>stagesTable activeStages}}
+  {{>stagesTable stages=activeStages}}
   {{/if}}
   {{#if numPendingStages}}
   <h4 id="pending">Pending Stages ({{numPendingStages}})</h4>
-  {{>stagesTable pendingStages}}
+  {{>stagesTable stages=pendingStages appId=appId}}
   {{/if}}
   {{#if numCompletedStages}}
   <h4 id="completed">Completed Stages ({{numCompletedStages}})</h4>
-  {{>stagesTable completedStages}}
+  {{>stagesTable stages=completedStages appId=appId}}
   {{/if}}
   {{#if numSkippedStages}}
   <h4 id="skipped">Skipped Stages ({{numSkippedStages}})</h4>
-  {{>stagesTable skippedStages}}
+  {{>stagesTable stages=skippedStages appId=appId}}
   {{/if}}
 </template>
 
@@ -38,8 +38,8 @@
     </tr>
     </thead>
     <tbody>
-    {{#each this}}
-    {{> stageRow this}}
+    {{#each stages}}
+      {{>stageRow e=this appId=../appId}}
     {{/each}}
     </tbody>
   </table>
@@ -47,11 +47,10 @@
 
 <template name="stageRow">
   <tr class="{{getClass this}}">
+    <td>{{e.stage.id}}</td>
+    <td><a href="/a/{{appId}}/stage/{{e.stage.id}}?attempt={{e.attempt.id}}">{{e.stage.name}}</a></td>
 
-    <td>{{stage.id}}</td>
-    <td><a href="/a/{{appId}}/stage/{{stage.id}}?attempt={{attempt.id}}">{{stage.name}}</a></td>
-
-    {{#with attempt}}
+    {{#with e.attempt}}
       <td>{{formatDateTime time.start}}</td>
       <td>{{formatDuration time.start time.end}}</td>
 

@@ -69,11 +69,6 @@ Template.stageRow.helpers({
       return "succeeded";
     }
     return "";
-  },
-
-  appId: function() {
-    var app = Applications.findOne({}, { fields: { id: 1 } });
-    return app && app.id;
   }
 });
 
