@@ -2,7 +2,7 @@
 
 host=localhost
 port=27017
-db=spear
+db=spree
 
 while getopts ":h:p:d:" opt; do
   case $opt in
