@@ -41,6 +41,8 @@ Meteor.publish("jobs-page", function(appId) {
   apps = (appId == 'latest') ? lastApp() : Applications.find({ id: appId });
   appId = (appId == 'latest') ? apps.fetch()[0].id : appId;
   return [
+    apps,
+    Environment.find({ appId: appId }),
     Jobs.find({appId: appId }),
     Stages.find({ appId: appId })
   ];

@@ -20,8 +20,10 @@ Router.route("/a/:_appId", {
     this.render('jobsPage', {
       data: {
         appId: this.params._appId,
+        app: Applications.findOne(),
         jobs: jobs,
         stages: Stages.find(),
+        env: Environment.findOne(),
         jobsTab: 1
       }
     });

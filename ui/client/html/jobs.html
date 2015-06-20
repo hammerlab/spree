@@ -5,35 +5,50 @@
   {{log this}}
   <div class="container-fluid">
     <h3>Spark Jobs</h3>
-    <div><strong>Total Duration:</strong> TODO</div>
-    <div><strong>Scheduling Mode:</strong> TODO</div>
-    <div><a href="#completed"><strong>Completed Jobs:</strong></a> TODO</div>
+    <div><strong>Total Duration:</strong> {{formatDuration app.time.start}}</div>
+    <div><strong>Scheduling Mode:</strong> {{schedulingMode env}}</div>
+    {{#if numActiveJobs}}<div><a href="#completed"><strong>Active Jobs:</strong></a> {{numActiveJobs}}</div>{{/if}}
+    {{#if numCompletedJobs}}<div><a href="#completed"><strong>Completed Jobs:</strong></a> {{numCompletedJobs}}</div>{{/if}}
+    {{#if numFailedJobs}}<div><a href="#failed"><strong>Failed Jobs:</strong></a> {{numFailedJobs}}</div>{{/if}}
 
-    <h4 id="completed">Completed Jobs</h4>
-    <table class="table table-bordered table-striped table-condensed sortable">
-      <thead>
-      <tr>
-        <th>Job Id</th>
-        <th>Description</th>
-        <th>Submitted</th>
-        <th>Duration</th>
-        <th>Stages: Succeeded/Total</th>
-        <th>Tasks (all stages): Succeeded/Total</th>
-      </tr>
-      </thead>
-      <tbody>
-      {{#each jobs}}
-      <tr class="{{rowClass this}}">
-        <td>{{id}}</td>
-        <td><a href="/a/{{appId}}/job/{{id}}">{{getJobName this}}</a></td>
-        <td>{{formatDateTime time.start}}</td>
-        <td>{{getJobDuration this}}</td>
-        <td>{{> progressBar stageCounts}}</td>
-        <td>{{> progressBar taskCounts}}</td>
-      </tr>
-      {{/each}}
-      </tbody>
-    </table>
+    {{#with activeJobs}}
+      <h4 id="active">Active Jobs ({{numActiveJobs}}</h4>
+      {{>jobsTable this}}
+    {{/with}}
+    {{#with completedJobs}}
+      <h4 id="completed">Completed Jobs ({{numCompletedJobs}}</h4>
+      {{>jobsTable this}}
+    {{/with}}
+    {{#with failedJobs}}
+      <h4 id="failed">Failed Jobs ({{numFailedJobs}}</h4>
+      {{>jobsTable this}}
+    {{/with}}
   </div>
 </template>
 
+<template name="jobsTable">
+  <table class="table table-bordered table-striped table-condensed sortable">
+    <thead>
+    <tr>
+      <th>Job Id</th>
+      <th>Description</th>
+      <th>Submitted</th>
+      <th>Duration</th>
+      <th>Stages: Succeeded/Total</th>
+      <th>Tasks (all stages): Succeeded/Total</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{#each this}}
+    <tr class="{{rowClass this}}">
+      <td>{{id}}</td>
+      <td><a href="/a/{{appId}}/job/{{id}}">{{getJobName this}}</a></td>
+      <td>{{formatDateTime time.start}}</td>
+      <td>{{getJobDuration this}}</td>
+      <td>{{> progressBar stageCounts}}</td>
+      <td>{{> progressBar taskCounts}}</td>
+    </tr>
+    {{/each}}
+    </tbody>
+  </table>
+</template>
