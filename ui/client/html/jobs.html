@@ -11,18 +11,18 @@
     {{#if numCompletedJobs}}<div><a href="#completed"><strong>Completed Jobs:</strong></a> {{numCompletedJobs}}</div>{{/if}}
     {{#if numFailedJobs}}<div><a href="#failed"><strong>Failed Jobs:</strong></a> {{numFailedJobs}}</div>{{/if}}
 
-    {{#with activeJobs}}
-      <h4 id="active">Active Jobs ({{numActiveJobs}}</h4>
-      {{>jobsTable this}}
-    {{/with}}
-    {{#with completedJobs}}
-      <h4 id="completed">Completed Jobs ({{numCompletedJobs}}</h4>
-      {{>jobsTable this}}
-    {{/with}}
-    {{#with failedJobs}}
-      <h4 id="failed">Failed Jobs ({{numFailedJobs}}</h4>
-      {{>jobsTable this}}
-    {{/with}}
+    {{#if numActiveJobs}}
+      <h4 id="active">Active Jobs ({{numActiveJobs}})</h4>
+      {{>jobsTable activeJobs}}
+    {{/if}}
+    {{#if numCompletedJobs}}
+      <h4 id="completed">Completed Jobs ({{numCompletedJobs}})</h4>
+      {{>jobsTable completedJobs}}
+    {{/if}}
+    {{#if numFailedJobs}}
+      <h4 id="failed">Failed Jobs ({{numFailedJobs}})</h4>
+      {{>jobsTable failedJobs}}
+    {{/if}}
   </div>
 </template>
 
