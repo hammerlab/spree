@@ -6,7 +6,7 @@
   {{#if numSkippedStages}}<div><a href="#skipped"><strong>Skipped Stages:</strong></a> {{numSkippedStages}}</div>{{/if}}
   {{#if numActiveStages}}
     <h4 id="active">Active Stages ({{numActiveStages}})</h4>
-    {{>stagesTable stages=activeStages}}
+    {{>stagesTable stages=activeStages appId=appId}}
   {{/if}}
   {{#if numPendingStages}}
     <h4 id="pending">Pending Stages ({{numPendingStages}})</h4>
@@ -59,7 +59,7 @@
   {{formatDateTime attempt.time.start}}
 </template>
 
-<template name="stageRow-end">
+<template name="stageRow-duration">
   {{#with attempt.time}}{{formatDuration start end}}{{/with}}
 </template>
 

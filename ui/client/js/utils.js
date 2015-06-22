@@ -68,7 +68,7 @@ formatBytes = function(bytes) {
 Template.registerHelper("formatBytes", formatBytes);
 
 shuffleBytesRead = function(shuffleReadMetrics) {
-  return shuffleReadMetrics && (shuffleReadMetrics.LocalBytesRead + shuffleReadMetrics.RemoteBytesRead) || 0;;
+  return shuffleReadMetrics && (shuffleReadMetrics.LocalBytesRead + shuffleReadMetrics.RemoteBytesRead) || 0;
 };
 Template.registerHelper("shuffleBytesRead", shuffleBytesRead);
 
