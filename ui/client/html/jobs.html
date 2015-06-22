@@ -13,42 +13,39 @@
 
     {{#if numActiveJobs}}
       <h4 id="active">Active Jobs ({{numActiveJobs}})</h4>
-      {{>jobsTable activeJobs}}
+      {{>table data=activeJobs columns=columns}}
     {{/if}}
     {{#if numCompletedJobs}}
       <h4 id="completed">Completed Jobs ({{numCompletedJobs}})</h4>
-      {{>jobsTable completedJobs}}
+      {{>table data=completedJobs columns=columns}}
     {{/if}}
     {{#if numFailedJobs}}
       <h4 id="failed">Failed Jobs ({{numFailedJobs}})</h4>
-      {{>jobsTable failedJobs}}
+      {{>table data=failedJobs columns=columns}}
     {{/if}}
   </div>
 </template>
 
-<template name="jobsTable">
-  <table class="table table-bordered table-striped table-condensed sortable">
-    <thead>
-    <tr>
-      <th>Job Id</th>
-      <th>Description</th>
-      <th>Submitted</th>
-      <th>Duration</th>
-      <th>Stages: Succeeded/Total</th>
-      <th>Tasks (all stages): Succeeded/Total</th>
-    </tr>
-    </thead>
-    <tbody>
-    {{#each this}}
-    <tr class="{{rowClass this}}">
-      <td>{{id}}</td>
-      <td><a href="/a/{{appId}}/job/{{id}}">{{getJobName this}}</a></td>
-      <td>{{formatDateTime time.start}}</td>
-      <td>{{getJobDuration this}}</td>
-      <td>{{> progressBar stageCounts}}</td>
-      <td>{{> progressBar taskCounts}}</td>
-    </tr>
-    {{/each}}
-    </tbody>
-  </table>
+<template name="jobRow-id">
+  {{job.id}}
+</template>
+
+<template name="jobRow-desc">
+  <a href="/a/{{appId}}/job/{{job.id}}">{{name}}</a>
+</template>
+
+<template name="jobRow-start">
+  {{formatDateTime job.time.start}}
+</template>
+
+<template name="jobRow-duration">
+  {{getJobDuration job}}
+</template>
+
+<template name="jobRow-stages">
+  {{> progressBar job.stageCounts}}
+</template>
+
+<template name="jobRow-tasks">
+  {{> progressBar job.taskCounts}}
 </template>

@@ -1,27 +1,4 @@
 
-acc = function(key) {
-  if (typeof key == 'string') {
-    return acc(key.split('.'));
-  }
-  return key.reduce(function(soFar, next) {
-    return function(x) {
-      var sf = soFar(x);
-      return sf ? sf[next] : undefined;
-    };
-  }, function(x) { return x; });
-};
-
-sortBy = function(key) {
-  var fn = acc(key);
-  return function(a,b) {
-    var fna = fn(a);
-    var fnb = fn(b);
-    if (fna < fnb) return -1;
-    if (fna > fnb) return 1;
-    return 0;
-  }
-};
-
 var columns = [
   { label: 'Stage ID', id: 'id', cmpFn: sortBy('stage.id') },
   { label: 'Description', id: 'desc', cmpFn: sortBy('stage.name') },
@@ -33,7 +10,6 @@ var columns = [
   { label: 'Input', id: 'input', cmpFn: sortBy('attempt.metrics.InputMetrics.BytesRead') },
   { label: 'Output', id: 'output', cmpFn: sortBy('attempt.metrics.OutputMetrics.BytesWritten') },
   { label: 'Shuffle Read', id: 'shuffle-read', cmpFn: function(a,b) {
-    console.log("%O %O", a, b);
     return shuffleBytesRead(a.attempt.metrics.ShuffleReadMetrics) - shuffleBytesRead(b.attempt.metrics.ShuffleReadMetrics);
   } },
   { label: 'Shuffle Write', id: 'shuffle-write', cmpFn: sortBy('attempt.metrics.ShuffleWriteMetrics.ShuffleBytesWritten') }
@@ -42,14 +18,16 @@ var columns = [
 var columnsById = {};
 columns.forEach(function(column) {
   columnsById[column.id] = column;
+  column.template = 'stageRow-' + column.id;
+  column.table = 'stage-table';
 });
 
 // TODO(ryan): join these on the server, expose via a dedicated publish()
-attachStagesToAttempts = function(attempts) {
-  var sort = Session.get('sort') || ['start', -1];
+attachStagesToAttempts = function(attempts, appId) {
+  var sort = Session.get('stage-table-sort') || ['start', -1];
   var cmpFn = columnsById[sort[0]].cmpFn;
   var joined = attempts.map(function(stageAttempt) {
-    return { attempt: stageAttempt, stage: Stages.findOne({ id: stageAttempt.stageId }) };
+    return { attempt: stageAttempt, stage: Stages.findOne({ id: stageAttempt.stageId }), appId: appId };
   });
   if (cmpFn) {
     return sort[1] == 1 ? joined.sort(cmpFn) : joined.sort(cmpFn).reverse();
@@ -67,7 +45,9 @@ completedStages = function() {
     ]
   }, { sort: { stageId: -1 }});
 };
-Template.registerHelper("completedStages", function() { return attachStagesToAttempts(completedStages()); });
+Template.registerHelper("completedStages", function() {
+  return attachStagesToAttempts(completedStages(), this.appId);
+});
 Template.registerHelper("numCompletedStages", function() {
   return completedStages().count();
 });
@@ -83,7 +63,7 @@ activeStages = function() {
     "time.end": { $exists: false }
   }, { sort: { stageId: -1 }});
 };
-Template.registerHelper("activeStages", function() { return attachStagesToAttempts(activeStages()); });
+Template.registerHelper("activeStages", function() { return attachStagesToAttempts(activeStages(), this.appId); });
 Template.registerHelper("numActiveStages", function() {
   return activeStages().count();
 });
@@ -97,7 +77,7 @@ pendingStages = function() {
     "time.end": { $exists: false }
   }, { sort: { stageId: -1 }});
 };
-Template.registerHelper("pendingStages", function() { return attachStagesToAttempts(pendingStages()); });
+Template.registerHelper("pendingStages", function() { return attachStagesToAttempts(pendingStages(), this.appId); });
 Template.registerHelper("numPendingStages", function() {
   return pendingStages().count();
 });
@@ -107,26 +87,14 @@ skippedStages = function() {
     skipped: true
   }, { sort: { stageId: -1 }});
 };
-Template.registerHelper("skippedStages", function() { return attachStagesToAttempts(skippedStages()); });
+Template.registerHelper("skippedStages", function() { return attachStagesToAttempts(skippedStages(), this.appId); });
 Template.registerHelper("numSkippedStages", function() {
   return skippedStages().count();
 });
 
-Template.stagesTable.helpers({
-  columns: function() { return columns; },
-  getTemplateName: function() {
-    return "stageRow-" + this.id;
+Template.stagesTables.helpers({
+  columns: function () {
+    return columns;
   }
 });
 
-Template.stagesTable.events({
-  'click th': function(e, t) {
-    var prevSort = Session.get('sort');
-    if (prevSort && prevSort[0] == this.id) {
-      Session.set('sort', [prevSort[0], -prevSort[1]]);
-    } else {
-      Session.set('sort', [this.id, -1]);
-    }
-    console.log("event: %O, template: %O, this: %O. setting 'sort' to [%s,%d]", e, t, this, Session.get('sort')[0], Session.get('sort')[1]);
-  }
-});

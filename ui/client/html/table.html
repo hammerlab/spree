@@ -1,0 +1,24 @@
+
+<template name="table">
+  <table class="table table-bordered table-striped table-condensed sortable">
+    <thead>
+    <tr>
+      {{#each columns}}
+      <th>{{label}}</th>
+      {{/each}}
+    </tr>
+    </thead>
+    <tbody>
+    {{#each data}}
+    <tr>
+      {{#each ../columns}}
+      <td>
+        {{> Template.dynamic template=template data=..}}
+      </td>
+      {{/each}}
+    </tr>
+    {{/each}}
+    </tbody>
+  </table>
+</template>
+

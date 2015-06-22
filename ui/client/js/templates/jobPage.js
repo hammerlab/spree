@@ -1,8 +1,5 @@
 
 Template.jobPage.helpers({
-  completed: function(stageCounts) {
-    return (stageCounts && (stageCounts.num - stageCounts.running)) || 0;
-  },
   setTitle: function(data) {
     if (data && data.job && data.job.id !== undefined) {
       document.title = "Job " + data.job.id + " - Spark";

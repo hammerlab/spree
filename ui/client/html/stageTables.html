@@ -6,45 +6,20 @@
   {{#if numSkippedStages}}<div><a href="#skipped"><strong>Skipped Stages:</strong></a> {{numSkippedStages}}</div>{{/if}}
   {{#if numActiveStages}}
     <h4 id="active">Active Stages ({{numActiveStages}})</h4>
-    {{>stagesTable stages=activeStages appId=appId}}
+    {{>table data=activeStages columns=columns}}
   {{/if}}
   {{#if numPendingStages}}
     <h4 id="pending">Pending Stages ({{numPendingStages}})</h4>
-    {{>stagesTable stages=pendingStages appId=appId}}
+    {{>table data=pendingStages columns=columns}}
   {{/if}}
   {{#if numCompletedStages}}
     <h4 id="completed">Completed Stages ({{numCompletedStages}})</h4>
-    {{>stagesTable stages=completedStages appId=appId}}
+    {{>table data=completedStages columns=columns}}
   {{/if}}
   {{#if numSkippedStages}}
     <h4 id="skipped">Skipped Stages ({{numSkippedStages}})</h4>
-    {{>stagesTable stages=skippedStages appId=appId}}
+    {{>table data=skippedStages columns=columns}}
   {{/if}}
-</template>
-
-<template name="stagesTable">
-  <table class="table table-bordered table-striped table-condensed sortable">
-    <thead>
-    <tr>
-      {{#each columns}}
-        <th>{{label}}</th>
-      {{/each}}
-    </tr>
-    </thead>
-    <tbody>
-    {{#each stages}}
-      {{#with stage=stage attempt=attempt appId=../appId}}
-        <tr>
-          {{#each columns}}
-            <td>
-              {{> Template.dynamic template=getTemplateName data=..}}
-            </td>
-          {{/each}}
-        </tr>
-      {{/with}}
-    {{/each}}
-    </tbody>
-  </table>
 </template>
 
 <template name="stageRow-id">
