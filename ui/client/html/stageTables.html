@@ -5,20 +5,20 @@
   {{#if numCompletedStages}}<div><a href="#completed"><strong>Completed Stages:</strong></a> {{numCompletedStages}}</div>{{/if}}
   {{#if numSkippedStages}}<div><a href="#skipped"><strong>Skipped Stages:</strong></a> {{numSkippedStages}}</div>{{/if}}
   {{#if numActiveStages}}
-  <h4 id="active">Active Stages ({{numActiveStages}})</h4>
-  {{>stagesTable stages=activeStages}}
+    <h4 id="active">Active Stages ({{numActiveStages}})</h4>
+    {{>stagesTable stages=activeStages}}
   {{/if}}
   {{#if numPendingStages}}
-  <h4 id="pending">Pending Stages ({{numPendingStages}})</h4>
-  {{>stagesTable stages=pendingStages appId=appId}}
+    <h4 id="pending">Pending Stages ({{numPendingStages}})</h4>
+    {{>stagesTable stages=pendingStages appId=appId}}
   {{/if}}
   {{#if numCompletedStages}}
-  <h4 id="completed">Completed Stages ({{numCompletedStages}})</h4>
-  {{>stagesTable stages=completedStages appId=appId}}
+    <h4 id="completed">Completed Stages ({{numCompletedStages}})</h4>
+    {{>stagesTable stages=completedStages appId=appId}}
   {{/if}}
   {{#if numSkippedStages}}
-  <h4 id="skipped">Skipped Stages ({{numSkippedStages}})</h4>
-  {{>stagesTable stages=skippedStages appId=appId}}
+    <h4 id="skipped">Skipped Stages ({{numSkippedStages}})</h4>
+    {{>stagesTable stages=skippedStages appId=appId}}
   {{/if}}
 </template>
 
