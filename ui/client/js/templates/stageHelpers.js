@@ -9,9 +9,7 @@ var columns = [
   { label: 'Tasks: Succeeded/Total', id: 'tasks', cmpFn: sortBy('attempt.taskCounts.succeeded') },
   { label: 'Input', id: 'input', cmpFn: sortBy('attempt.metrics.InputMetrics.BytesRead') },
   { label: 'Output', id: 'output', cmpFn: sortBy('attempt.metrics.OutputMetrics.BytesWritten') },
-  { label: 'Shuffle Read', id: 'shuffle-read', cmpFn: function(a,b) {
-    return shuffleBytesRead(a.attempt.metrics.ShuffleReadMetrics) - shuffleBytesRead(b.attempt.metrics.ShuffleReadMetrics);
-  } },
+  { label: 'Shuffle Read', id: 'shuffle-read', cmpFn: shuffleBytesReadCmp },
   { label: 'Shuffle Write', id: 'shuffle-write', cmpFn: sortBy('attempt.metrics.ShuffleWriteMetrics.ShuffleBytesWritten') }
 ];
 

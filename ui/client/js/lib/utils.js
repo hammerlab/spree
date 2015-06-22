@@ -72,6 +72,10 @@ shuffleBytesRead = function(shuffleReadMetrics) {
 };
 Template.registerHelper("shuffleBytesRead", shuffleBytesRead);
 
+shuffleBytesReadCmp = function(a,b) {
+  return shuffleBytesRead(a.attempt.metrics.ShuffleReadMetrics) - shuffleBytesRead(b.attempt.metrics.ShuffleReadMetrics);
+};
+
 shuffleBytesReadStr = function(shuffleReadMetrics) {
   return formatBytes(shuffleBytesRead(shuffleReadMetrics));
 };
