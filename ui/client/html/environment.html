@@ -6,31 +6,28 @@
   <div class="container-fluid">
     <h3>Environment</h3>
     <h4>Runtime Information</h4>
-    {{>environmentTable env.jvm}}
+    {{#with sort env.jvm}}
+      {{>table data=this columns=columns}}
+    {{/with}}
     <h4>Spark Properties</h4>
-    {{>environmentTable env.spark}}
+    {{#with sort env.spark}}
+      {{>table data=this columns=columns}}
+    {{/with}}
     <h4>System Properties</h4>
-    {{>environmentTable env.system}}
+    {{#with sort env.system}}
+      {{>table data=this columns=columns}}
+    {{/with}}
     <h4>Classpath Entries</h4>
-    {{>environmentTable env.classpath}}
+    {{#with sort env.classpath}}
+      {{>table data=this columns=columns}}
+    {{/with}}
   </div>
 </template>
 
-<template name="environmentTable">
-  <table class="env table table-bordered table-striped table-condensed sortable">
-    <thead>
-    <tr>
-      <th width="50%">Name</th>
-      <th width="50%">Value</th>
-    </tr>
-    </thead>
-    <tbody>
-    {{#each props this}}
-    <tr>
-      <td>{{first this}}</td>
-      <td>{{second this}}</td>
-    </tr>
-    {{/each}}
-    </tbody>
-  </table>
+<template name="envRow-0">
+  {{first this}}
+</template>
+
+<template name="envRow-1">
+  {{second this}}
 </template>
