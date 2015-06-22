@@ -1,4 +1,15 @@
 
+var columns = [
+  { label: 'Stage ID', id: 'id' },
+  { label: 'Description', id: 'desc' },
+  { label: 'Submitted', id: 'start' },
+  { label: 'Duration', id: 'end' },
+  { label: 'Tasks: Succeeded/Total', id: 'tasks' },
+  { label: 'Input', id: 'input' },
+  { label: 'Output', id: 'output' },
+  { label: 'Shuffle Read', id: 'shuffle-read' },
+  { label: 'Shuffle Write', id: 'shuffle-write' }
+];
 
 // TODO(ryan): join these on the server, expose via a dedicated publish()
 attachStagesToAttempts = function(attempts) {
@@ -61,16 +72,18 @@ Template.registerHelper("numSkippedStages", function() {
   return skippedStages().count();
 });
 
-Template.stageRow.helpers({
-  getClass: function(stage) {
-    if (!stage) return "";
-    if (stage.failureReason) {
-      return "failed"
-    }
-    if (stage.time && stage.time.end) {
-      return "succeeded";
-    }
-    return "";
+Template.stagesTable.helpers({
+  columns: function() { return columns; },
+  getTemplateName: function() {
+    return "stageRow-" + this.id;;
   }
 });
 
+Template.stagesTable.events({
+  'click th': function(e, t) {
+    console.log("event: %O, template: %O", e, t);
+    var sortObj = {};
+    sortObj[e.currentTarget.cellIndex] = -1;
+    Session.set('sort', sortObj);
+  }
+});

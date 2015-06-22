@@ -26,44 +26,60 @@
   <table class="table table-bordered table-striped table-condensed sortable">
     <thead>
     <tr>
-      <th>Stage ID</th>
-      <th>Description</th>
-      <th>Submitted</th>
-      <th>Duration</th>
-      <th>Tasks: Suceeded/Total</th>
-      <th>Input</th>
-      <th>Output</th>
-      <th>Shuffle Read</th>
-      <th>Shuffle Write</th>
+      {{#each columns}}
+        <th>{{label}}</th>
+      {{/each}}
     </tr>
     </thead>
     <tbody>
     {{#each stages}}
-      {{>stageRow e=this appId=../appId}}
+      {{#with stage=stage attempt=attempt appId=../appId}}
+        <tr>
+          {{#each columns}}
+            <td>
+              {{> Template.dynamic template=getTemplateName data=..}}
+            </td>
+          {{/each}}
+        </tr>
+      {{/with}}
     {{/each}}
     </tbody>
   </table>
 </template>
 
-<template name="stageRow">
-  <tr class="{{getClass this}}">
-    <td>{{e.stage.id}}</td>
-    <td><a href="/a/{{appId}}/stage/{{e.stage.id}}?attempt={{e.attempt.id}}">{{e.stage.name}}</a></td>
+<template name="stageRow-id">
+  {{stage.id}}
+</template>
 
-    {{#with e.attempt}}
-      <td>{{formatDateTime time.start}}</td>
-      <td>{{formatDuration time.start time.end}}</td>
+<template name="stageRow-desc">
+  <a href="/a/{{appId}}/stage/{{stage.id}}?attempt={{attempt.id}}">{{stage.name}}</a>
+</template>
 
-      <td>{{> progressBar taskCounts}}</td>
+<template name="stageRow-start">
+  {{formatDateTime attempt.time.start}}
+</template>
 
-      {{#with metrics}}
-        <td>{{formatBytes InputMetrics.BytesRead}}</td>
-        <td>{{formatBytes OutputMetrics.BytesWritten}}</td>
-        <td>{{shuffleBytesReadStr ShuffleReadMetrics}}</td>
-        <td>{{formatBytes ShuffleWriteMetrics.ShuffleBytesWritten}}</td>
-      {{/with}}
+<template name="stageRow-end">
+  {{#with attempt.time}}{{formatDuration start end}}{{/with}}
+</template>
 
-    {{/with}}
-  </tr>
+<template name="stageRow-tasks">
+  {{> progressBar attempt.taskCounts}}
+</template>
+
+<template name="stageRow-input">
+  {{formatBytes attempt.metrics.InputMetrics.BytesRead}}
+</template>
+
+<template name="stageRow-output">
+  {{formatBytes attempt.metrics.OutputMetrics.BytesWritten}}
+</template>
+
+<template name="stageRow-shuffle-read">
+  {{shuffleBytesReadStr attempt.metrics.ShuffleReadMetrics}}
+</template>
+
+<template name="stageRow-shuffle-write">
+  {{formatBytes attempt.metrics.ShuffleWriteMetrics.ShuffleBytesWritten}}
 </template>
 
