@@ -5,7 +5,7 @@ Template.registerHelper("setTitle", function(title) {
 });
 
 Template.registerHelper("log", function(something) {
-  console.log(something);
+  console.log.apply(console, Array.prototype.slice.call(arguments, 0, arguments.length - 1));
 });
 
 sigFigs = function(m, n) {
