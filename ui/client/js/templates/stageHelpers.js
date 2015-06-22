@@ -1,4 +1,6 @@
 
+
+// TODO(ryan): join these on the server, expose via a dedicated publish()
 attachStagesToAttempts = function(attempts) {
   return attempts.map(function(stageAttempt) {
     return { attempt: stageAttempt, stage: Stages.findOne({ id: stageAttempt.stageId }) };
