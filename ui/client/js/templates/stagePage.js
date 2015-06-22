@@ -37,14 +37,6 @@ Template.stagePage.helpers({
     return null;
   },
 
-  totalTime: function(tasks) {
-    var totalMs = 0;
-    tasks.forEach(function(t) {
-      totalMs += (t.time && t.time.start && t.time.end && (t.time.end - t.time.start)) || 0;
-    });
-    return formatTime(totalMs);
-  },
-
   localityLevel: function(taskLocality) {
     return LocalityLevels[taskLocality];
   }
@@ -53,28 +45,6 @@ Template.stagePage.helpers({
 Template.stagePage.helpers(hases);
 Template.metricsHeaders.helpers(hases);
 Template.metricsColumns.helpers(hases);
-
-Template.executorRow.helpers({
-  taskTime: function(id) {
-    var s = 0;
-    TaskAttempts.find({execId: id}).forEach(function(t) {
-      if (t.time && t.time.end && t.time.start)
-        s += t.time.end - t.time.start;
-    });
-    return formatTime(s);
-  },
-  taskCounts: function(execId) {
-    var stage = Stages.findOne();
-    var stageId = stage && stage.id;
-    var attempt = StageAttempts.findOne();
-    var attemptId = attempt && attempt.id;
-    var key = ['stages', stageId, attemptId, 'taskCounts'].join('.');
-    var fields = {};
-    fields[key] = 1;
-    var e = Executors.findOne({ id: execId }, { fields: fields });
-    return e && e.stages && e.stages[stageId] && e.stages[stageId][attemptId] && e.stages[stageId][attemptId].taskCounts || {};
-  }
-});
 
 Template.exceptionFailure.helpers({
   exceptionFailure: function(reason) {
@@ -103,6 +73,28 @@ Template.summaryMetricsTable.helpers({
   numCompletedTasks: function(taskCounts) {
     console.log("numCompletedTasks: %O", taskCounts);
     return taskCounts && ((taskCounts.succeeded || 0) + (taskCounts.failed || 0));
+  }
+});
+
+Template.executorRow.helpers({
+  taskTime: function(id) {
+    var s = 0;
+    TaskAttempts.find({execId: id}).forEach(function(t) {
+      if (t.time && t.time.end && t.time.start)
+        s += t.time.end - t.time.start;
+    });
+    return formatTime(s);
+  },
+  taskCounts: function(execId) {
+    var stage = Stages.findOne();
+    var stageId = stage && stage.id;
+    var attempt = StageAttempts.findOne();
+    var attemptId = attempt && attempt.id;
+    var key = ['stages', stageId, attemptId, 'taskCounts'].join('.');
+    var fields = {};
+    fields[key] = 1;
+    var e = Executors.findOne({ id: execId }, { fields: fields });
+    return e && e.stages && e.stages[stageId] && e.stages[stageId][attemptId] && e.stages[stageId][attemptId].taskCounts || {};
   }
 });
 
