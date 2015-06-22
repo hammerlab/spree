@@ -26,7 +26,6 @@ var hases = {
   hasShuffleWrite: function() {
     var stage = Stages.findOne();
     var ret = stage && stage.metrics && stage.metrics.ShuffleWriteMetrics && stage.metrics.ShuffleWriteMetrics.ShuffleBytesWritten;
-    //console.log("hasShuffleWrite: %O, %s", stage, ret);
     return !!ret;
   }
 
@@ -112,13 +111,10 @@ Template.tasksTable.helpers({
     return statuses[task.status];
   },
 
-  getHost: function(appId, execId/*task, appId, commonHostSuffix*/) {
+  getHost: function(appId, execId) {
+    // TODO(ryan): possibly inefficient on the critical path.
     var e = Executors.findOne({ appId: appId, id: execId });
     return e && e.host;
-  },
-
-  lastMetrics: function(task) {
-    return task.metrics && task.metrics[task.metrics.length - 1] || {};
   }
 
 });
