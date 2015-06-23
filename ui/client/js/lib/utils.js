@@ -64,7 +64,7 @@ formatBytes = function(bytes) {
     }
     bytes /= 1024;
   }
-}
+};
 Template.registerHelper("formatBytes", formatBytes);
 
 shuffleBytesRead = function(shuffleReadMetrics) {

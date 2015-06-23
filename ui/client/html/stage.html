@@ -177,50 +177,87 @@
 
 <template name="tasksTable">
   <h4>Tasks</h4>
-  <table class="table table-bordered table-striped table-condensed sortable">
-    <thead>
-    <tr>
-      <th>Index</th>
-      <th>ID</th>
-      <th>Attempt</th>
-      <th>Status</th>
-      <th>Locality Level</th>
-      <th>Exec ID</th>
-      <th>Host</th>
-      <th>Launch Time</th>
-      <th>Duration</th>
-      <th>GC Time</th>
-      {{>metricsHeaders}}
-      <th>Errors</th>
-    </tr>
-    </thead>
-    <tbody>
-    {{#each taskAttempts}}
-    <tr>
-      <td>{{index}}</td>
-      <td>{{id}}</td>
-      <td>{{attempt}}</td>
-      <td>{{status this}}</td>
-      <td>{{locality}}</td>
-      <td>{{execId}}</td>
-      <td>{{getHost appId execId}}</td>
-      <td>{{formatDateTime time.start}}</td>
+  {{#with sorted taskAttempts}}
+    {{>table data=this columns=columns}}
+  {{/with}}
+</template>
 
-      {{#with metrics}}
-        <td>{{formatTime ExecutorRunTime}}</td>
-        <td>{{#if JVMGCTime}}{{JVMGCTime}}{{/if}}</td>
-        {{>metricsColumns this}}
-      {{/with}}
+<template name="taskRow-index">
+  {{index}}
+</template>
 
-      <td>
-        {{>fetchFailure end}}
-        {{>exceptionFailure end}}
-        {{>executorLostFailure end}}
-      </td>
-    </tr>
-    {{/each}}
-    </tbody>
-  </table>
+<template name="taskRow-id">
+  {{id}}
+</template>
+
+<template name="taskRow-attempt">
+  {{attempt}}
+</template>
+
+<template name="taskRow-status">
+  {{status this}}
+</template>
+
+<template name="taskRow-localityLevel">
+  {{locality}}
+</template>
+
+<template name="taskRow-execId">
+  {{execId}}
+</template>
+
+<template name="taskRow-host">
+  {{getHost appId execId}}
+</template>
+
+<template name="taskRow-start">
+  {{formatDateTime time.start}}
+</template>
+
+<template name="taskRow-duration">
+  {{formatDuration time.start time.end}}
+</template>
+
+<template name="taskRow-gcTime">
+  {{#if metrics.JVMGCTime}}{{formatTime metrics.JVMGCTime}}{{/if}}
+</template>
+
+<template name="taskRow-input">
+  {{formatBytes metrics.InputMetrics.BytesRead}}
+</template>
+
+<template name="taskRow-inputRecords">
+  {{formatBytes metrics.InputMetrics.RecordsRead}}
+</template>
+
+<template name="taskRow-output">
+  {{formatBytes metrics.OutputMetrics.BytesWritten}}
+</template>
+
+<template name="taskRow-outputRecords">
+  {{formatBytes metrics.OutputMetrics.RecordsWritten}}
+</template>
+
+<template name="taskRow-shuffleRead">
+  {{shuffleBytesReadStr metrics.ShuffleReadMetrics}}
+</template>
+
+<template name="taskRow-shuffleReadRecords">
+  {{metrics.ShuffleReadMetrics.TotalRecordsRead}}
+</template>
+
+<template name="taskRow-shuffleWrite">
+  {{formatBytes metrics.ShuffleWriteMetrics.ShuffleBytesWritten}}
+</template>
+
+<template name="taskRow-shuffleWriteRecords">
+  {{metrics.ShuffleWriteMetrics.ShuffleRecordsWritten}}
+</template>
+
+<template name="taskRow-errors">
+  {{>fetchFailure end}}
+  {{>exceptionFailure end}}
+  {{>executorLostFailure end}}
 </template>
 
 <template name="fetchFailure">

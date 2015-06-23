@@ -7,6 +7,36 @@ var statuses = {
   4: "SKIPPED"
 };
 
+var columns = [
+  { id: 'index', label: 'Index', cmpFn: sortBy('index') },
+  { id: 'id', label: 'ID', cmpFn: sortBy('id') },
+  { id: 'attempt', label: 'Attempt', cmpFn: sortBy('attempt') },
+  { id: 'status', label: 'Status', cmpFn: sortBy('status') },
+  { id: 'localityLevel', label: 'Locality Level', cmpFn: sortBy('locality') },
+  { id: 'execId', label: 'Executor', cmpFn: sortBy('execId') },
+  { id: 'host', label: 'Host'/*, cmpFn: sortBy('')*/ },
+  { id: 'start', label: 'Launch Time', cmpFn: sortBy('time.start') },
+  { id: 'duration', label: 'Duration', cmpFn: durationCmp() },
+  { id: 'gcTime', label: 'GC Time', cmpFn: sortBy('metrics.JVMGCTime') },
+  { id: 'input', label: 'Input', cmpFn: sortBy('metrics.InputMetrics.BytesRead') },
+  { id: 'inputRecords', label: 'Records', cmpFn: sortBy('metrics.InputMetrics.RecordsRead') },
+  { id: 'output', label: 'Output', cmpFn: sortBy('metrics.OutputMetrics.BytesWritten') },
+  { id: 'outputRecords', label: 'Records', cmpFn: sortBy('metrics.OutputMetrics.RecordsWritten') },
+  { id: 'shuffleRead', label: 'Shuffle Read', cmpFn: shuffleBytesReadCmp() },
+  { id: 'shuffleReadRecords', label: 'Records', cmpFn: sortBy('metrics.ShuffleReadMetrics.TotalRecordsRead') },
+  { id: 'shuffleWrite', label: 'Shuffle Write', cmpFn: sortBy('metrics.ShuffleWriteMetrics.ShuffleBytesWritten') },
+  { id: 'shuffleWriteRecords', label: 'Records', cmpFn: sortBy('metrics.ShuffleWriteMetrics.ShuffleRecordsWritten') },
+  { id: 'errors', label: 'Errors', cmpFn: sortBy('errors') }
+];
+
+var columnsById = {};
+columns.forEach(function(column) {
+  columnsById[column.id] = column;
+  column.template = 'taskRow-' + column.id;
+  column.table = 'task-table';
+});
+
+
 var hases = {
   hasInput: function() {
     var stage = Stages.findOne();
@@ -71,7 +101,6 @@ Template.executorLostFailure.helpers({
 
 Template.summaryMetricsTable.helpers({
   numCompletedTasks: function(taskCounts) {
-    console.log("numCompletedTasks: %O", taskCounts);
     return taskCounts && ((taskCounts.succeeded || 0) + (taskCounts.failed || 0));
   }
 });
@@ -99,14 +128,35 @@ Template.executorRow.helpers({
 });
 
 Template.tasksTable.helpers({
-  status: function(task) {
-    return statuses[task.status];
+  sorted: function(taskAttempts) {
+    var sort = Session.get('task-table-sort') || ['index', 1];
+    var cmpFn = columnsById[sort[0]].cmpFn;
+    var arr = taskAttempts.map(identity);
+    if (cmpFn) {
+      return sort[1] == 1 ? arr.sort(cmpFn) : arr.sort(cmpFn).reverse();
+    } else {
+      return sort[1] == 1 ? arr.sort() : arr.sort().reverse();
+    }
   },
+
+  columns: function() { return columns; }
+
+});
+
+Template['taskRow-host'].helpers({
 
   getHost: function(appId, execId) {
     // TODO(ryan): possibly inefficient on the critical path.
     var e = Executors.findOne({ appId: appId, id: execId });
     return e && e.host;
+  }
+
+});
+
+Template['taskRow-status'].helpers({
+
+  status: function(task) {
+    return statuses[task.status];
   }
 
 });
