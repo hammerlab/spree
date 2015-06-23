@@ -5,32 +5,35 @@
   {{log this}}
   <div class="container-fluid">
     <h3>Storage</h3>
-    <table class="table table-bordered table-striped table-condensed sortable">
-      <thead>
-      <tr>
-        <th>RDD Name (ID)</th>
-        <th>Storage Level</th>
-        <th>Cached Partitions</th>
-        <th>Fraction Cached</th>
-        <th>Size in Memory</th>
-        <th>Size in Tachyon</th>
-        <th>Size on Disk</th>
-      </tr>
-      </thead>
-      <tbody>
-      {{#each rdds}}
-      <tr>
-        <td><a href="/a/{{../appId}}/rdd/{{id}}">{{name}} ({{id}})</a></td>
-        <td>{{getStorageLevel storageLevel}}</td>
-        <td>{{numCachedPartitions}}</td>
-        <td>{{fractionCached this}}</td>
-        <td>{{formatBytes MemorySize}}</td>
-        <td>{{formatBytes ExternalBlockStoreSize}}</td>
-        <td>{{formatBytes DiskSize}}</td>
-      </tr>
-      {{/each}}
-      </tbody>
-    </table>
+    {{>table data=sorted columns=columns}}
   </div>
+</template>
+
+<template name="rddRow-id">
+  <a href="/a/{{../appId}}/rdd/{{id}}">{{name}} ({{id}})</a>
+</template>
+
+<template name="rddRow-storageLevel">
+  {{getStorageLevel storageLevel}}
+</template>
+
+<template name="rddRow-cachedPartitions">
+  {{numCachedPartitions}}
+</template>
+
+<template name="rddRow-fractionCached">
+  {{fractionCached this}}
+</template>
+
+<template name="rddRow-memSize">
+  {{formatBytes MemorySize}}
+</template>
+
+<template name="rddRow-offHeapSize">
+  {{formatBytes ExternalBlockStoreSize}}
+</template>
+
+<template name="rddRow-diskSize">
+  {{formatBytes DiskSize}}
 </template>
 
