@@ -207,7 +207,7 @@
 </template>
 
 <template name="taskRow-inputRecords">
-  {{formatBytes metrics.InputMetrics.RecordsRead}}
+  {{metrics.InputMetrics.RecordsRead}}
 </template>
 
 <template name="taskRow-output">
@@ -215,7 +215,7 @@
 </template>
 
 <template name="taskRow-outputRecords">
-  {{formatBytes metrics.OutputMetrics.RecordsWritten}}
+  {{metrics.OutputMetrics.RecordsWritten}}
 </template>
 
 <template name="taskRow-shuffleRead">

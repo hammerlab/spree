@@ -51,7 +51,7 @@ Template.jobsPage.helpers({
   },
 
   completedJobs: function() {
-    return attachNameAndAppId(Jobs.find({ succeeded: true }, { sort: { id: -1 } }), this.appid)
+    return attachNameAndAppId(Jobs.find({ succeeded: true }, { sort: { id: -1 } }), this.appId)
   },
 
   numCompletedJobs: function() {
