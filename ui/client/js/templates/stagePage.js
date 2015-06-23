@@ -106,13 +106,16 @@ Template.summaryMetricsTable.helpers({
 });
 
 Template.executorRow.helpers({
-  taskTime: function(id) {
-    var s = 0;
-    TaskAttempts.find({execId: id}).forEach(function(t) {
-      if (t.time && t.time.end && t.time.start)
-        s += t.time.end - t.time.start;
-    });
-    return formatTime(s);
+  taskTime: function() {
+    var stage = Stages.findOne();
+    var stageId = stage && stage.id;
+    var attempt = StageAttempts.findOne();
+    var attemptId = attempt && attempt.id;
+    var key = ['stages', stageId, attemptId, 'metrics', 'ExecutorRunTime'].join('.');
+    var fields = {};
+    fields[key] = 1;
+    var e = Executors.findOne({ id: this.id }, { fields: fields });
+    return acc(key)(e) || {};
   },
   taskCounts: function(execId) {
     var stage = Stages.findOne();
@@ -123,7 +126,7 @@ Template.executorRow.helpers({
     var fields = {};
     fields[key] = 1;
     var e = Executors.findOne({ id: execId }, { fields: fields });
-    return e && e.stages && e.stages[stageId] && e.stages[stageId][attemptId] && e.stages[stageId][attemptId].taskCounts || {};
+    return acc(key)(e) || {};
   }
 });
 
