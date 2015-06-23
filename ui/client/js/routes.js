@@ -95,15 +95,23 @@ Router.route("/a/:_appId/stage/:_stageId", {
     );
   },
   action: function() {
+    var stage = Stages.findOne();
+    var stageAttempt = StageAttempts.findOne();
+    var executors = Executors.find().map(function(e) {
+      e.metrics = e.stages[stage.id][stageAttempt.id].metrics;
+      e.taskCounts = e.stages[stage.id][stageAttempt.id].taskCounts;
+      delete e['stages'];
+      return e;
+    });
     this.render('stagePage', {
       data: {
         appId: this.params._appId,
         app: Applications.findOne(),
-        stage: Stages.findOne(),
-        stageAttempt: StageAttempts.findOne(),
+        stage: stage,
+        stageAttempt: stageAttempt,
         tasks: Tasks.find(),
         taskAttempts: TaskAttempts.find({}, { sort: { index: 1 } }),
-        executors: Executors.find(),
+        executors: executors,
         stagesTab: 1
       }
     });

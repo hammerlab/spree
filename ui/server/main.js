@@ -82,13 +82,19 @@ Meteor.publish("stages-page", function(appId) {
 Meteor.publish("stage-page", function(appId, stageId, attemptId) {
   apps = (appId == 'latest') ? lastApp() : Applications.find({ id: appId });
   appId = (appId == 'latest') ? apps.fetch()[0].id : appId;
+
+  var executorStageKey = ["stages", stageId, attemptId].join('.');
+  var fieldsObj = { id: 1, host: 1, port: 1 };
+  fieldsObj[executorStageKey] = 1;
+  var executors = Executors.find({ appId: appId }, { fields: fieldsObj });
+
   return [
     apps,
     Stages.find({ appId: appId, id: stageId }),
     StageAttempts.find({ appId: appId, stageId: stageId, id: attemptId }),
     Tasks.find({ appId: appId, stageId: stageId }),
     TaskAttempts.find({ appId: appId, stageId: stageId, stageAttemptId: attemptId }),
-    Executors.find({ appId: appId })
+    executors
   ];
 });
 

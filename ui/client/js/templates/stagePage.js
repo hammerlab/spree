@@ -73,8 +73,6 @@ Template.stagePage.helpers({
 });
 
 Template.stagePage.helpers(hases);
-Template.metricsHeaders.helpers(hases);
-Template.metricsColumns.helpers(hases);
 
 Template.exceptionFailure.helpers({
   exceptionFailure: function(reason) {
@@ -86,17 +84,20 @@ Template.fetchFailure.helpers({
     return reason == "FetchFailure"
   }
 });
+
+getHostPort = function(execId) {
+  var e = Executors.findOne({ id: execId });
+  if (e) {
+    return e.host + ':' + e.port;
+  }
+  return null;
+};
+
 Template.executorLostFailure.helpers({
   executorLostFailure: function(reason) {
     return reason == "ExecutorLostFailure"
   },
-  getHostPort: function(execId) {
-    var e = Executors.findOne({ id: execId });
-    if (e) {
-      return e.host + ':' + e.port;
-    }
-    return null;
-  }
+  getHostPort: getHostPort
 });
 
 Template.summaryMetricsTable.helpers({
@@ -105,28 +106,42 @@ Template.summaryMetricsTable.helpers({
   }
 });
 
-Template.executorRow.helpers({
-  taskTime: function() {
-    var stage = Stages.findOne();
-    var stageId = stage && stage.id;
-    var attempt = StageAttempts.findOne();
-    var attemptId = attempt && attempt.id;
-    var key = ['stages', stageId, attemptId, 'metrics', 'ExecutorRunTime'].join('.');
-    var fields = {};
-    fields[key] = 1;
-    var e = Executors.findOne({ id: this.id }, { fields: fields });
-    return acc(key)(e) || {};
-  },
-  taskCounts: function(execId) {
-    var stage = Stages.findOne();
-    var stageId = stage && stage.id;
-    var attempt = StageAttempts.findOne();
-    var attemptId = attempt && attempt.id;
-    var key = ['stages', stageId, attemptId, 'taskCounts'].join('.');
-    var fields = {};
-    fields[key] = 1;
-    var e = Executors.findOne({ id: execId }, { fields: fields });
-    return acc(key)(e) || {};
+var executorColumns = [
+  { id: 'id', label: 'Executor ID', cmpFn: sortBy('id') },
+  { id: 'address', label: 'Address', cmpFn: sortBy(getHostPort) },
+  { id: 'taskTime', label: 'Task Time', cmpFn: sortBy('metrics.ExecutorRunTime') },
+  { id: 'activeTasks', label: 'Active Tasks', cmpFn: sortBy('taskCounts.running') },
+  { id: 'failedTasks', label: 'Failed Tasks', cmpFn: sortBy('taskCounts.failed') },
+  { id: 'completeTasks', label: 'Complete Tasks', cmpFn: sortBy('taskCounts.succeeded') },
+  { id: 'totalTasks', label: 'Total Tasks', cmpFn: sortBy('taskCounts.num') },
+  { id: 'input', label: 'Input', cmpFn: sortBy('metrics.InputMetrics.BytesRead') },
+  { id: 'inputRecords', label: 'Records', cmpFn: sortBy('metrics.InputMetrics.RecordsRead') },
+  { id: 'output', label: 'Output', cmpFn: sortBy('metrics.OutputMetrics.BytesWritten') },
+  { id: 'outputRecords', label: 'Records', cmpFn: sortBy('metrics.OutputMetrics.RecordsWritten') },
+  { id: 'shuffleRead', label: 'Shuffle Read', cmpFn: shuffleBytesReadCmp() },
+  { id: 'shuffleReadRecords', label: 'Records', cmpFn: sortBy('metrics.ShuffleReadMetrics.TotalRecordsRead') },
+  { id: 'shuffleWrite', label: 'Shuffle Write', cmpFn: sortBy('metrics.ShuffleWriteMetrics.ShuffleBytesWritten') },
+  { id: 'shuffleWriteRecords', label: 'Records', cmpFn: sortBy('metrics.ShuffleWriteMetrics.ShuffleRecordsWritten') }
+];
+
+var executorColumnsById = {};
+executorColumns.forEach(function(column) {
+  executorColumnsById[column.id] = column;
+  column.template = 'stageExec-' + column.id;
+  column.table = 'stageExec-table';
+});
+
+Template.executorTable.helpers({
+  columns: function() { return executorColumns; },
+  sorted: function() {
+    var sort = Session.get('stageExec-table-sort') || ['id', 1];
+    var cmpFn = executorColumnsById[sort[0]].cmpFn;
+    var arr = this.executors.map(identity);
+    if (cmpFn) {
+      return sort[1] == 1 ? arr.sort(cmpFn) : arr.sort(cmpFn).reverse();
+    } else {
+      return sort[1] == 1 ? arr.sort() : arr.sort().reverse();
+    }
   }
 });
 

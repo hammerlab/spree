@@ -91,89 +91,69 @@
 
 <template name="executorTable">
   <h4>Aggregated Metrics by Executor</h4>
-  <table class="table table-bordered table-striped table-condensed sortable">
-    <thead>
-    <tr>
-      <th>Executor ID</th>
-      <th>Address</th>
-      <th>Task Time</th>
-      <th>Active Tasks</th>
-      <th>Failed Tasks</th>
-      <th>Succeeded Tasks</th>
-      <th>Total Tasks</th>
-      {{>metricsHeaders}}
-    </tr>
-    </thead>
-    <tbody>
-    {{#each executors}}
-      {{>executorRow}}
-    {{/each}}
-    </tbody>
-  </table>
+  {{>table data=sorted columns=columns}}
 </template>
 
-<template name="metricsHeaders">
-  {{#if hasInput}}
-    <th>Input Size</th>
-    <th>…Records</th>
-  {{/if}}
-  {{#if hasOutput}}
-    <th>Output Size</th>
-    <th>…Records</th>
-  {{/if}}
-  {{#if hasShuffleRead}}
-    <th>Shuffle Read Size</th>
-    <th>…Records</th>
-  {{/if}}
-  {{#if hasShuffleWrite}}
-    <th>Shuffle Write Size</th>
-    <th>…Records</th>
-  {{/if}}
+<template name="stageExec-id">
+  {{id}}
 </template>
 
-<template name="metricsColumns">
-  {{#if hasInput}}
-    {{#with InputMetrics}}
-      <td>{{formatBytes BytesRead}}</td>
-      <td>{{RecordsRead}}</td>
-    {{/with}}
-  {{/if}}
-  {{#if hasOutput}}
-    {{#with OutputMetrics}}
-      <td>{{formatBytes BytesWritten}}</td>
-      <td>{{RecordsWritten}}</td>
-    {{/with}}
-  {{/if}}
-  {{#if hasShuffleRead}}
-    {{#with ShuffleReadMetrics}}
-      <td>{{shuffleBytesReadStr this}}</td>
-      <td>{{TotalRecordsRead}}</td>
-    {{/with}}
-  {{/if}}
-  {{#if hasShuffleWrite}}
-    {{#with ShuffleWriteMetrics}}
-      <td>{{formatBytes ShuffleBytesWritten}}</td>
-      <td>{{ShuffleRecordsWritten}}</td>
-    {{/with}}
-  {{/if}}
+<template name="stageExec-address">
+  {{>hostPort}}
 </template>
 
-<template name="executorRow">
-  <tr>
-    <td>{{id}}</td>
-    <td>{{>hostPort this}}</td>
-    <td>{{formatTime taskTime}}</td>
-
-    {{#with taskCounts id}}
-      <td>{{running}}</td>
-      <td>{{#if failed}}{{failed}}{{else}}0{{/if}}</td>
-      <td>{{succeeded}}</td>
-      <td>{{num}}</td>
-    {{/with}}
-
-    {{>metricsColumns metrics}}
-  </tr>
+<template name="stageExec-taskTime">
+  {{formatTime metrics.ExecutorRunTime}}
 </template>
+
+<template name="stageExec-activeTasks">
+  {{orZero taskCounts.running}}
+</template>
+
+<template name="stageExec-failedTasks">
+  {{orZero taskCounts.failed}}
+</template>
+
+<template name="stageExec-completeTasks">
+  {{orZero taskCounts.succeeded}}
+</template>
+
+<template name="stageExec-totalTasks">
+  {{orZero taskCounts.num}}
+</template>
+
+<template name="stageExec-input">
+  {{formatBytes metrics.InputMetrics.BytesRead}}
+</template>
+
+<template name="stageExec-inputRecords">
+  {{metrics.InputMetrics.RecordsRead}}
+</template>
+
+<template name="stageExec-output">
+  {{formatBytes metrics.OutputMetrics.BytesWritten}}
+</template>
+
+<template name="stageExec-outputRecords">
+  {{metrics.OutputMetrics.RecordsWritten}}
+</template>
+
+<template name="stageExec-shuffleRead">
+  {{shuffleBytesReadStr metrics.ShuffleReadMetrics}}
+</template>
+
+<template name="stageExec-shuffleReadRecords">
+  {{metrics.ShuffleReadMetrics.TotalRecordsRead}}
+</template>
+
+<template name="stageExec-shuffleWrite">
+  {{formatBytes metrics.ShuffleWriteMetrics.ShuffleBytesWritten}}
+</template>
+
+<template name="stageExec-shuffleWriteRecords">
+  {{metrics.ShuffleWriteMetrics.ShuffleRecordsWritten}}
+</template>
+
 
 <template name="tasksTable">
   <h4>Tasks</h4>
