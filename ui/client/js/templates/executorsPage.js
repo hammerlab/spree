@@ -14,7 +14,7 @@ var columns = [
   { id: 'taskTime', label: 'Task Time', cmpFn: sortBy('ExecutorRunTime') },
   { id: 'input', label: 'Input', cmpFn: sortBy('metrics.InputMetrics.BytesRead') },
   { id: 'output', label: 'Output', cmpFn: sortBy('metrics.OutputMetrics.BytesWritten') },
-  { id: 'shuffleRead', label: 'Shuffle Read', cmpFn: shuffleBytesReadCmp },
+  { id: 'shuffleRead', label: 'Shuffle Read', cmpFn: shuffleBytesReadCmp() },
   { id: 'shuffleWrite', label: 'Shuffle Write', cmpFn: sortBy('metrics.ShuffleWriteMetrics.ShuffleBytesWritten') },
   { id: 'threadDump', label: 'Thread Dump' }
 ];

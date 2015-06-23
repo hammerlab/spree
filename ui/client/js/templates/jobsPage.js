@@ -3,9 +3,9 @@ var columns = [
   { id: "id", label: "Job ID", cmpFn: sortBy("job.id") },
   { id: "desc", label: "Description", cmpFn: sortBy("name") },
   { id: "start", label: "Submitted", cmpFn: sortBy("job.time.start") },
-  { id: "duration", label: "Duration", cmpFn: sortBy(function(x) { return x.job.time.end - x.job.time.start; }) },
-  { id: "stages", label: "Stages: Succeeded/Total", cmpFn: sortBy(function(x) { return x.job.stageCounts.succeeded; }) },
-  { id: "tasks", label: "Tasks: Succeeded/Total", cmpFn: sortBy(function(x) { return x.job.taskCounts.succeeded; }) }
+  { id: "duration", label: "Duration", cmpFn: durationCmp('job') },
+  { id: "stages", label: "Stages: Succeeded/Total", cmpFn: sortBy("job.stageCounts.succeeded") },
+  { id: "tasks", label: "Tasks: Succeeded/Total", cmpFn: sortBy("job.taskCounts.succeeded") }
 ];
 
 var columnsById = {};

@@ -3,13 +3,11 @@ var columns = [
   { label: 'Stage ID', id: 'id', cmpFn: sortBy('stage.id') },
   { label: 'Description', id: 'desc', cmpFn: sortBy('stage.name') },
   { label: 'Submitted', id: 'start', cmpFn: sortBy('attempt.time.start') },
-  { label: 'Duration', id: 'duration', cmpFn: function(a,b) {
-    return a.attempt.time.end - a.attempt.time.start - (b.attempt.time.end - b.attempt.time.start);
-  }  },
+  { label: 'Duration', id: 'duration', cmpFn: durationCmp('attempt') },
   { label: 'Tasks: Succeeded/Total', id: 'tasks', cmpFn: sortBy('attempt.taskCounts.succeeded') },
   { label: 'Input', id: 'input', cmpFn: sortBy('attempt.metrics.InputMetrics.BytesRead') },
   { label: 'Output', id: 'output', cmpFn: sortBy('attempt.metrics.OutputMetrics.BytesWritten') },
-  { label: 'Shuffle Read', id: 'shuffle-read', cmpFn: shuffleBytesReadCmp },
+  { label: 'Shuffle Read', id: 'shuffle-read', cmpFn: shuffleBytesReadCmp('attempt') },
   { label: 'Shuffle Write', id: 'shuffle-write', cmpFn: sortBy('attempt.metrics.ShuffleWriteMetrics.ShuffleBytesWritten') }
 ];
 

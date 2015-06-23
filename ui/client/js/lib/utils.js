@@ -72,8 +72,11 @@ shuffleBytesRead = function(shuffleReadMetrics) {
 };
 Template.registerHelper("shuffleBytesRead", shuffleBytesRead);
 
-shuffleBytesReadCmp = function(a,b) {
-  return shuffleBytesRead(a.attempt.metrics.ShuffleReadMetrics) - shuffleBytesRead(b.attempt.metrics.ShuffleReadMetrics);
+shuffleBytesReadCmp = function(key) {
+  var f = acc(key);
+  return function(a,b) {
+    return shuffleBytesRead(f(a).metrics.ShuffleReadMetrics) - shuffleBytesRead(f(b).metrics.ShuffleReadMetrics);
+  };
 };
 
 shuffleBytesReadStr = function(shuffleReadMetrics) {
@@ -97,6 +100,9 @@ formatDuration = function(start, end, hideIncomplete) {
 Template.registerHelper("formatDuration", formatDuration);
 
 acc = function(key) {
+  if (!key) {
+    return identity;
+  }
   if (typeof key == 'string') {
     return acc(key.split('.'));
   }
@@ -126,3 +132,15 @@ sortBy = function(key) {
   }
 };
 
+identity = function(x) { return x; };
+
+durationCmp = function(key) {
+  var f = acc(key);
+  return function(a, b) {
+    var A = (f(a).time.end - f(a).time.start) || 0;
+    var B = (f(b).time.end - f(b).time.start) || 0;
+    if (A < B) return -1;
+    if (A > B) return 1;
+    return 0;
+  };
+};
