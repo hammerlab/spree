@@ -1,7 +1,7 @@
 
 var columns = [
-  { id: "id", label: "Job ID", cmpFn: sortBy("id"), template: 'id' },
-  { id: "desc", label: "Description", cmpFn: sortBy("name") },
+  { id: "id", label: "Job ID", sortBy: "id", template: 'id' },
+  { id: "desc", label: "Description", sortBy: "name" },
   startColumn,
   durationColumn,
   stagesColumn,

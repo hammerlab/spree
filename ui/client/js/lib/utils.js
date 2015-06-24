@@ -87,13 +87,6 @@ shuffleBytesRead = function(shuffleReadMetrics) {
 };
 Template.registerHelper("shuffleBytesRead", shuffleBytesRead);
 
-shuffleBytesReadCmp = function(key) {
-  var f = acc(key);
-  return function(a,b) {
-    return shuffleBytesRead(f(a).metrics.ShuffleReadMetrics) - shuffleBytesRead(f(b).metrics.ShuffleReadMetrics);
-  };
-};
-
 shuffleBytesReadStr = function(shuffleReadMetrics) {
   return formatBytes(shuffleBytesRead(shuffleReadMetrics));
 };
@@ -150,22 +143,24 @@ sortBy = function(key) {
 
 identity = function(x) { return x; };
 
-durationCmp = function(key) {
-  var f = acc(key);
-  return function(a, b) {
-    var A = (f(a).time.end - f(a).time.start) || 0;
-    var B = (f(b).time.end - f(b).time.start) || 0;
-    if (A < B) return -1;
-    if (A > B) return 1;
-    return 0;
-  };
-};
-
 byId = function(columns, templatePrefix, tableName) {
   var columnsById = {};
   columns.forEach(function(column) {
     column.template = column.template || (templatePrefix + '-' + column.id);
     column.table = tableName + '-table';
+    if (!column.sortBy) {
+      throw new Error("Column " + column.id + " requires a 'sortBy' attribute");
+    }
+    if (typeof column.sortBy == 'string') {
+      column.sortBy = acc(column.sortBy);
+    }
+    column.cmpFn = function(a, b) {
+      var fna = column.sortBy(a);
+      var fnb = column.sortBy(b);
+      if (fna < fnb || fna === undefined) return -1;
+      if (fna > fnb || fnb === undefined) return 1;
+      return 0;
+    };
     columnsById[column.id] = column;
   });
   return columnsById;
@@ -180,11 +175,7 @@ makeTable = function(originalColumns, templateName, dataKey, columnsKey, templat
     var sort = Session.get(tableName + '-table-sort') || defaultSort;
     var cmpFn = columnsById[sort[0]].cmpFn;
     var data = dataFn.bind(this).call(this, arg);
-    return (
-          cmpFn ?
-                (sort[1] == 1 ? data.sort(cmpFn) : data.sort(cmpFn).reverse()) :
-                (sort[1] == 1 ? data.sort() : data.sort().reverse())
-    );
+    return (sort[1] == 1 ? data.sort(cmpFn) : data.sort(cmpFn).reverse());
   };
   helpers[columnsKey] = columns;
 
@@ -209,20 +200,20 @@ storageLevelToNum = function(sl) {
 
 
 taskColumns = [
-  { id: 'activeTasks', label: 'Active Tasks', cmpFn: sortBy('taskCounts.running'), template: 'activeTasks' },
-  { id: 'failedTasks', label: 'Failed Tasks', cmpFn: sortBy('taskCounts.failed'), template: 'failedTasks' },
-  { id: 'completeTasks', label: 'Complete Tasks', cmpFn: sortBy('taskCounts.succeeded'), template: 'completeTasks' },
-  { id: 'totalTasks', label: 'Total Tasks', cmpFn: sortBy('taskCounts.num'), template: 'totalTasks' }
+  { id: 'activeTasks', label: 'Active Tasks', sortBy: 'taskCounts.running', template: 'activeTasks' },
+  { id: 'failedTasks', label: 'Failed Tasks', sortBy: 'taskCounts.failed', template: 'failedTasks' },
+  { id: 'completeTasks', label: 'Complete Tasks', sortBy: 'taskCounts.succeeded', template: 'completeTasks' },
+  { id: 'totalTasks', label: 'Total Tasks', sortBy: 'taskCounts.num', template: 'totalTasks' }
 ];
 
-inputBytesColumn = { id: 'input', label: 'Input', cmpFn: sortBy('metrics.InputMetrics.BytesRead'), template: 'input' };
-inputRecordsColumn = { id: 'inputRecords', label: 'Records', cmpFn: sortBy('metrics.InputMetrics.RecordsRead'), template: 'inputRecords' };
-outputBytesColumn = { id: 'output', label: 'Output', cmpFn: sortBy('metrics.OutputMetrics.BytesWritten'), template: 'output' };
-outputRecordsColumn = { id: 'outputRecords', label: 'Records', cmpFn: sortBy('metrics.OutputMetrics.RecordsWritten'), template: 'outputRecords' };
-shuffleReadBytesColumn = { id: 'shuffleRead', label: 'Shuffle Read', cmpFn: shuffleBytesReadCmp(), template: 'shuffleRead' };
-shuffleReadRecordsColumn = { id: 'shuffleReadRecords', label: 'Records', cmpFn: sortBy('metrics.ShuffleReadMetrics.TotalRecordsRead'), template: 'shuffleReadRecords' };
-shuffleWriteBytesColumn = { id: 'shuffleWrite', label: 'Shuffle Write', cmpFn: sortBy('metrics.ShuffleWriteMetrics.ShuffleBytesWritten'), template: 'shuffleWrite' };
-shuffleWriteRecordsColumn = { id: 'shuffleWriteRecords', label: 'Records', cmpFn: sortBy('metrics.ShuffleWriteMetrics.ShuffleRecordsWritten'), template: 'shuffleWriteRecords' };
+inputBytesColumn = { id: 'input', label: 'Input', sortBy: 'metrics.InputMetrics.BytesRead', template: 'input' };
+inputRecordsColumn = { id: 'inputRecords', label: 'Records', sortBy: 'metrics.InputMetrics.RecordsRead', template: 'inputRecords' };
+outputBytesColumn = { id: 'output', label: 'Output', sortBy: 'metrics.OutputMetrics.BytesWritten', template: 'output' };
+outputRecordsColumn = { id: 'outputRecords', label: 'Records', sortBy: 'metrics.OutputMetrics.RecordsWritten', template: 'outputRecords' };
+shuffleReadBytesColumn = { id: 'shuffleRead', label: 'Shuffle Read', sortBy: function(x) { return shuffleBytesRead(x.metrics.ShuffleReadMetrics); }, template: 'shuffleRead' };
+shuffleReadRecordsColumn = { id: 'shuffleReadRecords', label: 'Records', sortBy: 'metrics.ShuffleReadMetrics.TotalRecordsRead', template: 'shuffleReadRecords' };
+shuffleWriteBytesColumn = { id: 'shuffleWrite', label: 'Shuffle Write', sortBy: 'metrics.ShuffleWriteMetrics.ShuffleBytesWritten', template: 'shuffleWrite' };
+shuffleWriteRecordsColumn = { id: 'shuffleWriteRecords', label: 'Records', sortBy: 'metrics.ShuffleWriteMetrics.ShuffleRecordsWritten', template: 'shuffleWriteRecords' };
 
 ioBytesColumns = [
   inputBytesColumn,
@@ -242,20 +233,20 @@ ioColumns = [
   shuffleWriteRecordsColumn
 ];
 
-nameColumn = { id: 'name', label: 'Name', cmpFn: sortBy('name'), template: 'nameAttr' };
-startColumn = { label: 'Submitted', id: 'start', cmpFn: sortBy('time.start'), template: 'start' };
-durationColumn = { label: 'Duration', id: 'duration', cmpFn: durationCmp(), template: 'duration' };
-tasksColumn = { id: "tasks", label: "Tasks: Succeeded/Total", cmpFn: sortBy("taskCounts.succeeded"), template: 'tasks' };
-stagesColumn = { id: "stages", label: "Stages: Succeeded/Total", cmpFn: sortBy("stageCounts.succeeded"), template: 'stages' };
+nameColumn = { id: 'name', label: 'Name', sortBy: 'name', template: 'nameAttr' };
+startColumn = { label: 'Submitted', id: 'start', sortBy: 'time.start', template: 'start' };
+durationColumn = { label: 'Duration', id: 'duration', sortBy: function(x) { return x.time && (x.time.end - x.time.start) || 0; }, template: 'duration' };
+tasksColumn = { id: "tasks", label: "Tasks: Succeeded/Total", sortBy: "taskCounts.succeeded", template: 'tasks' };
+stagesColumn = { id: "stages", label: "Stages: Succeeded/Total", sortBy: "stageCounts.succeeded", template: 'stages' };
 
-memColumn = { id: 'memSize', label: 'Size in Memory', cmpFn: sortBy("MemorySize"), template: 'mem' };
-offHeapColumn = { id: 'offHeapSize', label: 'Size in Tachyon', cmpFn: sortBy("ExternalBlockStoreSize"), template: 'offHeap' };
-diskColumn = { id: 'diskSize', label: 'Size on Disk', cmpFn: sortBy("DiskSize"), template: 'disk' };
+memColumn = { id: 'memSize', label: 'Size in Memory', sortBy: "MemorySize", template: 'mem' };
+offHeapColumn = { id: 'offHeapSize', label: 'Size in Tachyon', sortBy: "ExternalBlockStoreSize", template: 'offHeap' };
+diskColumn = { id: 'diskSize', label: 'Size on Disk', sortBy: "DiskSize", template: 'disk' };
 
 spaceColumns = [ memColumn, offHeapColumn, diskColumn ];
 
-hostColumn = { id: 'host', label: 'Host', cmpFn: sortBy('host'), template: 'host' };
-portColumn = { id: 'port', label: 'Port', cmpFn: sortBy('port'), template: 'port' };
-numBlocksColumn = { id: 'blocks', label: 'RDD Blocks', cmpFn: sortBy('numBlocks'), template: 'numBlocks' };
+hostColumn = { id: 'host', label: 'Host', sortBy: 'host', template: 'host' };
+portColumn = { id: 'port', label: 'Port', sortBy: 'port', template: 'port' };
+numBlocksColumn = { id: 'blocks', label: 'RDD Blocks', sortBy: 'numBlocks', template: 'numBlocks' };
 
-storageLevelColumn = { id: 'storageLevel', label: 'Storage Level', cmpFn: sortBy(storageLevelToNum), template: 'storageLevel' };
+storageLevelColumn = { id: 'storageLevel', label: 'Storage Level', sortBy: storageLevelToNum, template: 'storageLevel' };

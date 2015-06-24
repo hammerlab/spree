@@ -68,9 +68,9 @@ Template.summaryMetricsTable.helpers({
 
 // Per-executor table
 var executorColumns = [
-  { id: 'id', label: 'Executor ID', cmpFn: sortBy('id'), template: 'id' },
-  { id: 'address', label: 'Address', cmpFn: sortBy(getHostPort) },
-  { id: 'taskTime', label: 'Task Time', cmpFn: sortBy('metrics.ExecutorRunTime') }
+  { id: 'id', label: 'Executor ID', sortBy: 'id', template: 'id' },
+  { id: 'address', label: 'Address', sortBy: getHostPort },
+  { id: 'taskTime', label: 'Task Time', sortBy: 'metrics.ExecutorRunTime' }
 ]
       .concat(taskColumns)
       .concat(ioColumns);
@@ -82,20 +82,20 @@ makeTable(
 
 // Per-task table
 var columns = [
-  { id: 'index', label: 'Index', cmpFn: sortBy('index') },
-  { id: 'id', label: 'ID', cmpFn: sortBy('id'), template: 'id' },
-  { id: 'attempt', label: 'Attempt', cmpFn: sortBy('attempt') },
-  { id: 'status', label: 'Status', cmpFn: sortBy('status') },
-  { id: 'localityLevel', label: 'Locality Level', cmpFn: sortBy('locality') },
-  { id: 'execId', label: 'Executor', cmpFn: sortBy('execId') },
-  { id: 'host', label: 'Host', cmpFn: sortBy('host'), template: 'host' },
+  { id: 'index', label: 'Index', sortBy: 'index' },
+  { id: 'id', label: 'ID', sortBy: 'id', template: 'id' },
+  { id: 'attempt', label: 'Attempt', sortBy: 'attempt' },
+  { id: 'status', label: 'Status', sortBy: 'status' },
+  { id: 'localityLevel', label: 'Locality Level', sortBy: 'locality' },
+  { id: 'execId', label: 'Executor', sortBy: 'execId' },
+  { id: 'host', label: 'Host', sortBy: 'host', template: 'host' },
   startColumn,
   durationColumn,
-  { id: 'gcTime', label: 'GC Time', cmpFn: sortBy('metrics.JVMGCTime') }
+  { id: 'gcTime', label: 'GC Time', sortBy: 'metrics.JVMGCTime' }
 ]
       .concat(ioColumns)
       .concat([
-        { id: 'errors', label: 'Errors', cmpFn: sortBy('errors') }
+        { id: 'errors', label: 'Errors', sortBy: 'errors' }
       ]);
 
 makeTable(

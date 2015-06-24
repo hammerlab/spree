@@ -13,7 +13,7 @@ makeTable(
 );
 
 var blockColumns = [
-  { id: 'id', label: 'Block ID', cmpFn: sortBy("id"), template: 'id' },
+  { id: 'id', label: 'Block ID', sortBy: "id", template: 'id' },
   storageLevelColumn
 ]
       .concat(spaceColumns)

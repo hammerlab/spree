@@ -1,7 +1,7 @@
 
 var columns = [
-  { label: 'Stage ID', id: 'id', cmpFn: sortBy('stageId') },
-  { label: 'Description', id: 'desc', cmpFn: sortBy('name') },
+  { label: 'Stage ID', id: 'id', sortBy: 'stageId' },
+  { label: 'Description', id: 'desc', sortBy: 'name' },
   startColumn,
   durationColumn,
   tasksColumn

@@ -1,10 +1,10 @@
 
 var columns = [
-  { id: 'id', label: 'RDD ID', cmpFn: sortBy("id") },
+  { id: 'id', label: 'RDD ID', sortBy: "id" },
   nameColumn,
   storageLevelColumn,
-  { id: 'cachedPartitions', label: 'Cached Partitions', cmpFn: sortBy("cachedPartitions") },
-  { id: 'fractionCached', label: '% Cached', cmpFn: sortBy(function(rdd) { return rdd.numCachedPartitions / rdd.numPartitions; }) }
+  { id: 'cachedPartitions', label: 'Cached Partitions', sortBy: "cachedPartitions" },
+  { id: 'fractionCached', label: '% Cached', sortBy: function(rdd) { return rdd.numCachedPartitions / rdd.numPartitions; } }
 ].concat(spaceColumns);
 
 makeTable(

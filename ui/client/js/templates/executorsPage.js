@@ -1,21 +1,18 @@
 
 var columns = [
-  { id: 'id', label: 'ID', cmpFn: sortBy('id'), template: 'id' },
+  { id: 'id', label: 'ID', sortBy: 'id', template: 'id' },
       hostColumn,
       portColumn,
       numBlocksColumn,
-  { id: 'mem', label: 'Memory Usage', cmpFn: sortBy('MemorySize') },
+  { id: 'mem', label: 'Memory Usage', sortBy: 'MemorySize' },
   diskColumn,
   offHeapColumn
 ]
       .concat(taskColumns)
       .concat([
-        { id: 'taskTime', label: 'Task Time', cmpFn: sortBy('ExecutorRunTime') }
+        { id: 'taskTime', label: 'Task Time', sortBy: 'ExecutorRunTime' }
       ])
-      .concat(ioBytesColumns)
-      .concat([
-        { id: 'threadDump', label: 'Thread Dump' }
-      ]);
+      .concat(ioBytesColumns);
 
 makeTable(
       columns, 'executorsPage', 'sorted', 'columns', 'execRow', 'exec', function() { return this.executors.map(identity); }, ['id', -1]

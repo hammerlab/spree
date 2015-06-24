@@ -1,11 +1,11 @@
 
 var columns = [
-  { id: 'id', label: 'App ID', cmpFn: sortBy('id') },
+  { id: 'id', label: 'App ID', sortBy: 'id' },
   nameColumn,
-  { id: 'start', label: 'Started', cmpFn: sortBy('time.start'), template: 'start' },
-  { id: 'end', label: 'Completed', cmpFn: sortBy('time.end'), template: 'end' },
+  { id: 'start', label: 'Started', sortBy: 'time.start', template: 'start' },
+  { id: 'end', label: 'Completed', sortBy: 'time.end', template: 'end' },
   durationColumn,
-  { id: 'user', label: 'User', cmpFn: sortBy('user') }
+  { id: 'user', label: 'User', sortBy: 'user' }
 ];
 
 makeTable(
