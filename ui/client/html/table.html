@@ -4,7 +4,7 @@
     <thead>
     <tr>
       {{#each columns}}
-      <th>{{label}}</th>
+        <th>{{label}}</th>
       {{/each}}
     </tr>
     </thead>
@@ -20,6 +20,10 @@
     {{/each}}
     </tbody>
   </table>
+</template>
+
+<template name="nameAttr">
+  {{name}}
 </template>
 
 <template name="duration">
@@ -48,6 +52,10 @@
 
 <template name="start">
   {{formatDateTime time.start}}
+</template>
+
+<template name="end">
+  {{formatDateTime time.end}}
 </template>
 
 <template name="id">

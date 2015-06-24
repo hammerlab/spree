@@ -4,7 +4,7 @@
   {{setTitle this}}
   {{log this}}
   <div class="container-fluid">
-    <h3>Details for Stage {{stage.id}}, Attempt {{stageAttempt.id}}</h3>
+    <h3>Details for Stage {{stageAttempt.stageId}}, Attempt {{stageAttempt.id}}</h3>
     {{#with stageAttempt.metrics}}
       <div><strong>Total time across all tasks:</strong> {{formatTime ExecutorRunTime}}</div>
 
@@ -89,6 +89,7 @@
   <!--</tr>-->
 </template>
 
+
 <template name="executorTable">
   <h4>Aggregated Metrics by Executor</h4>
   {{>table data=sorted columns=columns}}
@@ -103,9 +104,10 @@
 </template>
 
 
+
 <template name="tasksTable">
   <h4>Tasks</h4>
-  {{#with sorted taskAttempts}}
+  {{#with sorted}}
     {{>table data=this columns=columns}}
   {{/with}}
 </template>
@@ -128,10 +130,6 @@
 
 <template name="taskRow-execId">
   {{execId}}
-</template>
-
-<template name="taskRow-host">
-  {{getHost appId execId}}
 </template>
 
 <template name="taskRow-gcTime">

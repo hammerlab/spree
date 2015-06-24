@@ -5,7 +5,7 @@ Router.route("/", {
     return Meteor.subscribe("apps");
   },
   action:function() {
-    this.render('appsPage');
+    this.render('appsPage', { data: { apps: Applications.find() } });
   }
 });
 
@@ -15,20 +15,45 @@ Router.route("/a/:_appId", {
     return Meteor.subscribe("jobs-page", this.params._appId);
   },
   action: function() {
-    var jobs = Jobs.find({}, { sort: { id: -1 } });
-    var jobIDs = jobs.map(function(job) { return job.id; });
+    var jobs = Jobs.find().map(function(job) {
+      var lastStage = Stages.findOne({ jobId: job.id }, { sort: { id: -1 } });
+      job.name = lastStage && lastStage.name || "";
+      return job;
+    });
+    var completedJobs = jobs.filter(function(job) { return job.succeeded; });
+    var activeJobs = jobs.filter(function(job) { return job.started && !job.ended; });
+    var failedJobs = jobs.filter(function(job) { return job.succeeded == false; });
     this.render('jobsPage', {
       data: {
         appId: this.params._appId,
         app: Applications.findOne(),
-        jobs: jobs,
-        stages: Stages.find(),
+        completed: { jobs: completedJobs, num: completedJobs.length },
+        active: { jobs: activeJobs, num: activeJobs.length },
+        failed: { jobs: failedJobs, num: failedJobs.length },
         env: Environment.findOne(),
         jobsTab: 1
       }
     });
   }
 });
+
+function getStagesData() {
+  var attempts = StageAttempts.find().map(identity);
+
+  var completed = attempts.filter(function(attempt) { return (attempt.ended || (attempt.time && attempt.time.end)) && !attempt.skipped && attempt.status == SUCCEEDED; });
+  var active = attempts.filter(function(attempt) { return attempt.started && !attempt.ended; });
+  var pending = attempts.filter(function(attempt) { return !attempt.started && !attempt.skipped; });
+  var skipped = attempts.filter(function(attempt) { return attempt.skipped; });
+  var failed = attempts.filter(function(attempt) { return attempt.ended && attempt.status == FAILED; });
+
+  return {
+    completed: { stages: completed, num: completed.length },
+    active: { stages: active, num: active.length },
+    pending: { stages: pending, num: pending.length },
+    skipped: { stages: skipped, num: skipped.length },
+    failed: { stages: failed, num: failed.length }
+  };
+}
 
 // Job page
 Router.route("/a/:_appId/job/:_jobId", {
@@ -37,31 +62,28 @@ Router.route("/a/:_appId/job/:_jobId", {
   },
   action: function() {
     this.render('jobPage', {
-      data: {
+      data: jQuery.extend(getStagesData(), {
         appId: this.params._appId,
         app: Applications.findOne(),
         job: Jobs.findOne(),
-        stages: Stages.find({}, { sort: { id: -1 } }),
-        attempts: StageAttempts.find({}, { sort: { stageId: -1, id: -1 }}),
         jobsTab: 1
-      }
+      })
     });
   }
 });
 
+// Stages page
 Router.route("/a/:_appId/stages", {
   waitOn: function() {
     return Meteor.subscribe('stages-page', this.params._appId);
   },
   action: function() {
     this.render('stagesPage', {
-      data: {
+      data: jQuery.extend(getStagesData(), {
         appId: this.params._appId,
         app: Applications.findOne(),
-        stages: Stages.find(),
-        attempts: StageAttempts.find(),
         stagesTab: 1
-      }
+      })
     });
   }
 });
@@ -110,7 +132,12 @@ Router.route("/a/:_appId/stage/:_stageId", {
         stage: stage,
         stageAttempt: stageAttempt,
         tasks: Tasks.find(),
-        taskAttempts: TaskAttempts.find({}, { sort: { index: 1 } }),
+        taskAttempts: TaskAttempts.find().map(function(task) {
+          var executor = Executors.findOne({ id: task.execId });
+          task.host = executor.host;
+          task.port = executor.port;
+          return task;
+        }),
         executors: executors,
         stagesTab: 1
       }

@@ -4,30 +4,15 @@ var columns = [
   { id: "desc", label: "Description", cmpFn: sortBy("name") },
   startColumn,
   durationColumn,
-  { id: "stages", label: "Stages: Succeeded/Total", cmpFn: sortBy("stageCounts.succeeded"), template: 'stages' },
+  stagesColumn,
   tasksColumn
 ];
 
-var columnsById = byId(columns, 'jobRow', 'job');
-
-function attachNameAndAppId(jobs/*, appId*/) {
-  var sort = Session.get('job-table-sort') || ['start', -1];
-  var cmpFn = columnsById[sort[0]].cmpFn;
-  var joined = jobs.map(function(job) {
-    var stage = Stages.findOne({ jobId: job.id }, { sort: { id: -1 } });
-    job.name = stage && stage.name || "";
-    return job;
-  });
-  if (cmpFn) {
-    return sort[1] == 1 ? joined.sort(cmpFn) : joined.sort(cmpFn).reverse();
-  } else {
-    return sort[1] == 1 ? joined.sort() : joined.sort().reverse();
-  }
-}
+makeTable(
+      columns, 'jobsPage', 'sorted', 'columns', 'jobRow', 'job', function() { return this; }, ['start', -1]
+);
 
 Template.jobsPage.helpers({
-
-  columns: function() { return columns; },
 
   schedulingMode: function(env) {
     if (env && env.spark) {
@@ -38,30 +23,6 @@ Template.jobsPage.helpers({
       }
     }
     return "Unknown";
-  },
-
-  completedJobs: function() {
-    return attachNameAndAppId(Jobs.find({ succeeded: true }, { sort: { id: -1 } }))
-  },
-
-  numCompletedJobs: function() {
-    return Jobs.find({ succeeded: true }).count();
-  },
-
-  activeJobs: function() {
-    return attachNameAndAppId(Jobs.find({ started: true, ended: { $exists: false } }, { sort: { id: -1 } }));
-  },
-
-  numActiveJobs: function() {
-    return Jobs.find({ started: true, ended: { $exists: false } }).count();
-  },
-
-  failedJobs: function() {
-    return attachNameAndAppId(Jobs.find({ succeeded: false }, { sort: { id: -1 } }));
-  },
-
-  numFailedJobs: function() {
-    return Jobs.find({ succeeded: false }).count();
   }
 
 });

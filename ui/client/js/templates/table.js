@@ -11,3 +11,5 @@ Template.table.events({
     }
   }
 });
+
+

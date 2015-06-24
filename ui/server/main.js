@@ -106,11 +106,11 @@ Meteor.publish("rdds-page", function(appId) {
   var rdds = RDDs.find({
     appId: appId,
     $or: [
-      { "storageLevel.UseDisk": true },
-      { "storageLevel.UseMemory": true },
-      { "storageLevel.UseExternalBlockStore": true },
-      { "storageLevel.Deserialized": true },
-      { "storageLevel.Replication": { $ne: 1} }
+      { "StorageLevel.UseDisk": true },
+      { "StorageLevel.UseMemory": true },
+      { "StorageLevel.UseExternalBlockStore": true },
+      { "StorageLevel.Deserialized": true },
+      { "StorageLevel.Replication": { $ne: 1} }
     ],
     unpersisted: { $ne: true }
   });

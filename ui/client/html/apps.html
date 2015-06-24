@@ -2,6 +2,7 @@
 <template name="appsPage">
   {{setTitle "Applications - Spark"}}
   {{>navbar}}
+  {{log this}}
   <div class="container-fluid">
     <h3>Spark Applications</h3>
     {{>table data=applications columns=columns}}
@@ -10,22 +11,6 @@
 
 <template name="appRow-id">
   <a href="/a/{{id}}">{{id}}</a>
-</template>
-
-<template name="appRow-name">
-  {{name}}
-</template>
-
-<template name="appRow-start">
-  {{formatDateTime time.start}}
-</template>
-
-<template name="appRow-end">
-  {{formatDateTime time.end}}
-</template>
-
-<template name="appRow-duration">
-  {{formatDuration time.start time.end}}
 </template>
 
 <template name="appRow-user">

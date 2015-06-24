@@ -17,22 +17,11 @@ var columns = [
         { id: 'threadDump', label: 'Thread Dump' }
       ]);
 
-var columnsById = byId(columns, 'execRow', 'exec');
+makeTable(
+      columns, 'executorsPage', 'sorted', 'columns', 'execRow', 'exec', function() { return this.executors.map(identity); }, ['id', -1]
+);
 
 Template.executorsPage.helpers({
-  sorted: function() {
-    var execs = this.executors.map(identity);
-    var sort = Session.get('exec-table-sort') || ['id', -1];
-    var cmpFn = columnsById[sort[0]].cmpFn;
-    if (cmpFn) {
-      return sort[1] == 1 ? execs.sort(cmpFn) : execs.sort(cmpFn).reverse();
-    } else {
-      return sort[1] == 1 ? execs.sort() : execs.sort().reverse();
-    }
-  },
-
-  columns: function() { return columns; },
-
   numExecutors: function() {
     return Executors.find().count();
   }

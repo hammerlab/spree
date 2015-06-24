@@ -1,4 +1,19 @@
 
+PENDING = undefined;
+RUNNING = 1;
+SUCCEEDED = 2;
+FAILED = 3;
+SKIPPED = 4;
+
+statuses = {
+  undefined: "PENDING",
+  1: "RUNNING",
+  2: "SUCCESS",
+  3: "FAILED",
+  4: "SKIPPED"
+};
+
+
 Template.registerHelper("setTitle", function(title) {
   document.title = title;
   return null;
@@ -88,7 +103,8 @@ Template.registerHelper("formatDateTime", function(dt) {
   return dt && moment(dt).format("YYYY/MM/DD HH:mm:ss") || "-";
 });
 
-Template.registerHelper("shouldShow", function(a, b) { return a || b; });
+Template.registerHelper('first', function(data) { return data[0]; });
+Template.registerHelper('second', function(data) { return data[1]; });
 
 formatDuration = function(start, end, hideIncomplete) {
   if (start && end)
@@ -123,11 +139,11 @@ sortBy = function(key) {
   } else {
     throw new Error("Can't sort by: " + key);
   }
-  return function(a,b) {
+  return function(a, b) {
     var fna = fn(a);
     var fnb = fn(b);
-    if (fna < fnb) return -1;
-    if (fna > fnb) return 1;
+    if (fna < fnb || fna === undefined) return -1;
+    if (fna > fnb || fnb === undefined) return 1;
     return 0;
   }
 };
@@ -148,12 +164,33 @@ durationCmp = function(key) {
 byId = function(columns, templatePrefix, tableName) {
   var columnsById = {};
   columns.forEach(function(column) {
-    columnsById[column.id] = column;
     column.template = column.template || (templatePrefix + '-' + column.id);
     column.table = tableName + '-table';
+    columnsById[column.id] = column;
   });
   return columnsById;
 };
+
+makeTable = function(originalColumns, templateName, dataKey, columnsKey, templatePrefix, tableName, dataFn, defaultSort) {
+  var columns = originalColumns.map(function(col) { return jQuery.extend({}, col); });
+  var columnsById = byId(columns, templatePrefix, tableName);
+
+  var helpers = {};
+  helpers[dataKey] = function(arg) {
+    var sort = Session.get(tableName + '-table-sort') || defaultSort;
+    var cmpFn = columnsById[sort[0]].cmpFn;
+    var data = dataFn.bind(this).call(this, arg);
+    return (
+          cmpFn ?
+                (sort[1] == 1 ? data.sort(cmpFn) : data.sort(cmpFn).reverse()) :
+                (sort[1] == 1 ? data.sort() : data.sort().reverse())
+    );
+  };
+  helpers[columnsKey] = columns;
+
+  Template[templateName].helpers(helpers);
+};
+
 
 getStorageLevel = function(sl) {
   return sl && [
@@ -205,9 +242,11 @@ ioColumns = [
   shuffleWriteRecordsColumn
 ];
 
+nameColumn = { id: 'name', label: 'Name', cmpFn: sortBy('name'), template: 'nameAttr' };
 startColumn = { label: 'Submitted', id: 'start', cmpFn: sortBy('time.start'), template: 'start' };
 durationColumn = { label: 'Duration', id: 'duration', cmpFn: durationCmp(), template: 'duration' };
 tasksColumn = { id: "tasks", label: "Tasks: Succeeded/Total", cmpFn: sortBy("taskCounts.succeeded"), template: 'tasks' };
+stagesColumn = { id: "stages", label: "Stages: Succeeded/Total", cmpFn: sortBy("stageCounts.succeeded"), template: 'stages' };
 
 memColumn = { id: 'memSize', label: 'Size in Memory', cmpFn: sortBy("MemorySize"), template: 'mem' };
 offHeapColumn = { id: 'offHeapSize', label: 'Size in Tachyon', cmpFn: sortBy("ExternalBlockStoreSize"), template: 'offHeap' };
