@@ -1,11 +1,11 @@
 
 var rddExecColumns = [
   hostColumn,
-      portColumn,
-      numBlocksColumn,
-      memColumn,
-      offHeapColumn,
-      diskColumn
+  portColumn,
+  numBlocksColumn,
+  memColumn,
+  offHeapColumn,
+  diskColumn
 ];
 
 makeTable(

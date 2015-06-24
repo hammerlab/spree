@@ -15,6 +15,8 @@ Template.table.events({
 Template.table.helpers({
   validColumns: function(columns, data) {
     return columns.filter(function(column) {
+      // Always show column headers when there is no data; table/page looks weird otherwise.
+      if (!data.length) return true;
       for (var i = 0; i < data.length; i++) {
         if (column.sortBy(data[i])) return true;
       }
