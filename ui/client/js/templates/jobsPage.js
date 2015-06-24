@@ -1,32 +1,22 @@
 
 var columns = [
-  { id: "id", label: "Job ID", cmpFn: sortBy("job.id") },
+  { id: "id", label: "Job ID", cmpFn: sortBy("id"), template: 'id' },
   { id: "desc", label: "Description", cmpFn: sortBy("name") },
-  { id: "start", label: "Submitted", cmpFn: sortBy("job.time.start") },
-  { id: "duration", label: "Duration", cmpFn: durationCmp('job') },
-  { id: "stages", label: "Stages: Succeeded/Total", cmpFn: sortBy("job.stageCounts.succeeded") },
-  { id: "tasks", label: "Tasks: Succeeded/Total", cmpFn: sortBy("job.taskCounts.succeeded") }
+  startColumn,
+  durationColumn,
+  { id: "stages", label: "Stages: Succeeded/Total", cmpFn: sortBy("stageCounts.succeeded"), template: 'stages' },
+  tasksColumn
 ];
 
-var columnsById = {};
-columns.forEach(function(column) {
-  columnsById[column.id] = column;
-  column.template = 'jobRow-' + column.id;
-  column.table = 'job-table';
-});
+var columnsById = byId(columns, 'jobRow', 'job');
 
-
-function attachNameAndAppId(jobs, appId) {
+function attachNameAndAppId(jobs/*, appId*/) {
   var sort = Session.get('job-table-sort') || ['start', -1];
   var cmpFn = columnsById[sort[0]].cmpFn;
   var joined = jobs.map(function(job) {
     var stage = Stages.findOne({ jobId: job.id }, { sort: { id: -1 } });
-    var name = stage && stage.name || "";
-    return {
-      job: job,
-      appId: appId,
-      name: name
-    }
+    job.name = stage && stage.name || "";
+    return job;
   });
   if (cmpFn) {
     return sort[1] == 1 ? joined.sort(cmpFn) : joined.sort(cmpFn).reverse();
@@ -51,7 +41,7 @@ Template.jobsPage.helpers({
   },
 
   completedJobs: function() {
-    return attachNameAndAppId(Jobs.find({ succeeded: true }, { sort: { id: -1 } }), this.appId)
+    return attachNameAndAppId(Jobs.find({ succeeded: true }, { sort: { id: -1 } }))
   },
 
   numCompletedJobs: function() {
@@ -59,7 +49,7 @@ Template.jobsPage.helpers({
   },
 
   activeJobs: function() {
-    return attachNameAndAppId(Jobs.find({ started: true, ended: { $exists: false } }, { sort: { id: -1 } }), this.appId);
+    return attachNameAndAppId(Jobs.find({ started: true, ended: { $exists: false } }, { sort: { id: -1 } }));
   },
 
   numActiveJobs: function() {
@@ -67,20 +57,11 @@ Template.jobsPage.helpers({
   },
 
   failedJobs: function() {
-    return attachNameAndAppId(Jobs.find({ succeeded: false }, { sort: { id: -1 } }), this.appId);
+    return attachNameAndAppId(Jobs.find({ succeeded: false }, { sort: { id: -1 } }));
   },
 
   numFailedJobs: function() {
     return Jobs.find({ succeeded: false }).count();
   }
 
-});
-
-Template["jobRow-duration"].helpers({
-  getJobDuration: function(job) {
-    return job.time.end ?
-          formatTime(job.time.end - job.time.start) :
-          (formatTime(Math.max(0, moment().unix()*1000 - job.time.start)) + '...')
-          ;
-  }
 });

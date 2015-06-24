@@ -1,5 +1,6 @@
 
 <template name="stagesTables">
+  {{log "stagesTables: " this}}
   {{#if numActiveStages}}<div><a href="#active"><strong>Active Stages:</strong></a> {{numActiveStages}}</div>{{/if}}
   {{#if numPendingStages}}<div><a href="#pending"><strong>Pending Stages:</strong></a> {{numPendingStages}}</div>{{/if}}
   {{#if numCompletedStages}}<div><a href="#completed"><strong>Completed Stages:</strong></a> {{numCompletedStages}}</div>{{/if}}
@@ -23,38 +24,9 @@
 </template>
 
 <template name="stageRow-id">
-  {{stage.id}}
+  {{stageId}}
 </template>
 
 <template name="stageRow-desc">
-  <a href="/a/{{appId}}/stage/{{stage.id}}?attempt={{attempt.id}}">{{stage.name}}</a>
+  <a href="/a/{{appId}}/stage/{{stageId}}?attempt={{id}}">{{name}}</a>
 </template>
-
-<template name="stageRow-start">
-  {{formatDateTime attempt.time.start}}
-</template>
-
-<template name="stageRow-duration">
-  {{#with attempt.time}}{{formatDuration start end}}{{/with}}
-</template>
-
-<template name="stageRow-tasks">
-  {{> progressBar attempt.taskCounts}}
-</template>
-
-<template name="stageRow-input">
-  {{formatBytes attempt.metrics.InputMetrics.BytesRead}}
-</template>
-
-<template name="stageRow-output">
-  {{formatBytes attempt.metrics.OutputMetrics.BytesWritten}}
-</template>
-
-<template name="stageRow-shuffle-read">
-  {{shuffleBytesReadStr attempt.metrics.ShuffleReadMetrics}}
-</template>
-
-<template name="stageRow-shuffle-write">
-  {{formatBytes attempt.metrics.ShuffleWriteMetrics.ShuffleBytesWritten}}
-</template>
-

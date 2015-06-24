@@ -26,26 +26,6 @@
   </div>
 </template>
 
-<template name="jobRow-id">
-  {{job.id}}
-</template>
-
 <template name="jobRow-desc">
-  <a href="/a/{{appId}}/job/{{job.id}}">{{name}}</a>
-</template>
-
-<template name="jobRow-start">
-  {{formatDateTime job.time.start}}
-</template>
-
-<template name="jobRow-duration">
-  {{getJobDuration job}}
-</template>
-
-<template name="jobRow-stages">
-  {{> progressBar job.stageCounts}}
-</template>
-
-<template name="jobRow-tasks">
-  {{> progressBar job.taskCounts}}
+  <a href="/a/{{appId}}/job/{{id}}">{{name}}</a>
 </template>

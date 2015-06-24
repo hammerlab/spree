@@ -8,14 +8,7 @@ var columns = [
   { id: 'user', label: 'User', cmpFn: sortBy('user') }
 ];
 
-var columnsById = {};
-columns.forEach(function(column) {
-  columnsById[column.id] = column;
-  column.template = 'appRow-' + column.id;
-  column.table = 'app-table';
-});
-
-
+var columnsById = byId(columns, 'appRow', 'app');
 
 Template.appsPage.helpers({
   applications: function() {

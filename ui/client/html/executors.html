@@ -30,68 +30,8 @@
   </div>
 </template>
 
-<template name="execRow-id">
-  {{id}}
-</template>
-
-<template name="execRow-host">
-  {{host}}
-</template>
-
-<template name="execRow-port">
-  {{port}}
-</template>
-
-<template name="execRow-blocks">
-  {{orZero numBlocks}}
-</template>
-
 <template name="execRow-mem">
   {{formatBytes MemorySize}} / {{formatBytes maxMem}}
-</template>
-
-<template name="execRow-disk">
-  {{formatBytes DiskSize}}
-</template>
-
-<template name="execRow-offHeap">
-  {{formatBytes ExternalBlockStoreSize}}
-</template>
-
-<template name="execRow-activeTasks">
-  {{orZero taskCounts.running}}
-</template>
-
-<template name="execRow-failedTasks">
-  {{orZero taskCounts.failed}}
-</template>
-
-<template name="execRow-completeTasks">
-  {{orZero taskCounts.succeeded}}
-</template>
-
-<template name="execRow-totalTasks">
-  {{orZero taskCounts.num}}
-</template>
-
-<template name="execRow-taskTime">
-  {{formatTime taskTime}}
-</template>
-
-<template name="execRow-input">
-  {{formatBytes metrics.InputMetrics.BytesRead}}
-</template>
-
-<template name="execRow-output">
-  {{formatBytes metrics.OutputMetrics.BytesWritten}}
-</template>
-
-<template name="execRow-shuffleRead">
-  {{shuffleBytesReadStr metrics.ShuffleReadMetrics}}
-</template>
-
-<template name="execRow-shuffleWrite">
-  {{formatBytes metrics.ShuffleWriteMetrics.ShuffleBytesWritten}}
 </template>
 
 <template name="execRow-threadDump">

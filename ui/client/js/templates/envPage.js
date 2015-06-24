@@ -4,12 +4,7 @@ var columns = [
   { id: '1', label: 'Name', cmpFn: sortBy("1") }
 ];
 
-var columnsById = {};
-columns.forEach(function(column) {
-  columnsById[column.id] = column;
-  column.template = 'envRow-' + column.id;
-  column.table = 'env-table';
-});
+var columnsById = byId(columns, 'envRow', 'env');
 
 Template['envRow-0'].helpers({
   first: function(data) { return data[0]; }

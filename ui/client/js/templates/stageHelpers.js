@@ -1,30 +1,19 @@
 
 var columns = [
-  { label: 'Stage ID', id: 'id', cmpFn: sortBy('stage.id') },
-  { label: 'Description', id: 'desc', cmpFn: sortBy('stage.name') },
-  { label: 'Submitted', id: 'start', cmpFn: sortBy('attempt.time.start') },
-  { label: 'Duration', id: 'duration', cmpFn: durationCmp('attempt') },
-  { label: 'Tasks: Succeeded/Total', id: 'tasks', cmpFn: sortBy('attempt.taskCounts.succeeded') },
-  { label: 'Input', id: 'input', cmpFn: sortBy('attempt.metrics.InputMetrics.BytesRead') },
-  { label: 'Output', id: 'output', cmpFn: sortBy('attempt.metrics.OutputMetrics.BytesWritten') },
-  { label: 'Shuffle Read', id: 'shuffle-read', cmpFn: shuffleBytesReadCmp('attempt') },
-  { label: 'Shuffle Write', id: 'shuffle-write', cmpFn: sortBy('attempt.metrics.ShuffleWriteMetrics.ShuffleBytesWritten') }
-];
+  { label: 'Stage ID', id: 'id', cmpFn: sortBy('stageId') },
+  { label: 'Description', id: 'desc', cmpFn: sortBy('name') },
+  startColumn,
+  durationColumn,
+  tasksColumn
+].concat(ioBytesColumns);
 
-var columnsById = {};
-columns.forEach(function(column) {
-  columnsById[column.id] = column;
-  column.template = 'stageRow-' + column.id;
-  column.table = 'stage-table';
-});
+var columnsById = byId(columns, 'stageRow', 'stage');
 
 // TODO(ryan): join these on the server, expose via a dedicated publish()
-attachStagesToAttempts = function(attempts, appId) {
+attachStagesToAttempts = function(attempts) {
   var sort = Session.get('stage-table-sort') || ['start', -1];
   var cmpFn = columnsById[sort[0]].cmpFn;
-  var joined = attempts.map(function(stageAttempt) {
-    return { attempt: stageAttempt, stage: Stages.findOne({ id: stageAttempt.stageId }), appId: appId };
-  });
+  var joined = attempts.map(identity);
   if (cmpFn) {
     return sort[1] == 1 ? joined.sort(cmpFn) : joined.sort(cmpFn).reverse();
   } else {

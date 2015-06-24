@@ -22,3 +22,88 @@
   </table>
 </template>
 
+<template name="duration">
+  {{formatDuration time.start time.end}}
+</template>
+
+<template name="activeTasks">
+  {{orZero taskCounts.running}}
+</template>
+
+<template name="failedTasks">
+  {{orZero taskCounts.failed}}
+</template>
+
+<template name="completeTasks">
+  {{orZero taskCounts.succeeded}}
+</template>
+
+<template name="totalTasks">
+  {{orZero taskCounts.num}}
+</template>
+
+<template name="taskTime">
+  {{formatTime taskTime}}
+</template>
+
+<template name="start">
+  {{formatDateTime time.start}}
+</template>
+
+<template name="id">
+  {{id}}
+</template>
+
+<template name="tasks">
+  {{> progressBar taskCounts}}
+</template>
+
+<template name="stages">
+  {{> progressBar stageCounts}}
+</template>
+
+<template name="mem">
+  {{formatBytes MemorySize}}
+</template>
+
+<template name="disk">
+  {{formatBytes DiskSize}}
+</template>
+
+<template name="offHeap">
+  {{formatBytes ExternalBlockStoreSize}}
+</template>
+
+<template name="input">
+  {{formatBytes metrics.InputMetrics.BytesRead}}
+</template>
+
+<template name="output">
+  {{formatBytes metrics.OutputMetrics.BytesWritten}}
+</template>
+
+<template name="shuffleRead">
+  {{shuffleBytesReadStr metrics.ShuffleReadMetrics}}
+</template>
+
+<template name="shuffleWrite">
+  {{formatBytes metrics.ShuffleWriteMetrics.ShuffleBytesWritten}}
+</template>
+
+<template name="host">
+  {{host}}
+</template>
+
+<template name="port">
+  {{port}}
+</template>
+
+<template name="numBlocks">
+  {{orZero numBlocks}}
+</template>
+
+<template name="storageLevel">
+  {{getStorageLevel StorageLevel}}
+</template>
+
+

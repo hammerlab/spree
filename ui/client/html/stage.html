@@ -79,23 +79,19 @@
 </template>
 
 <template name="summaryRow">
-  <tr>
-    <td>{{name}}</td>
-    <td>{{stats.[0]}}</td>
-    <td>{{stats.[1]}}</td>
-    <td>{{stats.[2]}}</td>
-    <td>{{stats.[3]}}</td>
-    <td>{{stats.[4]}}</td>
-  </tr>
+  <!--<tr>-->
+    <!--<td>{{name}}</td>-->
+    <!--<td>{{stats.[0]}}</td>-->
+    <!--<td>{{stats.[1]}}</td>-->
+    <!--<td>{{stats.[2]}}</td>-->
+    <!--<td>{{stats.[3]}}</td>-->
+    <!--<td>{{stats.[4]}}</td>-->
+  <!--</tr>-->
 </template>
 
 <template name="executorTable">
   <h4>Aggregated Metrics by Executor</h4>
   {{>table data=sorted columns=columns}}
-</template>
-
-<template name="stageExec-id">
-  {{id}}
 </template>
 
 <template name="stageExec-address">
@@ -104,54 +100,6 @@
 
 <template name="stageExec-taskTime">
   {{formatTime metrics.ExecutorRunTime}}
-</template>
-
-<template name="stageExec-activeTasks">
-  {{orZero taskCounts.running}}
-</template>
-
-<template name="stageExec-failedTasks">
-  {{orZero taskCounts.failed}}
-</template>
-
-<template name="stageExec-completeTasks">
-  {{orZero taskCounts.succeeded}}
-</template>
-
-<template name="stageExec-totalTasks">
-  {{orZero taskCounts.num}}
-</template>
-
-<template name="stageExec-input">
-  {{formatBytes metrics.InputMetrics.BytesRead}}
-</template>
-
-<template name="stageExec-inputRecords">
-  {{metrics.InputMetrics.RecordsRead}}
-</template>
-
-<template name="stageExec-output">
-  {{formatBytes metrics.OutputMetrics.BytesWritten}}
-</template>
-
-<template name="stageExec-outputRecords">
-  {{metrics.OutputMetrics.RecordsWritten}}
-</template>
-
-<template name="stageExec-shuffleRead">
-  {{shuffleBytesReadStr metrics.ShuffleReadMetrics}}
-</template>
-
-<template name="stageExec-shuffleReadRecords">
-  {{metrics.ShuffleReadMetrics.TotalRecordsRead}}
-</template>
-
-<template name="stageExec-shuffleWrite">
-  {{formatBytes metrics.ShuffleWriteMetrics.ShuffleBytesWritten}}
-</template>
-
-<template name="stageExec-shuffleWriteRecords">
-  {{metrics.ShuffleWriteMetrics.ShuffleRecordsWritten}}
 </template>
 
 
@@ -164,10 +112,6 @@
 
 <template name="taskRow-index">
   {{index}}
-</template>
-
-<template name="taskRow-id">
-  {{id}}
 </template>
 
 <template name="taskRow-attempt">
@@ -190,48 +134,8 @@
   {{getHost appId execId}}
 </template>
 
-<template name="taskRow-start">
-  {{formatDateTime time.start}}
-</template>
-
-<template name="taskRow-duration">
-  {{formatDuration time.start time.end}}
-</template>
-
 <template name="taskRow-gcTime">
   {{#if metrics.JVMGCTime}}{{formatTime metrics.JVMGCTime}}{{/if}}
-</template>
-
-<template name="taskRow-input">
-  {{formatBytes metrics.InputMetrics.BytesRead}}
-</template>
-
-<template name="taskRow-inputRecords">
-  {{metrics.InputMetrics.RecordsRead}}
-</template>
-
-<template name="taskRow-output">
-  {{formatBytes metrics.OutputMetrics.BytesWritten}}
-</template>
-
-<template name="taskRow-outputRecords">
-  {{metrics.OutputMetrics.RecordsWritten}}
-</template>
-
-<template name="taskRow-shuffleRead">
-  {{shuffleBytesReadStr metrics.ShuffleReadMetrics}}
-</template>
-
-<template name="taskRow-shuffleReadRecords">
-  {{metrics.ShuffleReadMetrics.TotalRecordsRead}}
-</template>
-
-<template name="taskRow-shuffleWrite">
-  {{formatBytes metrics.ShuffleWriteMetrics.ShuffleBytesWritten}}
-</template>
-
-<template name="taskRow-shuffleWriteRecords">
-  {{metrics.ShuffleWriteMetrics.ShuffleRecordsWritten}}
 </template>
 
 <template name="taskRow-errors">

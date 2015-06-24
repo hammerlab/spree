@@ -10,11 +10,7 @@
 </template>
 
 <template name="rddRow-id">
-  <a href="/a/{{../appId}}/rdd/{{id}}">{{name}} ({{id}})</a>
-</template>
-
-<template name="rddRow-storageLevel">
-  {{getStorageLevel storageLevel}}
+  <a href="/a/{{appId}}/rdd/{{id}}">{{name}} ({{id}})</a>
 </template>
 
 <template name="rddRow-cachedPartitions">
@@ -24,16 +20,3 @@
 <template name="rddRow-fractionCached">
   {{fractionCached this}}
 </template>
-
-<template name="rddRow-memSize">
-  {{formatBytes MemorySize}}
-</template>
-
-<template name="rddRow-offHeapSize">
-  {{formatBytes ExternalBlockStoreSize}}
-</template>
-
-<template name="rddRow-diskSize">
-  {{formatBytes DiskSize}}
-</template>
-

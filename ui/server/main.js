@@ -123,10 +123,17 @@ Meteor.publish("rdds-page", function(appId) {
 Meteor.publish("rdd-page", function(appId, rddId) {
   apps = (appId == 'latest') ? lastApp() : Applications.find({ id: appId });
   appId = (appId == 'latest') ? apps.fetch()[0].id : appId;
+  var rddKey = ['blocks', 'rdd', rddId].join('.');
+  var queryObj = { appId: appId };
+  queryObj[rddKey] = { $exists: true };
+
+  var fieldsObj = { host: 1, port: 1, id: 1, maxMem: 1 };
+  fieldsObj[rddKey] = 1;
+
   return [
     apps,
     RDDs.find({ appId: appId, id: rddId }),
-    Executors.find({ appId: appId })
+    Executors.find(queryObj, { fields: fieldsObj })
   ];
 });
 

@@ -1,4 +1,5 @@
 
+
 Template.table.events({
   'click th': function(e, t) {
     var sortKey = this.table + '-sort';
