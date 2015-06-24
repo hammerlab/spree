@@ -21,7 +21,7 @@ Router.route("/a/:_appId", {
       return job;
     });
     var completedJobs = jobs.filter(function(job) { return job.succeeded; });
-    var activeJobs = jobs.filter(function(job) { return job.started && !job.ended; });
+    var activeJobs = jobs.filter(function(job) { return (job.started || job.time.start) && !job.ended; });
     var failedJobs = jobs.filter(function(job) { return job.succeeded == false; });
     this.render('jobsPage', {
       data: {
