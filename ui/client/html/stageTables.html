@@ -1,6 +1,5 @@
 
 <template name="stagesTables">
-  {{log "stagesTables: " this}}
   {{#if active.num}}<div><a href="#active"><strong>Active Stages:</strong></a> {{active.num}}</div>{{/if}}
   {{#if pending.num}}<div><a href="#pending"><strong>Pending Stages:</strong></a> {{pending.num}}</div>{{/if}}
   {{#if completed.num}}<div><a href="#completed"><strong>Completed Stages:</strong></a> {{completed.num}}</div>{{/if}}
