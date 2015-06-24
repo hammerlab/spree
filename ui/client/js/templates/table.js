@@ -12,4 +12,13 @@ Template.table.events({
   }
 });
 
-
+Template.table.helpers({
+  validColumns: function(columns, data) {
+    return columns.filter(function(column) {
+      for (var i = 0; i < data.length; i++) {
+        if (column.sortBy(data[i])) return true;
+      }
+      return false;
+    }.bind(this));
+  }
+});

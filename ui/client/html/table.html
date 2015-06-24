@@ -3,7 +3,7 @@
   <table class="table table-bordered table-striped table-condensed sortable">
     <thead>
     <tr>
-      {{#each columns}}
+      {{#each validColumns columns data}}
         <th>{{label}}</th>
       {{/each}}
     </tr>
@@ -11,7 +11,7 @@
     <tbody>
     {{#each data}}
     <tr>
-      {{#each ../columns}}
+      {{#each validColumns ../columns ../data}}
       <td>
         {{> Template.dynamic template=template data=..}}
       </td>
