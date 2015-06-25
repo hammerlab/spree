@@ -8,6 +8,4 @@ var columns = [
   { id: 'user', label: 'User', sortBy: 'user' }
 ];
 
-makeTable(
-      columns, 'appsPage', 'sorted', 'columns', 'appRow', 'app', 'apps', ['start', -1]
-);
+makeTable(columns, 'appsPage', 'app', 'apps', ['start', -1]);

@@ -167,7 +167,18 @@ byId = function(columns, templatePrefix, tableName) {
   return columnsById;
 };
 
-makeTable = function(originalColumns, templateName, dataKey, columnsKey, templatePrefix, tableName, data, defaultSort) {
+makeTable = function(originalColumns, templateName, tableName, data, defaultSort, dataKey, columnsKey, templatePrefix) {
+  if (!defaultSort) {
+    if (!originalColumns.filter(function(c) { return c.id == 'id'; }).length) {
+      throw new Error("Table " + tableName + " must specify a default sort value if 'id' column doesn't exist.");
+    }
+    defaultSort = ['id', 1];
+  }
+
+  dataKey = dataKey || 'sorted';
+  columnsKey = columnsKey || 'columns';
+  templatePrefix = templatePrefix || (tableName + 'Row');
+
   var columns = originalColumns.map(function(col) { return jQuery.extend({}, col); });
   var columnsById = byId(columns, templatePrefix, tableName);
 

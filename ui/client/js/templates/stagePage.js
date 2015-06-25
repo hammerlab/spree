@@ -49,9 +49,7 @@ var executorColumns = [
       .concat(taskColumns)
       .concat(ioColumns);
 
-makeTable(
-      executorColumns, 'executorTable', 'sorted', 'columns', 'stageExec', 'stageExec', 'executors', ['id', 1]
-);
+makeTable(executorColumns, 'executorTable', 'stageExec', 'executors');
 
 
 // Per-task table
@@ -72,9 +70,7 @@ var columns = [
         { id: 'errors', label: 'Errors', sortBy: 'errors' }
       ]);
 
-makeTable(
-      columns, 'tasksTable', 'sorted', 'columns', 'taskRow', 'task', 'taskAttempts', ['id', 1]
-);
+makeTable(columns, 'tasksTable', 'task', 'taskAttempts');
 
 Template['taskRow-status'].helpers({
   status: function(task) {

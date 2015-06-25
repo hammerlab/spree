@@ -7,9 +7,7 @@ var columns = [
   { id: 'fractionCached', label: '% Cached', sortBy: function(rdd) { return rdd.numCachedPartitions / rdd.numPartitions; } }
 ].concat(spaceColumns);
 
-makeTable(
-      columns, 'storagePage', 'sorted', 'columns', 'rddRow', 'rdd', 'rdds', ['id', 1]
-);
+makeTable(columns, 'storagePage', 'rdd', 'rdds');
 
 fractionCached = function(rdd) {
   return ((rdd.numCachedPartitions / rdd.numPartitions) || 0) * 100 + '%';

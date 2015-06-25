@@ -8,9 +8,7 @@ var columns = [
   tasksColumn
 ];
 
-makeTable(
-      columns, 'jobsPage', 'sorted', 'columns', 'jobRow', 'job', null, ['start', -1]
-);
+makeTable(columns, 'jobsPage', 'job', null, ['start', -1]);
 
 Template.jobsPage.helpers({
 

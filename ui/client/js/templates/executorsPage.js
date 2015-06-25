@@ -12,9 +12,7 @@ var columns = [
       .concat([ taskTimeColumn ])
       .concat(ioBytesColumns);
 
-makeTable(
-      columns, 'executorsPage', 'sorted', 'columns', 'execRow', 'exec', 'executors', ['id', -1]
-);
+makeTable(columns, 'executorsPage', 'exec', 'executors');
 
 Template.executorsPage.helpers({
   numExecutors: function() {

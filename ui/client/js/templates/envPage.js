@@ -4,7 +4,5 @@ var columns = [
   { id: '1', label: 'Name', sortBy: "1" }
 ];
 
-makeTable(
-      columns, 'environmentPage', 'sorted', 'columns', 'envRow', 'env', null, ['0', 1]
-);
+makeTable(columns, 'environmentPage', 'env', null, ['0', 1]);
 

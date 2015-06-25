@@ -8,9 +8,7 @@ var rddExecColumns = [
   diskColumn
 ];
 
-makeTable(
-      rddExecColumns, 'rddPage', 'sortedExecutors', 'execColumns', 'rddExec', 'rddExec', 'executors', ['host', 1]
-);
+makeTable(rddExecColumns, 'rddPage', 'rddExec', 'executors', ['host', 1], 'sortedExecutors', 'execColumns');
 
 var blockColumns = [
   { id: 'id', label: 'Block ID', sortBy: "id", template: 'id' },
@@ -20,7 +18,10 @@ var blockColumns = [
       .concat([ hostColumn, portColumn ]);
 
 makeTable(
-      blockColumns, 'rddPage', 'sortedBlocks', 'blockColumns', 'blocks', 'blocks', function() {
+      blockColumns,
+      'rddPage',
+      'blocks',
+      function() {
         var blocks = [];
         this.executors.forEach(function(executor) {
           for (var blockId in executor.blocks) {
@@ -32,7 +33,10 @@ makeTable(
           }
         });
         return blocks;
-      }, ['id', 1]
+      },
+      ['id', 1],
+      'sortedBlocks',
+      'blockColumns'
 );
 
 
