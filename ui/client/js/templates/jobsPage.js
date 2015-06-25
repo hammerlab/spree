@@ -14,6 +14,10 @@ makeTable(
 
 Template.jobsPage.helpers({
 
+  showAll: function() {
+    return !(Session.get("jobs-showAll") == false);
+  },
+
   schedulingMode: function(env) {
     if (env && env.spark) {
       for (var i in env.spark) {
@@ -25,4 +29,17 @@ Template.jobsPage.helpers({
     return "Unknown";
   }
 
+});
+
+function unsetShowAll() {
+  Session.set("jobs-showAll", false);
+}
+
+function setShowAll() {
+  Session.set("jobs-showAll", true);
+}
+
+Template.jobsPage.events({
+  'click #active-link, click #completed-link, click #failed-link': unsetShowAll,
+  'click #all-link': setShowAll
 });

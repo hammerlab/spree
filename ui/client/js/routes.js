@@ -27,6 +27,7 @@ Router.route("/a/:_appId", {
       data: {
         appId: this.params._appId,
         app: Applications.findOne(),
+        all: { jobs: jobs, num: jobs.length },
         completed: { jobs: completedJobs, num: completedJobs.length },
         active: { jobs: activeJobs, num: activeJobs.length },
         failed: { jobs: failedJobs, num: failedJobs.length },
