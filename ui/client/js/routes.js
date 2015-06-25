@@ -120,10 +120,28 @@ Router.route("/a/:_appId/stage/:_stageId", {
   action: function() {
     var stage = Stages.findOne();
     var stageAttempt = StageAttempts.findOne();
+    if (!stageAttempt) {
+      this.render('stagePage', {
+        data: {
+          appId: this.params._appId,
+          app: Applications.findOne(),
+          stageId: parseInt(this.params._stageId),
+          attemptId: this.params.query.attempt ? parseInt(this.params.query.attempt) : 0,
+          executors: [],
+          tasks: [],
+          taskAttempts: [],
+          stagesTab: 1
+        }
+      });
+      return;
+    }
     var executors = Executors.find().map(function(e) {
-      e.metrics = e.stages[stage.id][stageAttempt.id].metrics;
-      e.taskCounts = e.stages[stage.id][stageAttempt.id].taskCounts;
-      delete e['stages'];
+      if (stage.id in e.stages && stageAttempt.id in e.stages[stage.id]) {
+        var eStage = e.stages[stage.id][stageAttempt.id];
+        e.metrics = eStage.metrics;
+        e.taskCounts = eStage.taskCounts;
+        delete e['stages'];
+      }
       return e;
     });
     this.render('stagePage', {
@@ -132,6 +150,8 @@ Router.route("/a/:_appId/stage/:_stageId", {
         app: Applications.findOne(),
         stage: stage,
         stageAttempt: stageAttempt,
+        stageId: stage.id,
+        attemptId: stageAttempt.id,
         tasks: Tasks.find(),
         taskAttempts: TaskAttempts.find().map(function(task) {
           var executor = Executors.findOne({ id: task.execId });

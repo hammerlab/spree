@@ -4,7 +4,7 @@
   {{setTitle this}}
   {{log this}}
   <div class="container-fluid">
-    <h3>Details for Stage {{stageAttempt.stageId}}, Attempt {{stageAttempt.id}}</h3>
+    <h3>Details for Stage {{stageId}}, Attempt {{attemptId}}</h3>
     {{#with stageAttempt.metrics}}
       <div><strong>Total time across all tasks:</strong> {{formatTime ExecutorRunTime}}</div>
 
@@ -107,9 +107,7 @@
 
 <template name="tasksTable">
   <h4>Tasks</h4>
-  {{#with sorted}}
-    {{>table data=this columns=columns}}
-  {{/with}}
+  {{>table data=sorted columns=columns}}
 </template>
 
 <template name="taskRow-index">

@@ -26,7 +26,7 @@ var hases = {
 
 Template.stagePage.helpers({
   setTitle: function(data) {
-    document.title = "Stage " + (data.stage && (data.stage.id !== undefined) ? data.stage.id : "-") + " (" + (data.stageAttempt && (data.stageAttempt.id !== undefined) ? data.stageAttempt.id : "-") + ")";
+    document.title = "Stage " + data.stageId + " (" + data.attemptId + ")";
     return null;
   }
 });
