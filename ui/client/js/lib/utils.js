@@ -206,14 +206,14 @@ taskColumns = [
   { id: 'totalTasks', label: 'Total Tasks', sortBy: 'taskCounts.num', template: 'totalTasks' }
 ];
 
-inputBytesColumn = { id: 'input', label: 'Input', sortBy: 'metrics.InputMetrics.BytesRead', template: 'input' };
-inputRecordsColumn = { id: 'inputRecords', label: 'Records', sortBy: 'metrics.InputMetrics.RecordsRead', template: 'inputRecords' };
-outputBytesColumn = { id: 'output', label: 'Output', sortBy: 'metrics.OutputMetrics.BytesWritten', template: 'output' };
-outputRecordsColumn = { id: 'outputRecords', label: 'Records', sortBy: 'metrics.OutputMetrics.RecordsWritten', template: 'outputRecords' };
-shuffleReadBytesColumn = { id: 'shuffleRead', label: 'Shuffle Read', sortBy: function(x) { return x.metrics && shuffleBytesRead(x.metrics.ShuffleReadMetrics) || 0; }, template: 'shuffleRead' };
-shuffleReadRecordsColumn = { id: 'shuffleReadRecords', label: 'Records', sortBy: 'metrics.ShuffleReadMetrics.TotalRecordsRead', template: 'shuffleReadRecords' };
-shuffleWriteBytesColumn = { id: 'shuffleWrite', label: 'Shuffle Write', sortBy: 'metrics.ShuffleWriteMetrics.ShuffleBytesWritten', template: 'shuffleWrite' };
-shuffleWriteRecordsColumn = { id: 'shuffleWriteRecords', label: 'Records', sortBy: 'metrics.ShuffleWriteMetrics.ShuffleRecordsWritten', template: 'shuffleWriteRecords' };
+inputBytesColumn = { id: 'input', label: 'Input', sortBy: 'metrics.InputMetrics.BytesRead', template: 'input', showInEmptyTable: false };
+inputRecordsColumn = { id: 'inputRecords', label: 'Records', sortBy: 'metrics.InputMetrics.RecordsRead', template: 'inputRecords', showInEmptyTable: false };
+outputBytesColumn = { id: 'output', label: 'Output', sortBy: 'metrics.OutputMetrics.BytesWritten', template: 'output', showInEmptyTable: false };
+outputRecordsColumn = { id: 'outputRecords', label: 'Records', sortBy: 'metrics.OutputMetrics.RecordsWritten', template: 'outputRecords', showInEmptyTable: false };
+shuffleReadBytesColumn = { id: 'shuffleRead', label: 'Shuffle Read', sortBy: function(x) { return x.metrics && shuffleBytesRead(x.metrics.ShuffleReadMetrics) || 0; }, template: 'shuffleRead', showInEmptyTable: false };
+shuffleReadRecordsColumn = { id: 'shuffleReadRecords', label: 'Records', sortBy: 'metrics.ShuffleReadMetrics.TotalRecordsRead', template: 'shuffleReadRecords', showInEmptyTable: false };
+shuffleWriteBytesColumn = { id: 'shuffleWrite', label: 'Shuffle Write', sortBy: 'metrics.ShuffleWriteMetrics.ShuffleBytesWritten', template: 'shuffleWrite', showInEmptyTable: false };
+shuffleWriteRecordsColumn = { id: 'shuffleWriteRecords', label: 'Records', sortBy: 'metrics.ShuffleWriteMetrics.ShuffleRecordsWritten', template: 'shuffleWriteRecords', showInEmptyTable: false };
 
 ioBytesColumns = [
   inputBytesColumn,
