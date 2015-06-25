@@ -3,7 +3,7 @@ var columns = [
   { id: 'id', label: 'RDD ID', sortBy: "id" },
   nameColumn,
   storageLevelColumn,
-  { id: 'cachedPartitions', label: 'Cached Partitions', sortBy: "cachedPartitions" },
+  { id: 'numCachedPartitions', label: 'Cached Partitions', sortBy: "numCachedPartitions" },
   { id: 'fractionCached', label: '% Cached', sortBy: function(rdd) { return rdd.numCachedPartitions / rdd.numPartitions; } }
 ].concat(spaceColumns);
 
