@@ -10,7 +10,7 @@ var columns = [
 ]
       .concat(taskColumns)
       .concat([
-        { id: 'taskTime', label: 'Task Time', sortBy: 'ExecutorRunTime' }
+        { id: 'taskTime', label: 'Task Time', sortBy: 'metrics.ExecutorRunTime' }
       ])
       .concat(ioBytesColumns);
 

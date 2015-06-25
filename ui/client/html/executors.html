@@ -22,9 +22,7 @@
 
     <div class="row">
       <div class="span12">
-        {{#with sorted}}
-          {{>table data=this columns=columns}}
-        {{/with}}
+        {{>table data=sorted columns=columns}}
       </div>
     </div>
   </div>
@@ -34,7 +32,6 @@
   {{formatBytes MemorySize}} / {{formatBytes maxMem}}
 </template>
 
-<template name="execRow-threadDump">
-  <!--TODO-->
+<template name="execRow-taskTime">
+  {{formatTime metrics.ExecutorRunTime}}
 </template>
-
