@@ -1,40 +1,48 @@
 
 <template name="stagesTables">
-  {{#if active.num}}<div><a href="#active"><strong>Active Stages:</strong></a> {{active.num}}</div>{{/if}}
-  {{#if pending.num}}<div><a href="#pending"><strong>Pending Stages:</strong></a> {{pending.num}}</div>{{/if}}
-  {{#if completed.num}}<div><a href="#completed"><strong>Completed Stages:</strong></a> {{completed.num}}</div>{{/if}}
-  {{#if skipped.num}}<div><a href="#skipped"><strong>Skipped Stages:</strong></a> {{skipped.num}}</div>{{/if}}
-  {{#if failed.num}}<div><a href="#failed"><strong>Failed Stages:</strong></a> {{failed.num}}</div>{{/if}}
+  {{#if active.num}}<span id="active-link"><a href="#active"><strong>Active Stages:</strong></a> {{active.num}}</span>{{/if}}
+  {{#if pending.num}}<span id="pending-link"><a href="#pending"><strong>Pending Stages:</strong></a> {{pending.num}}</span>{{/if}}
+  {{#if completed.num}}<span id="completed-link"><a href="#completed"><strong>Completed Stages:</strong></a> {{completed.num}}</span>{{/if}}
+  {{#if skipped.num}}<span id="skipped-link"><a href="#skipped"><strong>Skipped Stages:</strong></a> {{skipped.num}}</span>{{/if}}
+  {{#if failed.num}}<span id="failed-link"><a href="#failed"><strong>Failed Stages:</strong></a> {{failed.num}}</span>{{/if}}
+  <div id="all-link"><a href="#all"><strong>All Stages:</strong></a> {{all.num}}</div>
 
-  {{#if active.num}}
-    <h4 id="active">Active Stages ({{active.num}})</h4>
-    {{#with active.stages}}
+  {{#if showAll}}
+    <h4 id="all">All Stages ({{all.num}})</h4>
+    {{#with all.stages}}
       {{>table data=sorted columns=columns}}
     {{/with}}
-  {{/if}}
-  {{#if pending.num}}
-    <h4 id="pending">Pending Stages ({{pending.num}})</h4>
-    {{#with pending.stages}}
-      {{>table data=sorted columns=columns}}
-    {{/with}}
-  {{/if}}
-  {{#if completed.num}}
-    <h4 id="completed">Completed Stages ({{completed.num}})</h4>
-    {{#with completed.stages}}
-      {{>table data=sorted columns=columns}}
-    {{/with}}
-  {{/if}}
-  {{#if failed.num}}
-    <h4 id="failed">Failed Stages ({{failed.num}})</h4>
-    {{#with failed.stages}}
-      {{>table data=sorted columns=columns}}
-    {{/with}}
-  {{/if}}
-  {{#if skipped.num}}
-    <h4 id="skipped">Skipped Stages ({{skipped.num}})</h4>
-    {{#with skipped.stages}}
-      {{>table data=sorted columns=columns}}
-    {{/with}}
+  {{else}}
+    {{#if active.num}}
+      <h4 id="active">Active Stages ({{active.num}})</h4>
+      {{#with active.stages}}
+        {{>table data=sorted columns=columns}}
+      {{/with}}
+    {{/if}}
+    {{#if pending.num}}
+      <h4 id="pending">Pending Stages ({{pending.num}})</h4>
+      {{#with pending.stages}}
+        {{>table data=sorted columns=columns}}
+      {{/with}}
+    {{/if}}
+    {{#if completed.num}}
+      <h4 id="completed">Completed Stages ({{completed.num}})</h4>
+      {{#with completed.stages}}
+        {{>table data=sorted columns=columns}}
+      {{/with}}
+    {{/if}}
+    {{#if failed.num}}
+      <h4 id="failed">Failed Stages ({{failed.num}})</h4>
+      {{#with failed.stages}}
+        {{>table data=sorted columns=columns}}
+      {{/with}}
+    {{/if}}
+    {{#if skipped.num}}
+      <h4 id="skipped">Skipped Stages ({{skipped.num}})</h4>
+      {{#with skipped.stages}}
+        {{>table data=sorted columns=columns}}
+      {{/with}}
+    {{/if}}
   {{/if}}
 </template>
 

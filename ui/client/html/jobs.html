@@ -7,9 +7,11 @@
     <h3>Spark Jobs</h3>
     <div><strong>Total Duration:</strong> {{formatDuration app.time.start}}</div>
     <div><strong>Scheduling Mode:</strong> {{schedulingMode env}}</div>
-    {{#if active.num}}<div id="active-link"><a href="#active"><strong>Active Jobs:</strong></a> {{active.num}}</div>{{/if}}
-    {{#if completed.num}}<div id="completed-link"><a href="#completed"><strong>Completed Jobs:</strong></a> {{completed.num}}</div>{{/if}}
-    {{#if failed.num}}<div id="failed-link"><a href="#failed"><strong>Failed Jobs:</strong></a> {{failed.num}}</div>{{/if}}
+    <div>
+      {{#if active.num}}<span id="active-link"><a href="#active"><strong>Active Jobs:</strong></a> {{active.num}}</span>{{/if}}
+      {{#if completed.num}}<span id="completed-link"><a href="#completed"><strong>Completed Jobs:</strong></a> {{completed.num}}</span>{{/if}}
+      {{#if failed.num}}<span id="failed-link"><a href="#failed"><strong>Failed Jobs:</strong></a> {{failed.num}}</span>{{/if}}
+    </div>
     <div id="all-link"><a href="#all"><strong>All Jobs:</strong></a> {{all.num}}</div>
 
     {{#if showAll}}

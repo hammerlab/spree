@@ -48,6 +48,7 @@ function getStagesData() {
   var failed = attempts.filter(function(attempt) { return attempt.ended && attempt.status == FAILED; });
 
   return {
+    all: { stages: attempts, num: attempts.length },
     completed: { stages: completed, num: completed.length },
     active: { stages: active, num: active.length },
     pending: { stages: pending, num: pending.length },
