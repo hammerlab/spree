@@ -1,7 +1,7 @@
 
 var columns = [
   { id: 'id', label: 'RDD ID', sortBy: "id" },
-  nameColumn,
+  { id: 'name', label: 'RDD Name', sortBy: 'name' },
   storageLevelColumn,
   { id: 'numCachedPartitions', label: 'Cached Partitions', sortBy: "numCachedPartitions" },
   { id: 'fractionCached', label: '% Cached', sortBy: function(rdd) { return rdd.numCachedPartitions / rdd.numPartitions; } }
