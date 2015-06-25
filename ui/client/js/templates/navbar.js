@@ -13,6 +13,12 @@ function mongoUrl() {
 }
 Template.registerHelper("mongoUrl", mongoUrl);
 
+Template.navbar.helpers({
+  includeNavLinks: function() {
+    return this.hideLinks != false;
+  }
+});
+
 Template.navbar.events({
   'click .navbar-text': function(e) {
     prompt("Copy the mongo URL below", fullMongoUrl());
