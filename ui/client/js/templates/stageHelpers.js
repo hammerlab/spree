@@ -8,7 +8,7 @@ var columns = [
 ].concat(ioBytesColumns);
 
 makeTable(
-  columns, 'stagesTables', 'sorted', 'columns', 'stageRow', 'stage', function() { return this; }, ['id', -1]
+  columns, 'stagesTables', 'sorted', 'columns', 'stageRow', 'stage', null, ['id', -1]
 );
 
 Template.stagesTables.helpers({

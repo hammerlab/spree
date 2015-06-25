@@ -9,7 +9,7 @@
       <div><strong>Total time across all tasks:</strong> {{formatTime ExecutorRunTime}}</div>
 
       {{#with InputMetrics}}
-        {{#if hasInput}}
+        {{#if BytesRead}}
         <div>
           <strong>Input Size / Records:</strong> {{formatBytes BytesRead}} / {{RecordsRead}} records
         </div>
@@ -17,7 +17,7 @@
       {{/with}}
 
       {{#with OutputMetrics}}
-        {{#if hasOutput}}
+        {{#if BytesWritten}}
         <div>
           <strong>Output Size / Records:</strong> {{formatBytes BytesWritten}} / {{RecordsWritten}} records
         </div>
@@ -25,7 +25,7 @@
       {{/with}}
 
       {{#with ShuffleReadMetrics}}
-        {{#if hasShuffleRead}}
+        {{#if shuffleBytesRead this}}
         <div>
           <strong>Shuffle read:</strong> {{shuffleBytesReadStr this}} / {{TotalRecordsRead}} records
         </div>
@@ -33,7 +33,7 @@
       {{/with}}
 
       {{#with ShuffleWriteMetrics}}
-        {{#if hasShuffleWrite}}
+        {{#if ShuffleBytesWritten}}
         <div>
           <strong>Shuffle write:</strong> {{formatBytes ShuffleBytesWritten}} / {{ShuffleRecordsWritten}} records
         </div>
@@ -98,11 +98,6 @@
 <template name="stageExec-address">
   {{>hostPort}}
 </template>
-
-<template name="stageExec-taskTime">
-  {{formatTime metrics.ExecutorRunTime}}
-</template>
-
 
 
 <template name="tasksTable">

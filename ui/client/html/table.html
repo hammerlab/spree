@@ -47,7 +47,7 @@
 </template>
 
 <template name="taskTime">
-  {{formatTime taskTime}}
+  {{formatTime metrics.ExecutorRunTime}}
 </template>
 
 <template name="start">
@@ -86,16 +86,32 @@
   {{formatBytes metrics.InputMetrics.BytesRead}}
 </template>
 
+<template name="inputRecords">
+  {{orDash metrics.InputMetrics.RecordsRead}}
+</template>
+
 <template name="output">
   {{formatBytes metrics.OutputMetrics.BytesWritten}}
+</template>
+
+<template name="outputRecords">
+  {{orDash metrics.OutputMetrics.RecordsWritten}}
 </template>
 
 <template name="shuffleRead">
   {{shuffleBytesReadStr metrics.ShuffleReadMetrics}}
 </template>
 
+<template name="shuffleReadRecords">
+  {{orDash metrics.ShuffleReadMetrics.TotalRecordsRead}}
+</template>
+
 <template name="shuffleWrite">
   {{formatBytes metrics.ShuffleWriteMetrics.ShuffleBytesWritten}}
+</template>
+
+<template name="shuffleWriteRecords">
+  {{orDash metrics.ShuffleWriteMetrics.ShuffleRecordsWritten}}
 </template>
 
 <template name="host">
@@ -113,5 +129,3 @@
 <template name="storageLevel">
   {{getStorageLevel StorageLevel}}
 </template>
-
-

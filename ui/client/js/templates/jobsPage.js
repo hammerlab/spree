@@ -9,7 +9,7 @@ var columns = [
 ];
 
 makeTable(
-      columns, 'jobsPage', 'sorted', 'columns', 'jobRow', 'job', function() { return this; }, ['start', -1]
+      columns, 'jobsPage', 'sorted', 'columns', 'jobRow', 'job', null, ['start', -1]
 );
 
 Template.jobsPage.helpers({

@@ -8,7 +8,7 @@ var columns = [
 ].concat(spaceColumns);
 
 makeTable(
-      columns, 'storagePage', 'sorted', 'columns', 'rddRow', 'rdd', function() { return this.rdds.map(identity); }, ['id', 1]
+      columns, 'storagePage', 'sorted', 'columns', 'rddRow', 'rdd', 'rdds', ['id', 1]
 );
 
 fractionCached = function(rdd) {

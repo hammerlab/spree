@@ -9,13 +9,11 @@ var columns = [
   offHeapColumn
 ]
       .concat(taskColumns)
-      .concat([
-        { id: 'taskTime', label: 'Task Time', sortBy: 'metrics.ExecutorRunTime' }
-      ])
+      .concat([ taskTimeColumn ])
       .concat(ioBytesColumns);
 
 makeTable(
-      columns, 'executorsPage', 'sorted', 'columns', 'execRow', 'exec', function() { return this.executors.map(identity); }, ['id', -1]
+      columns, 'executorsPage', 'sorted', 'columns', 'execRow', 'exec', 'executors', ['id', -1]
 );
 
 Template.executorsPage.helpers({

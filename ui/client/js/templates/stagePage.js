@@ -1,37 +1,11 @@
 
 
-var hases = {
-  hasInput: function() {
-    var stage = Stages.findOne();
-    return stage && stage.metrics && stage.metrics.InputMetrics && stage.metrics.InputMetrics.BytesRead;
-  },
-
-  hasOutput: function() {
-    var stage = Stages.findOne();
-    return stage && stage.metrics && stage.metrics.OutputMetrics && stage.metrics.OutputMetrics.BytesWritten;
-  },
-
-  hasShuffleRead: function() {
-    var stage = Stages.findOne();
-    return stage && stage.metrics && shuffleBytesRead(stage.metrics.ShuffleReadMetrics);
-  },
-
-  hasShuffleWrite: function() {
-    var stage = Stages.findOne();
-    var ret = stage && stage.metrics && stage.metrics.ShuffleWriteMetrics && stage.metrics.ShuffleWriteMetrics.ShuffleBytesWritten;
-    return !!ret;
-  }
-
-};
-
 Template.stagePage.helpers({
   setTitle: function(data) {
     document.title = "Stage " + data.stageId + " (" + data.attemptId + ")";
     return null;
   }
 });
-
-Template.stagePage.helpers(hases);
 
 Template.exceptionFailure.helpers({
   exceptionFailure: function(reason) {
@@ -70,13 +44,13 @@ Template.summaryMetricsTable.helpers({
 var executorColumns = [
   { id: 'id', label: 'Executor ID', sortBy: 'id', template: 'id' },
   { id: 'address', label: 'Address', sortBy: getHostPort },
-  { id: 'taskTime', label: 'Task Time', sortBy: 'metrics.ExecutorRunTime' }
+  taskTimeColumn
 ]
       .concat(taskColumns)
       .concat(ioColumns);
 
 makeTable(
-      executorColumns, 'executorTable', 'sorted', 'columns', 'stageExec', 'stageExec', function() { return this.executors.map(identity); }, ['id', 1]
+      executorColumns, 'executorTable', 'sorted', 'columns', 'stageExec', 'stageExec', 'executors', ['id', 1]
 );
 
 
@@ -99,7 +73,7 @@ var columns = [
       ]);
 
 makeTable(
-      columns, 'tasksTable', 'sorted', 'columns', 'taskRow', 'task', function() { return this.taskAttempts.map(identity); }, ['id', 1]
+      columns, 'tasksTable', 'sorted', 'columns', 'taskRow', 'task', 'taskAttempts', ['id', 1]
 );
 
 Template['taskRow-status'].helpers({

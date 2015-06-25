@@ -6,20 +6,20 @@
   <div class="container-fluid">
     <h3>Environment</h3>
     <h4>Runtime Information</h4>
-    {{#with sort env.jvm}}
-      {{>table data=this columns=columns class="env"}}
+    {{#with env.jvm}}
+      {{>table data=sorted columns=columns class="env"}}
     {{/with}}
     <h4>Spark Properties</h4>
-    {{#with sort env.spark}}
-      {{>table data=this columns=columns class="env"}}
+    {{#with env.spark}}
+      {{>table data=sorted columns=columns class="env"}}
     {{/with}}
     <h4>System Properties</h4>
-    {{#with sort env.system}}
-      {{>table data=this columns=columns class="env"}}
+    {{#with env.system}}
+      {{>table data=sorted columns=columns class="env"}}
     {{/with}}
     <h4>Classpath Entries</h4>
-    {{#with sort env.classpath}}
-      {{>table data=this columns=columns class="env"}}
+    {{#with env.classpath}}
+      {{>table data=sorted columns=columns class="env"}}
     {{/with}}
   </div>
 </template>

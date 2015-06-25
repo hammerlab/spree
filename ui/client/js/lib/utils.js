@@ -61,6 +61,7 @@ formatTime = function(ms) {
 Template.registerHelper("formatTime", formatTime);
 
 Template.registerHelper("orZero", function(n) { return n || 0; });
+Template.registerHelper("orDash", function(n) { return n || '-'; });
 Template.registerHelper("orEmpty", function(n) { return n || {}; });
 
 Template.registerHelper("formatDateTime", function(dt) {
@@ -166,7 +167,7 @@ byId = function(columns, templatePrefix, tableName) {
   return columnsById;
 };
 
-makeTable = function(originalColumns, templateName, dataKey, columnsKey, templatePrefix, tableName, dataFn, defaultSort) {
+makeTable = function(originalColumns, templateName, dataKey, columnsKey, templatePrefix, tableName, data, defaultSort) {
   var columns = originalColumns.map(function(col) { return jQuery.extend({}, col); });
   var columnsById = byId(columns, templatePrefix, tableName);
 
@@ -174,7 +175,22 @@ makeTable = function(originalColumns, templateName, dataKey, columnsKey, templat
   helpers[dataKey] = function(arg) {
     var sort = Session.get(tableName + '-table-sort') || defaultSort;
     var cmpFn = columnsById[sort[0]].cmpFn;
-    var data = dataFn.bind(this).call(this, arg);
+    data = (
+          (!data ?
+                      this :
+                      ((typeof data == 'function') ?
+                                  data.bind(this).call(this, arg) :
+                                  ((data instanceof Array) ?
+                                              data :
+                                              ((typeof data == 'string') ?
+                                                          this[data].map(identity) :
+                                                          data.map(identity)
+                                              )
+
+                                  )
+                      )
+          )
+    );
     return (sort[1] == 1 ? data.sort(cmpFn) : data.sort(cmpFn).reverse());
   };
   helpers[columnsKey] = columns;
@@ -251,3 +267,4 @@ portColumn = { id: 'port', label: 'Port', sortBy: 'port', template: 'port' };
 numBlocksColumn = { id: 'blocks', label: 'RDD Blocks', sortBy: 'numBlocks', template: 'numBlocks' };
 
 storageLevelColumn = { id: 'storageLevel', label: 'Storage Level', sortBy: storageLevelToNum, template: 'storageLevel' };
+taskTimeColumn = { id: 'taskTime', label: 'Task Time', sortBy: 'metrics.ExecutorRunTime', template: 'taskTime' };

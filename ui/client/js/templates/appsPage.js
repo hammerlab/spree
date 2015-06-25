@@ -9,5 +9,5 @@ var columns = [
 ];
 
 makeTable(
-      columns, 'appsPage', 'applications', 'columns', 'appRow', 'app', function() { return this.apps.map(identity); }, ['start', -1]
+      columns, 'appsPage', 'sorted', 'columns', 'appRow', 'app', 'apps', ['start', -1]
 );

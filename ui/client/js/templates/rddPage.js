@@ -9,7 +9,7 @@ var rddExecColumns = [
 ];
 
 makeTable(
-      rddExecColumns, 'rddPage', 'sortedExecutors', 'execColumns', 'rddExec', 'rddExec', function() { return this.executors.map(identity); }, ['host', 1]
+      rddExecColumns, 'rddPage', 'sortedExecutors', 'execColumns', 'rddExec', 'rddExec', 'executors', ['host', 1]
 );
 
 var blockColumns = [

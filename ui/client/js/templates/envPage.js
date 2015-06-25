@@ -5,6 +5,6 @@ var columns = [
 ];
 
 makeTable(
-      columns, 'environmentPage', 'sort', 'columns', 'envRow', 'env', identity, ['0', 1]
+      columns, 'environmentPage', 'sorted', 'columns', 'envRow', 'env', null, ['0', 1]
 );
 
