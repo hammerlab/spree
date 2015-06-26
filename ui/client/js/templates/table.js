@@ -24,3 +24,12 @@ Template.table.helpers({
     }.bind(this));
   }
 });
+
+Template.statsTable.helpers({
+  join: function(data, column) {
+    return {
+      template: data.template,
+      data: data[column.id]
+    };
+  }
+});

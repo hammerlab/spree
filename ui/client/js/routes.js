@@ -108,6 +108,24 @@ function makeSummaryStats(name, arr) {
   }
 }
 
+
+var statRows = [
+  ['Task Deserialization Time', 'metrics.ExecutorDeserializeTime', 'time'],
+  ['Duration', duration, 'time'],
+  ['GC Time', 'metrics.JVMGCTime', 'time'],
+  ['Getting Result Time', 'GettingResultTime', 'time'],
+  ['Result Serialization Time', 'ResultSerializationTime', 'time'],
+  ['Shuffle Read Bytes', shuffleBytesRead, 'bytes'],
+  ['Shuffle Read Records', 'metrics.ShuffleReadMetrics.TotalRecordsRead', 'num'],
+  ['Shuffle Write Bytes', 'metrics.ShuffleWriteMetrics.ShuffleBytesWritten', 'bytes'],
+  ['Shuffle Write Records', 'metrics.ShuffleWriteMetrics.ShuffleRecordsWritten', 'num']
+].map(function(x) {
+        if (typeof x[1] == 'string')
+          return [x[0], acc(x[1]), x[2]];
+        return x;
+      });
+
+
 // StageAttempt page
 Router.route("/a/:_appId/stage/:_stageId", {
   waitOn: function() {
@@ -145,6 +163,31 @@ Router.route("/a/:_appId/stage/:_stageId", {
       }
       return e;
     });
+
+    var stats = [];
+    statRows.forEach(function(c) {
+      var name = c[0];
+      var fn = c[1];
+      var tpl = c[2];
+      if (typeof fn == 'string') {
+        fn = acc(fn);
+      }
+      var tasks = TaskAttempts.find({ stageId: stage.id, stageAttemptId: stageAttempt.id }).map(identity).sort(sortBy(fn));
+      var n = tasks.length;
+      var max = fn(tasks[n-1]);
+      if (max) {
+        stats.push({
+          id: name,
+          template: tpl,
+          min: fn(tasks[0]),
+          tf: fn(tasks[n/4]),
+          median: fn(tasks[n/2]),
+          sf: fn(tasks[3*n/4]),
+          max: max
+        });
+      }
+    });
+
     this.render('stagePage', {
       data: {
         appId: this.params._appId,
@@ -153,6 +196,7 @@ Router.route("/a/:_appId/stage/:_stageId", {
         stageAttempt: stageAttempt,
         stageId: stage.id,
         attemptId: stageAttempt.id,
+        stats: stats,
         tasks: Tasks.find(),
         taskAttempts: TaskAttempts.find().map(function(task) {
           var executor = Executors.findOne({ id: task.execId });

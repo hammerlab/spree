@@ -7,7 +7,7 @@ var columns = [
   tasksColumn
 ].concat(ioBytesColumns);
 
-makeTable(columns, 'stagesTables', 'stage');
+makeTable(columns, 'stagesTables', 'stage', null, ['id', -1]);
 
 Template.stagesTables.helpers({
   showAll: function() {

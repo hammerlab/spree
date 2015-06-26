@@ -33,12 +33,22 @@ Template.executorLostFailure.helpers({
   getHostPort: getHostPort
 });
 
-Template.summaryMetricsTable.helpers({
+Template.summaryStatsTable.helpers({
   numCompletedTasks: function(taskCounts) {
     return taskCounts && ((taskCounts.succeeded || 0) + (taskCounts.failed || 0));
   }
 });
 
+var statsColumns = [
+  { id: 'id', label: 'Metric', sortBy: 'id', template: 'id' },
+  { id: 'min', label: 'Min', sortBy: 'min' },
+  { id: 'tf', label: '25th Percentile', sortBy: 'tf' },
+  { id: 'median', label: 'Median', sortBy: 'median' },
+  { id: 'sf', label: '75th Percentile', sortBy: 'sf' },
+  { id: 'max', label: 'Max', sortBy: 'max' }
+];
+
+makeTable(statsColumns, 'summaryStatsTable', 'summaryStats', 'stats');
 
 // Per-executor table
 var executorColumns = [

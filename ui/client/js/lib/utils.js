@@ -30,6 +30,7 @@ sigFigs = function(m, n) {
 };
 
 formatTime = function(ms) {
+  if (typeof ms != 'number') return ms;
   var S = 1000;
   var M = 60*S;
   var H = 60*M;
@@ -70,6 +71,7 @@ Template.registerHelper("formatDateTime", function(dt) {
 
 formatBytes = function(bytes) {
   if (!bytes) return "-";
+  if (typeof bytes != 'number') return bytes;
   var base = 1024;
   var cutoff = 2;
   var levels = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
@@ -84,6 +86,8 @@ formatBytes = function(bytes) {
 Template.registerHelper("formatBytes", formatBytes);
 
 shuffleBytesRead = function(shuffleReadMetrics) {
+  if ('metrics' in shuffleReadMetrics) shuffleReadMetrics = shuffleReadMetrics['metrics'];
+  if ('ShuffleReadMetrics' in shuffleReadMetrics) shuffleReadMetrics = shuffleReadMetrics['ShuffleReadMetrics'];
   return shuffleReadMetrics && (shuffleReadMetrics.LocalBytesRead + shuffleReadMetrics.RemoteBytesRead) || 0;
 };
 Template.registerHelper("shuffleBytesRead", shuffleBytesRead);
@@ -261,9 +265,11 @@ ioColumns = [
   shuffleWriteRecordsColumn
 ];
 
+duration = function(x) { return x.time && (x.time.end - x.time.start) || 0; };
+
 nameColumn = { id: 'name', label: 'Name', sortBy: 'name', template: 'nameAttr' };
 startColumn = { label: 'Submitted', id: 'start', sortBy: 'time.start', template: 'start' };
-durationColumn = { label: 'Duration', id: 'duration', sortBy: function(x) { return x.time && (x.time.end - x.time.start) || 0; }, template: 'duration' };
+durationColumn = { label: 'Duration', id: 'duration', sortBy: duration, template: 'duration' };
 tasksColumn = { id: "tasks", label: "Tasks: Succeeded/Total", sortBy: "taskCounts.succeeded", template: 'tasks' };
 stagesColumn = { id: "stages", label: "Stages: Succeeded/Total", sortBy: "stageCounts.succeeded", template: 'stages' };
 

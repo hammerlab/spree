@@ -41,13 +41,13 @@
       {{/with}}
     {{/with}}
 
-    {{> summaryMetricsTable this}}
+    {{> summaryStatsTable this}}
     {{> executorTable this}}
     {{> tasksTable this}}
   </div>
 </template>
 
-<template name="summaryMetricsTable">
+<template name="summaryStatsTable">
   {{#with stage.taskCounts}}
     <h4>
       Summary Metrics for {{numCompletedTasks this}} Completed Tasks
@@ -57,38 +57,32 @@
         {{#if succeeded}}{{succeeded}}{{else}}0{{/if}} succeeded)
     </h4>
   {{/with}}
-  <table class="table table-bordered table-striped table-condensed sortable">
-    <thead>
-    <tr>
-      <th>Metric</th>
-      <th>Min</th>
-      <th>25th Percentile</th>
-      <th>Median</th>
-      <th>75th Percentile</th>
-      <th>Max</th>
-    </tr>
-    </thead>
-    <tbody>
-    {{> summaryRow durations}}
-    </tbody>
-  </table>
+  {{>statsTable data=sorted columns=columns class="stats"}}
+</template>
+
+<template name='summaryStatsRow-min'>
+  {{min}}
+</template>
+
+<template name='summaryStatsRow-25'>
+  {{tf}}
+</template>
+
+<template name='summaryStatsRow-50'>
+  {{median}}
+</template>
+
+<template name='summaryStatsRow-75'>
+  {{sf}}
+</template>
+
+<template name='summaryStatsRow-max'>
+  {{max}}
 </template>
 
 <template name="hostPort">
   {{host}}:{{port}}
 </template>
-
-<template name="summaryRow">
-  <!--<tr>-->
-    <!--<td>{{name}}</td>-->
-    <!--<td>{{stats.[0]}}</td>-->
-    <!--<td>{{stats.[1]}}</td>-->
-    <!--<td>{{stats.[2]}}</td>-->
-    <!--<td>{{stats.[3]}}</td>-->
-    <!--<td>{{stats.[4]}}</td>-->
-  <!--</tr>-->
-</template>
-
 
 <template name="executorTable">
   <h4>Aggregated Metrics by Executor</h4>
