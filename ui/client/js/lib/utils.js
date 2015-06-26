@@ -86,6 +86,7 @@ formatBytes = function(bytes) {
 Template.registerHelper("formatBytes", formatBytes);
 
 shuffleBytesRead = function(shuffleReadMetrics) {
+  if (!shuffleReadMetrics) return 0;
   if ('metrics' in shuffleReadMetrics) shuffleReadMetrics = shuffleReadMetrics['metrics'];
   if ('ShuffleReadMetrics' in shuffleReadMetrics) shuffleReadMetrics = shuffleReadMetrics['ShuffleReadMetrics'];
   return shuffleReadMetrics && (shuffleReadMetrics.LocalBytesRead + shuffleReadMetrics.RemoteBytesRead) || 0;
@@ -265,7 +266,7 @@ ioColumns = [
   shuffleWriteRecordsColumn
 ];
 
-duration = function(x) { return x.time && (x.time.end - x.time.start) || 0; };
+duration = function(x) { return x && x.time && (x.time.end - x.time.start) || 0; };
 
 nameColumn = { id: 'name', label: 'Name', sortBy: 'name', template: 'nameAttr' };
 startColumn = { label: 'Submitted', id: 'start', sortBy: 'time.start', template: 'start' };

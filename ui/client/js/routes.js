@@ -147,6 +147,7 @@ Router.route("/a/:_appId/stage/:_stageId", {
           stageId: parseInt(this.params._stageId),
           attemptId: this.params.query.attempt ? parseInt(this.params.query.attempt) : 0,
           executors: [],
+          stats: [],
           tasks: [],
           taskAttempts: [],
           stagesTab: 1
@@ -155,7 +156,7 @@ Router.route("/a/:_appId/stage/:_stageId", {
       return;
     }
     var executors = Executors.find().map(function(e) {
-      if (stage.id in e.stages && stageAttempt.id in e.stages[stage.id]) {
+      if (stage && stage.id in e.stages && stageAttempt.id in e.stages[stage.id]) {
         var eStage = e.stages[stage.id][stageAttempt.id];
         e.metrics = eStage.metrics;
         e.taskCounts = eStage.taskCounts;
