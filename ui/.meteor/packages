@@ -9,3 +9,5 @@ insecure
 less
 iron:router
 jquery
+react
+react-template-helper

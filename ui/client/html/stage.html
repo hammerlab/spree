@@ -1,4 +1,10 @@
 
+<template name="reactStagePage">
+  <div>
+    {{>React component=StagePage}}
+  </div>
+</template>
+
 <template name="stagePage">
   {{>navbar}}
   {{setTitle this}}
@@ -41,9 +47,17 @@
       {{/with}}
     {{/with}}
 
-    {{> summaryStatsTable this}}
-    {{> executorTable this}}
-    {{> tasksTable this}}
+    <!--{{> summaryStatsTable this}}-->
+    <!--{{> executorTable this}}-->
+    <div>
+      {{>React component=SummaryMetricsTable stats=stats taskCounts=stageAttempt.taskCounts}}
+    </div>
+    <div>
+      {{>React component=ExecutorsTable stageId=stageAttempt.stageId attemptId=stageAttempt.id}}
+    </div>
+    <div>
+      {{>React component=TasksTable data=taskAttempts}}
+    </div>
   </div>
 </template>
 
@@ -95,8 +109,15 @@
 
 
 <template name="tasksTable">
-  <h4>Tasks</h4>
-  {{>table data=sorted columns=columns}}
+  <!--<h4>Tasks ({{numTasks}})</h4>-->
+  <!--{{#with eTasks}}-->
+  {{log "tasksTable: " this}}
+  <!--{{#with taskAttempts}}-->
+    <!--{{>reactTable data=sorted columns=columns}}-->
+  <!--{{/with}}-->
+  <!--{{else}}-->
+    <!--{{>table columns=columns}}-->
+  <!--{{/with}}-->
 </template>
 
 <template name="taskRow-index">

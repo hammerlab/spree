@@ -39,7 +39,7 @@ Router.route("/a/:_appId", {
 });
 
 function getStagesData() {
-  var attempts = StageAttempts.find().map(identity);
+  var attempts = StageAttempts.find().fetch();
 
   var completed = attempts.filter(function(attempt) { return (attempt.ended || (attempt.time && attempt.time.end)) && !attempt.skipped && attempt.status == SUCCEEDED; });
   var active = attempts.filter(function(attempt) { return attempt.started && !attempt.ended; });
@@ -112,9 +112,10 @@ function makeSummaryStats(name, arr) {
 var statRows = [
   ['Task Deserialization Time', 'metrics.ExecutorDeserializeTime', 'time'],
   ['Duration', duration, 'time'],
+  ['Run Time', 'metrics.ExecutorRunTime', 'time'],
   ['GC Time', 'metrics.JVMGCTime', 'time'],
   ['Getting Result Time', 'GettingResultTime', 'time'],
-  ['Result Serialization Time', 'ResultSerializationTime', 'time'],
+  ['Result Serialization Time', 'metrics.ResultSerializationTime', 'time'],
   ['Input Bytes', 'metrics.InputMetrics.BytesRead', 'bytes'],
   ['Input Records', 'metrics.InputMetrics.RecordsRead', 'num'],
   ['Output Bytes', 'metrics.OutputMetrics.BytesWritten', 'bytes'],
@@ -129,16 +130,42 @@ var statRows = [
         return x;
       });
 
+//Router.route("/a/:_appId/stage/:_stageId/test", {
+//  waitOn: function() {
+//    return Meteor.subscribe(
+//          'tasks-with-execs',
+//          this.params._appId,
+//          parseInt(this.params._stageId),
+//          this.params.query.attempt ? parseInt(this.params.query.attempt) : 0
+//    );
+//  },
+//  action: function() {
+//
+//  }
+//});
+
+Router.route("/test", {
+  waitOn: function() {
+    return Meteor.subscribe("test-page");
+  },
+  action: function() {
+    this.render('test', {
+      data: Test.find({}, { sort: { _id: -1 }})
+    });
+  }
+});
 
 // StageAttempt page
 Router.route("/a/:_appId/stage/:_stageId", {
   waitOn: function() {
-    return Meteor.subscribe(
-          'stage-page',
-          this.params._appId,
-          parseInt(this.params._stageId),
-          this.params.query.attempt ? parseInt(this.params.query.attempt) : 0
-    );
+    return [
+      Meteor.subscribe(
+            'stage-page',
+            this.params._appId,
+            parseInt(this.params._stageId),
+            this.params.query.attempt ? parseInt(this.params.query.attempt) : 0
+      ),
+    ];
   },
   action: function() {
     var stage = Stages.findOne();
@@ -150,34 +177,28 @@ Router.route("/a/:_appId/stage/:_stageId", {
           app: Applications.findOne(),
           stageId: parseInt(this.params._stageId),
           attemptId: this.params.query.attempt ? parseInt(this.params.query.attempt) : 0,
-          executors: [],
+          executors: Executors.find(),
           stats: [],
           tasks: [],
-          taskAttempts: [],
+          etasks: ETasks.find(),
+          taskAttempts: TaskAttempts.find(),
           stagesTab: 1
         }
       });
       return;
     }
-    var executors = Executors.find().map(function(e) {
-      if (stage && stage.id in e.stages && stageAttempt.id in e.stages[stage.id]) {
-        var eStage = e.stages[stage.id][stageAttempt.id];
-        e.metrics = eStage.metrics;
-        e.taskCounts = eStage.taskCounts;
-        delete e['stages'];
-      }
-      return e;
-    });
+    var stageId = stageAttempt.stageId;
+    var attemptId = stageAttempt.id;
 
     var stats = [];
-    statRows.forEach(function(c) {
+    statRows.forEach(function(c, idx) {
       var name = c[0];
       var fn = c[1];
       var tpl = c[2];
       if (typeof fn == 'string') {
         fn = acc(fn);
       }
-      var tasks = TaskAttempts.find({ stageId: stage.id, stageAttemptId: stageAttempt.id }).map(identity).sort(sortBy(fn));
+      var tasks = TaskAttempts.find({ stageId: stageId, stageAttemptId: attemptId }).fetch().sort(sortBy(fn));
       var n = tasks.length;
       var max = fn(tasks[n-1]);
       if (max) {
@@ -185,9 +206,9 @@ Router.route("/a/:_appId/stage/:_stageId", {
           id: name,
           template: tpl,
           min: fn(tasks[0]),
-          tf: fn(tasks[n/4]),
-          median: fn(tasks[n/2]),
-          sf: fn(tasks[3*n/4]),
+          tf: fn(tasks[parseInt(n/4)]),
+          median: fn(tasks[parseInt(n/2)]),
+          sf: fn(tasks[parseInt(3*n/4)]),
           max: max
         });
       }
@@ -197,19 +218,12 @@ Router.route("/a/:_appId/stage/:_stageId", {
       data: {
         appId: this.params._appId,
         app: Applications.findOne(),
-        stage: stage,
         stageAttempt: stageAttempt,
-        stageId: stage.id,
-        attemptId: stageAttempt.id,
+        stageId: stageId,
+        attemptId: attemptId,
         stats: stats,
-        tasks: Tasks.find(),
-        taskAttempts: TaskAttempts.find().map(function(task) {
-          var executor = Executors.findOne({ id: task.execId });
-          task.host = executor.host;
-          task.port = executor.port;
-          return task;
-        }),
-        executors: executors,
+        taskAttempts: TaskAttempts.find(),
+        executors: Executors.find(),
         stagesTab: 1
       }
     });
