@@ -1,0 +1,49 @@
+
+<template name="table">
+  <table class="table table-bordered table-striped table-condensed sortable {{class}}">
+    <thead>
+    <tr>
+      {{#each validColumns columns data}}
+        <th>{{label}}</th>
+      {{/each}}
+    </tr>
+    </thead>
+    <tbody>
+    {{#each data}}
+    <tr>
+      {{#each validColumns ../columns ../data}}
+      <td>
+        {{> Template.dynamic template=template data=..}}
+      </td>
+      {{/each}}
+    </tr>
+    {{/each}}
+    </tbody>
+  </table>
+</template>
+
+<template name="statsTable">
+  <table class="table table-bordered table-striped table-condensed sortable {{class}}">
+    <thead>
+    <tr>
+      {{#each columns}}
+        <th>{{label}}</th>
+      {{/each}}
+    </tr>
+    </thead>
+    <tbody>
+    {{#each data}}
+    <tr>
+      {{#each ../columns}}
+      <td>
+        {{#with join .. this}}
+          {{> Template.dynamic template=template data=data}}
+        {{/with}}
+      </td>
+      {{/each}}
+    </tr>
+    {{/each}}
+    </tbody>
+  </table>
+</template>
+
