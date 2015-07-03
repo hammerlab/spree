@@ -168,7 +168,6 @@ Router.route("/a/:_appId/stage/:_stageId", {
     ];
   },
   action: function() {
-    var stage = Stages.findOne();
     var stageAttempt = StageAttempts.findOne();
     if (!stageAttempt) {
       this.render('stagePage', {
@@ -179,8 +178,6 @@ Router.route("/a/:_appId/stage/:_stageId", {
           attemptId: this.params.query.attempt ? parseInt(this.params.query.attempt) : 0,
           executors: Executors.find(),
           stats: [],
-          tasks: [],
-          etasks: ETasks.find(),
           taskAttempts: TaskAttempts.find(),
           stagesTab: 1
         }
@@ -191,14 +188,14 @@ Router.route("/a/:_appId/stage/:_stageId", {
     var attemptId = stageAttempt.id;
 
     var stats = [];
-    statRows.forEach(function(c, idx) {
+    statRows.forEach(function(c) {
       var name = c[0];
       var fn = c[1];
       var tpl = c[2];
       if (typeof fn == 'string') {
         fn = acc(fn);
       }
-      var tasks = TaskAttempts.find({ stageId: stageId, stageAttemptId: attemptId }).fetch().sort(sortBy(fn));
+      var tasks = TaskAttempts.find({ stageId: stageId, stageAttemptId: attemptId }).fetch().sort(makeCmpFn(fn));
       var n = tasks.length;
       var max = fn(tasks[n-1]);
       if (max) {

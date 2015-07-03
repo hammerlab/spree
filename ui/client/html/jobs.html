@@ -18,9 +18,6 @@
       <h4 id="all">All Jobs ({{all.num}})</h4>
       {{#with all.jobs}}
         {{>table data=sorted columns=columns}}
-      {{else}}
-        <!--Kind of hacky way to show just the table headers of an empty table-->
-        {{>table columns=columns}}
       {{/with}}
     {{else}}
       {{#if active.num}}

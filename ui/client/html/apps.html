@@ -5,7 +5,9 @@
   {{log this}}
   <div class="container-fluid">
     <h3>Spark Applications</h3>
-    {{>reactTable data=sorted columns=columns}}
+    <div>
+      {{>React component=AppsTable}}
+    </div>
   </div>
 </template>
 

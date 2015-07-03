@@ -1,18 +1,4 @@
 
-<template name="reactTable">
-  <div>
-    {{log "table: " data columns}}
-    {{> React component=Table data=data columns=columns}}
-  </div>
-</template>
-
-<template name="reactRowTable">
-  <div>
-    {{log "rowTable: " data columns}}
-    {{> React component=RowTable data=data columns=columns}}
-  </div>
-</template>
-
 <template name="table">
   <table class="table table-bordered table-striped table-condensed sortable {{class}}">
     <thead>

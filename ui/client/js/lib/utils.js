@@ -135,7 +135,7 @@ acc = function(key) {
   }, function(x) { return x; });
 };
 
-sortBy = function(key) {
+makeCmpFn = function(key) {
   var fn = null;
   if (typeof key == 'function') {
     fn = key;
@@ -155,13 +155,18 @@ sortBy = function(key) {
 
 identity = function(x) { return x; };
 
-processColumns = function(columns, templatePrefix, tableName) {
-  return columns.map(function(originalColumn) {
+processColumns = function(originalColumns, tableName, templatePrefix) {
+  var colsById = {};
+  var columns = originalColumns.map(function(originalColumn) {
     var column = jQuery.extend({}, originalColumn);
-    column.template = column.template || (templatePrefix + '-' + column.id);
-    column.table = tableName + '-table';
     if (!column.sortBy) {
       throw new Error("Column " + column.id + " requires a 'sortBy' attribute");
+    }
+    if (!column.template && templatePrefix) {
+      column.template = templatePrefix + '-' + column.id;
+    }
+    if (tableName) {
+      column.tableName = tableName + '-table';
     }
     if (typeof column.sortBy == 'string') {
       column.sortKey = column.sortBy;
@@ -174,33 +179,17 @@ processColumns = function(columns, templatePrefix, tableName) {
       if (fna > fnb || fnb === undefined) return 1;
       return 0;
     };
+
+    colsById[column.id] = column;
+
     return column;
   });
-};
 
-//byId = function(columns, templatePrefix, tableName) {
-//  var columnsById = {};
-//  columns.forEach(function(column) {
-//    column.template = column.template || (templatePrefix + '-' + column.id);
-//    column.table = tableName + '-table';
-//    if (!column.sortBy) {
-//      throw new Error("Column " + column.id + " requires a 'sortBy' attribute");
-//    }
-//    if (typeof column.sortBy == 'string') {
-//      column.sortKey = column.sortBy;
-//      column.sortBy = acc(column.sortBy);
-//    }
-//    column.cmpFn = function(a, b) {
-//      var fna = column.sortBy(a);
-//      var fnb = column.sortBy(b);
-//      if (fna < fnb || fna === undefined) return -1;
-//      if (fna > fnb || fnb === undefined) return 1;
-//      return 0;
-//    };
-//    columnsById[column.id] = column;
-//  });
-//  return columnsById;
-//};
+  return {
+    columns: columns,
+    colsById: colsById
+  };
+};
 
 makeTable = function(originalColumns, templateName, tableName, data, defaultSort, dataKey, columnsKey, templatePrefix) {
   if (!defaultSort) {
@@ -214,19 +203,30 @@ makeTable = function(originalColumns, templateName, tableName, data, defaultSort
   columnsKey = columnsKey || 'columns';
   templatePrefix = templatePrefix || (tableName + 'Row');
 
-  var columns = processColumns(originalColumns, templatePrefix, tableName);
-  //var columnsById = byId(columns, templatePrefix, tableName);
+  var columnsObj = processColumns(originalColumns, tableName, templatePrefix);
+  var colsById = columnsObj.colsById;
+  var columns = columnsObj.columns;
 
   var helpers = {};
   helpers[dataKey] = function(arg) {
     var sort = Session.get(tableName + '-table-sort') || defaultSort;
-    //console.log("coll: %O, sort: %O", data, sort);
-    var sortObj = {};
-    sortObj[sort[0]] = sort[1];
+    //var sortObj = {};
+    //sortObj[sort[0]] = sort[1];
+    var sortColumn = colsById[sort[0]];
+    var cmpFn = sortColumn.cmpFn;
+    var arr = null;
     if (typeof data == 'string') {
-      return this[data];
+      arr = this[data];
+    } else {
+      arr = this;
     }
-    return this;//data.find({}, { sort: sortObj });
+
+    arr = arr.sort(cmpFn);
+    if (sort[1] == -1) {
+      arr = arr.reverse();
+    }
+
+    return arr;
   };
   helpers[columnsKey] = columns;
 
@@ -304,4 +304,4 @@ portColumn = { id: 'port', label: 'Port', sortBy: 'port', template: 'port' };
 numBlocksColumn = { id: 'blocks', label: 'RDD Blocks', sortBy: 'numBlocks', template: 'numBlocks', defaultSort: -1 };
 
 storageLevelColumn = { id: 'storageLevel', label: 'Storage Level', sortBy: 'StorageLevel.UseMemory', template: 'storageLevel' };
-taskTimeColumn = { id: 'taskTime', label: 'Task Time', sortBy: 'metrics.ExecutorRunTime', template: 'taskTime', defaultSort: -1 };
+taskTimeColumn = { id: 'taskTime', label: 'Task Time', sortBy: 'metrics.ExecutorRunTime', template: 'taskTime', render: formatTime, defaultSort: -1 };

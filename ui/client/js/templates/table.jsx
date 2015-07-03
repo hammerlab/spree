@@ -19,31 +19,30 @@ TableHeader = React.createClass({
 Table = React.createClass({
   mixins: [ReactMeteorData],
   getInitialState() {
-    var colsById = {};
-    this.props.columns.forEach((col) => {
-      colsById[col.id] = col;
-    });
-    return {
-      colsById: colsById
-    };
+    return jQuery.extend(
+          processColumns(this.props.columns),
+          { tableSortKey: this.props.name + '-table-sort' }
+    );
   },
   getMeteorData() {
     return {
-      sort: Session.get(this.props.sortKey),
+      sort: Session.get(this.state.tableSortKey),
       rows: this.props.data
     }
   },
   render() {
-    var displayCols = this.props.columns.filter((col) => {
-      if (!this.data.rows || !this.data.rows.length) {
-        return col.showInEmptyTable != false;
-      }
-      for (var i = 0; i < this.data.rows.length; ++i) {
-        var row = this.data.rows[i];
-        if (col.sortBy(row)) return true;
-      }
-      return false;
-    });
+    var displayCols = !this.props.allowEmptyCols ?
+          this.state.columns.filter((col) => {
+            if (!this.data.rows || !this.data.rows.length) {
+              return col.showInEmptyTable != false;
+            }
+            for (var i = 0; i < this.data.rows.length; ++i) {
+              var row = this.data.rows[i];
+              if (col.sortBy(row)) return true;
+            }
+            return false;
+          }) :
+          this.state.columns;
 
     var sort = this.data.sort || this.props.defaultSort;
     var fn = this.state.colsById[sort.id].cmpFn;
@@ -53,25 +52,39 @@ Table = React.createClass({
     }
 
     var columns = displayCols.map((column) => {
-      return <TableHeader key={column.id} tableSortKey={this.props.sortKey} {...column} />;  //<th key={column.id} onClick={this.onHeaderClick}>{column.label}</th>
+      return this.props.disableSort ?
+            <th key={column.id}>{column.label}</th> :
+            <TableHeader key={column.id} tableSortKey={this.state.tableSortKey} {...column} />;
     });
-    var header = <thead><tr key="header">{columns}</tr></thead>;
 
-    var rowElems = rows.map((row, idx) => {
+    var displayRows =
+          this.props.hideEmptyRows ?
+                rows.filter((row) => {
+                  for (var i = 0; i < displayCols.length; i++) {
+                    var c = displayCols[i];
+                    if (c.render(c.sortBy(row))) {
+                      return true;
+                    }
+                  }
+                  return false;
+                }) :
+                rows;
+
+    var rowElems = displayRows.map((row, idx) => {
       var cols = displayCols.map((column, idx) => {
-        return <td key={row.id + column.id}>{column.render ? column.render(column.sortBy(row)) : column.sortBy(row)}</td>
+        var render = column.render || row.render;
+        return <td key={row.id + column.id}>{render ? render(column.sortBy(row)) : column.sortBy(row)}</td>
       });
       return <tr key={row.id + "-" + idx}>
         {cols}
       </tr>;
     });
 
-    // {this.props.class}
-    return <table className="table table-bordered table-striped table-condensed sortable">
-      {header}
-      <tbody>
-      {rowElems}
-      </tbody>
+    var className =
+          "table table-bordered table-striped table-condensed sortable" + (this.props.class ? (" " + this.props.class) : "");
+    return <table className={className}>
+      <thead><tr>{columns}</tr></thead>
+      <tbody>{rowElems}</tbody>
     </table>;
   }
 });
@@ -79,13 +92,7 @@ Table = React.createClass({
 RowTable = React.createClass({
   mixins: [ReactMeteorData],
   getInitialState() {
-    var colsById = {};
-    this.props.columns.forEach((col) => {
-      colsById[col.id] = col;
-    });
-    return {
-      colsById: colsById
-    };
+    return processColumns(this.props.columns);
   },
   getMeteorData() {
     return {
@@ -94,7 +101,7 @@ RowTable = React.createClass({
     }
   },
   render() {
-    var displayCols = this.props.columns;
+    var displayCols = this.state.columns;
 
     var sort = this.data.sort || this.props.defaultSort;
     var fn = this.state.colsById[sort.id].cmpFn;
@@ -104,12 +111,11 @@ RowTable = React.createClass({
     }
 
     var columns = displayCols.map((column) => {
-      return <th key={column.id}>{column.label}</th>//<TableHeader key={column.id} tableSortKey={this.props.sortKey} {...column} />;
+      return <th key={column.id}>{column.label}</th>
     });
-    var header = <thead><tr key="header">{columns}</tr></thead>;
 
     var rowElems = rows.map((row, idx) => {
-      var cols = displayCols.map((column, idx) => {
+      var cols = displayCols.map((column) => {
         return <td key={row.id + column.id}>{row.render ? row.render(column.sortBy(row)) : column.sortBy(row)}</td>
       });
       return <tr key={row.id + "-" + idx}>
@@ -117,23 +123,10 @@ RowTable = React.createClass({
       </tr>;
     });
 
-    // {this.props.class}
-    return <table className={"table table-bordered table-striped table-condensed sortable" + (this.props.class ? (' ' + this.props.class) : '')}>
-      {header}
-      <tbody>
-      {rowElems}
-      </tbody>
+    var className =
+          "table table-bordered table-striped table-condensed sortable" + (this.props.class ? (' ' + this.props.class) : '');
+    return <table className={className}>
+      <thead><tr>{columns}</tr></thead>
+      <tbody>{rowElems}</tbody>
     </table>;  }
-});
-
-Template.reactTable.helpers({
-  Table() {
-    return Table;
-  }
-});
-
-Template.reactRowTable.helpers({
-  RowTable() {
-    return RowTable;
-  }
 });
