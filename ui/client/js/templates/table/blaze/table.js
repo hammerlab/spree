@@ -28,7 +28,7 @@ Template.table.helpers({
   sortCarat: function() {
     var sortKey = this.tableName + '-sort';
     var sort = Cookie.get(sortKey);
-    if (sort.id == this.id) {
+    if (sort && sort.id == this.id) {
       return " " + (sort.dir == -1 ? "▾" : "▴");
     }
     return "";
@@ -80,14 +80,11 @@ makeTable = function(originalColumns,
       Cookie.clear(tableName + '-table-sort');
     }
 
-    //var sortObj = {};
-    //sortObj[sort[0]] = sort[1];
-
     var sortColumn = colsById[sort.id];
     var cmpFn = sortColumn.cmpFn;
     var arr = null;
     if (typeof data == 'string') {
-      arr = this[data];
+      arr = this[data].fetch();
     } else {
       arr = this;
     }
