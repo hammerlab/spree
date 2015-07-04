@@ -1,16 +1,16 @@
 
 TableHeader = React.createClass({
   onClick(e) {
-    var extantSort = Session.get(this.props.tableSortKey);
+    var extantSort = Cookie.get(this.props.tableSortKey);
     var newSort =
           (extantSort && extantSort.id == this.props.id) ?
           { id: this.props.id, dir: -extantSort.dir } :
           { id: this.props.id, dir: this.props.defaultSort || 1 };
 
-    Session.set(this.props.tableSortKey, newSort);
+    Cookie.set(this.props.tableSortKey, newSort);
   },
   render() {
-    var extantSort = Session.get(this.props.tableSortKey);
+    var extantSort = Cookie.get(this.props.tableSortKey);
     var isCurrentSort = extantSort && extantSort.id == this.props.id;
     return <th onClick={this.onClick}>{this.props.label + (isCurrentSort ? (extantSort.dir == 1 ? ' ▴' : ' ▾') : '')}</th>
   }
@@ -26,7 +26,7 @@ Table = React.createClass({
   },
   getMeteorData() {
     return {
-      sort: Session.get(this.state.tableSortKey),
+      sort: Cookie.get(this.state.tableSortKey),
       rows: this.props.data
     }
   },

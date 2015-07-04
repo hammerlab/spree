@@ -13,7 +13,7 @@ makeTable(columns, 'jobsPage', 'job', null, ['start', -1]);
 Template.jobsPage.helpers({
 
   showAll: function() {
-    return !(Session.get("jobs-showAll") == false);
+    return !(Cookie.get("jobs-showAll") == false);
   },
 
   schedulingMode: function(env) {
@@ -30,11 +30,11 @@ Template.jobsPage.helpers({
 });
 
 function unsetShowAll() {
-  Session.set("jobs-showAll", false);
+  Cookie.set("jobs-showAll", false);
 }
 
 function setShowAll() {
-  Session.set("jobs-showAll", true);
+  Cookie.set("jobs-showAll", true);
 }
 
 Template.jobsPage.events({

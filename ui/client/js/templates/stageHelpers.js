@@ -11,16 +11,16 @@ makeTable(columns, 'stagesTables', 'stage', null, ['id', -1]);
 
 Template.stagesTables.helpers({
   showAll: function() {
-    return Session.get('stages-showAll') != false;
+    return Cookie.get('stages-showAll') != false;
   }
 });
 
 function unsetShowAll() {
-  Session.set("stages-showAll", false);
+  Cookie.set("stages-showAll", false);
 }
 
 function setShowAll() {
-  Session.set("stages-showAll", true);
+  Cookie.set("stages-showAll", true);
 }
 
 Template.stagesTables.events({

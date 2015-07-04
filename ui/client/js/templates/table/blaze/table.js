@@ -2,11 +2,11 @@
 Template.table.events({
   'click th': function(e, t) {
     var sortKey = this.tableName + '-sort';
-    var prevSort = Session.get(sortKey);
-    if (prevSort && prevSort[0] == this.id) {
-      Session.set(sortKey, [prevSort[0], -prevSort[1]]);
+    var prevSort = Cookie.get(sortKey);
+    if (prevSort && prevSort.id == this.id) {
+      Cookie.set(sortKey, { id: prevSort.id, dir: -prevSort.dir });
     } else {
-      Session.set(sortKey, [this.id, this.defaultSort || 1]);
+      Cookie.set(sortKey, { id: this.id, dir: this.defaultSort || 1 });
     }
   }
 });
@@ -35,13 +35,17 @@ Template.statsTable.helpers({
   }
 });
 
-makeTable = function(originalColumns, templateName, tableName, data, defaultSort, dataKey, columnsKey, templatePrefix) {
-  if (!defaultSort) {
+makeTable = function(originalColumns, templateName, tableName, data, originalDefaultSort, dataKey, columnsKey, templatePrefix) {
+  if (!originalDefaultSort) {
     if (!originalColumns.filter(function(c) { return c.id == 'id'; }).length) {
       throw new Error("Table " + tableName + " must specify a default sort value if 'id' column doesn't exist.");
     }
-    defaultSort = ['id', 1];
+    originalDefaultSort = ['id', 1];
   }
+  var defaultSort =
+        (originalDefaultSort instanceof Array) ?
+        { id: originalDefaultSort[0], dir: originalDefaultSort[1] } :
+              originalDefaultSort;
 
   dataKey = dataKey || 'sorted';
   columnsKey = columnsKey || 'columns';
@@ -53,10 +57,15 @@ makeTable = function(originalColumns, templateName, tableName, data, defaultSort
 
   var helpers = {};
   helpers[dataKey] = function(arg) {
-    var sort = Session.get(tableName + '-table-sort') || defaultSort;
+    var sort = Cookie.get(tableName + '-table-sort') || defaultSort;
+    if (sort && (typeof sort !== 'object' || !('id' in sort))) {
+      sort = defaultSort;
+      console.error("Clearing bad cookie: %O, using default sort: %O", sort, defaultSort);
+      Cookie.clear(tableName + '-table-sort');
+    }
     //var sortObj = {};
     //sortObj[sort[0]] = sort[1];
-    var sortColumn = colsById[sort[0]];
+    var sortColumn = colsById[sort.id];
     var cmpFn = sortColumn.cmpFn;
     var arr = null;
     if (typeof data == 'string') {
@@ -66,7 +75,7 @@ makeTable = function(originalColumns, templateName, tableName, data, defaultSort
     }
 
     arr = arr.sort(cmpFn);
-    if (sort[1] == -1) {
+    if (sort.dir == -1) {
       arr = arr.reverse();
     }
 
