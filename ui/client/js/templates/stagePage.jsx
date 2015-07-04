@@ -104,7 +104,7 @@ ExecutorsTable = React.createClass({
     // Pull the data relevant to this stage from the executor's "stages" field out to the top level.
     return {
       executors: Executors.find().fetch().map((e) => {
-        if (this.props.stageId in e.stages) {
+        if (e.stages && this.props.stageId in e.stages) {
           var stage = e.stages[this.props.stageId];
           if (this.props.attemptId in stage) {
             var attempt = stage[this.props.attemptId];
@@ -146,7 +146,8 @@ var columns = [
   { id: 'status', label: 'Status', sortBy: 'status', render: statusStr },
   { id: 'localityLevel', label: 'Locality Level', sortBy: 'locality' },
   { id: 'execId', label: 'Executor', sortBy: 'execId' },
-  { id: 'host', label: 'Host', sortBy: 'host', template: 'host' },
+  hostColumn,
+  portColumn,
   startColumn,
   durationColumn,
   { id: 'gcTime', label: 'GC Time', sortBy: 'metrics.JVMGCTime', render: formatTime, defaultSort: -1 }
