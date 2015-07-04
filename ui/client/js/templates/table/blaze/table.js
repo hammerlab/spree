@@ -19,7 +19,8 @@ Template.table.helpers({
         return column.showInEmptyTable != false;
       }
       for (var i = 0; i < data.length; i++) {
-        if (column.sortBy(data[i])) return true;
+        var value = column.sortBy(data[i]);
+        if (value || (value == 0)) return true;
       }
       return false;
     }.bind(this));
