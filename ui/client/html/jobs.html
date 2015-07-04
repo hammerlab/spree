@@ -5,7 +5,10 @@
   {{log this}}
   <div class="container-fluid">
     <h3>Spark Jobs</h3>
-    <div><strong>Total Duration:</strong> {{formatDuration app.time.start}}</div>
+    <div>
+      <strong>Total Duration:</strong> {{formatTime totalDuration}},
+      <strong>Total Uptime:</strong> {{formatTime uptime}}
+    </div>
     <div><strong>Scheduling Mode:</strong> {{schedulingMode env}}</div>
     <div>
       {{#if active.num}}<span id="active-link"><a href="#active"><strong>Active Jobs:</strong></a> {{active.num}}</span>{{/if}}

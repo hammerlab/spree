@@ -25,6 +25,19 @@ Template.jobsPage.helpers({
       }
     }
     return "Unknown";
+  },
+
+  totalDuration: function() {
+    return this.all.jobs.reduce(
+          function(sum, job) {
+            return sum + duration(job)
+          },
+          0
+    );
+  },
+
+  uptime: function() {
+    return moment().unix()*1000 - this.app.time.start;
   }
 
 });
