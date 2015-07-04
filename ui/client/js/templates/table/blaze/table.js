@@ -24,6 +24,14 @@ Template.table.helpers({
       }
       return false;
     }.bind(this));
+  },
+  sortCarat: function() {
+    var sortKey = this.tableName + '-sort';
+    var sort = Cookie.get(sortKey);
+    if (sort.id == this.id) {
+      return " " + (sort.dir == -1 ? "▾" : "▴");
+    }
+    return "";
   }
 });
 
@@ -36,7 +44,14 @@ Template.statsTable.helpers({
   }
 });
 
-makeTable = function(originalColumns, templateName, tableName, data, originalDefaultSort, dataKey, columnsKey, templatePrefix) {
+makeTable = function(originalColumns,
+                     templateName,
+                     tableName,
+                     data,
+                     originalDefaultSort,
+                     dataKey,
+                     columnsKey,
+                     templatePrefix) {
   if (!originalDefaultSort) {
     if (!originalColumns.filter(function(c) { return c.id == 'id'; }).length) {
       throw new Error("Table " + tableName + " must specify a default sort value if 'id' column doesn't exist.");
@@ -64,8 +79,10 @@ makeTable = function(originalColumns, templateName, tableName, data, originalDef
       console.error("Clearing bad cookie: %O, using default sort: %O", sort, defaultSort);
       Cookie.clear(tableName + '-table-sort');
     }
+
     //var sortObj = {};
     //sortObj[sort[0]] = sort[1];
+
     var sortColumn = colsById[sort.id];
     var cmpFn = sortColumn.cmpFn;
     var arr = null;
