@@ -58,6 +58,9 @@ Table = React.createClass({
       ,columnSettings: Cookie.get(this.state.tableColumnsKey) || {}
     }
   },
+  toggleCollapsed() {
+    Cookie.set(this.state.tableHiddenKey, !Cookie.get(this.state.tableHiddenKey));
+  },
   render() {
 
     var columnCookieMap = this.data.columnSettings;
@@ -147,28 +150,39 @@ Table = React.createClass({
       onMouseOut: this.onMouseOut
     };
 
+    var title = <h4 className="table-title">
+      <span className="title">{this.props.title}</span>
+      {
+        this.data.hidden ? null :
+              <TableSettings
+                    settings={this.props.selectRows ? rows : this.props.columns}
+                    mouseHandlers={mouseHandlers}
+                    displayedMap={displayedMap}
+                    nonEmptyMap={nonEmptyMap}
+                    canDisplayMap={canDisplayMap}
+                    tableColumnsKey={this.state.tableColumnsKey}
+                    tableName={this.props.name}
+                    visible={this.state.showSettings} />
+      }
+      <span className="toggle-collapsed" onClick={this.toggleCollapsed}>{this.data.hidden ? "▸" : "▾"}</span>
+    </h4>;
+
     return <div className="table-container">
-      <h4 className="table-title">
-        <span className="title">{this.props.title}</span>
-        <TableSettings
-              settings={this.props.selectRows ? rows : this.props.columns}
-              mouseHandlers={mouseHandlers}
-              displayedMap={displayedMap}
-              nonEmptyMap={nonEmptyMap}
-              canDisplayMap={canDisplayMap}
-              tableColumnsKey={this.state.tableColumnsKey}
-              tableName={this.props.name}
-              visible={this.state.showSettings} />
-      </h4>
+      {title}
       {
         this.props.rightTitle ?
               <span className="right-title">{this.props.rightTitle}</span> :
               null
       }
-      <table className={className}>
-        <thead><tr>{columnHeaders}</tr></thead>
-        <tbody>{rowElems}</tbody>
-      </table>
+      {
+        this.data.hidden ? null :
+              <table className={className}>
+                <thead>
+                <tr>{columnHeaders}</tr>
+                </thead>
+                <tbody>{rowElems}</tbody>
+              </table>
+      }
     </div>;
   },
   onMouseOver(e) {
