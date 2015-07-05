@@ -1,4 +1,81 @@
 
+.hidden {
+  display: none;
+}
+
+.table-container {
+  .table-title {
+    float: left;
+
+    .title {
+      float: left;
+    }
+
+    .settings-container {
+      float: left;
+
+      .gear {
+        float: left;
+        padding-left: 3px;
+        padding-bottom: 3px;
+        cursor: pointer;
+      }
+
+      .settings-tooltip-container {
+        float: left;
+        position: relative;
+        top: -1em;
+
+        .settings-tooltip {
+          min-width: 200px;
+          border: 1px solid black;
+          position: absolute;
+          background-color: #FFF;
+          padding: 5px 10px;
+          font-size: 0.8em;
+          line-height: 1.3em;
+          font-weight: normal;
+          
+          .tooltip-row {
+            cursor: pointer;
+
+            .tooltip-checkbox {
+              margin-top: 0px;
+            }
+            .tooltip-label {
+              padding-left: 5px;
+            }
+            .tooltip-label.empty {
+              color: #CCC;
+            }
+          }
+        }
+      }
+    }
+
+    .setting:hover:after {
+      background: #111;
+      background: rgba(0,0,0,.8);
+      border-radius: .5em;
+      bottom: 1.35em;
+      color: #fff;
+      content: attr(title);
+      display: block;
+      left: 2em;
+      padding: .3em 1em;
+      position: absolute;
+      text-shadow: 0 1px 0 #000;
+      white-space: nowrap;
+      z-index: 98;
+    }
+  }
+
+  .right-title {
+    float: right;
+    margin: 10px 0 10px 0;
+  }
+}
+
 .navbar {
   height: 50px;
   font-size: 15px;

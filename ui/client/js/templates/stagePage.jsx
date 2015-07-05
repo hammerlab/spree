@@ -69,16 +69,19 @@ SummaryMetricsTable = React.createClass({
   },
   render() {
     var tc = this.props.taskCounts || {};
+    var rightTitle = <span>
+      {tc.num || 0} total,{' '}
+      {tc.running || 0} active,{' '}
+      {tc.failed || 0} failed,{' '}
+      {tc.succeeded || 0} succeeded
+    </span>;
+
     return <div>
-      <h4>
-        Summary Metrics for {(tc.succeeded || 0) + (tc.failed || 0)} Completed Tasks
-        ({tc.num || 0} total,{' '}
-        {tc.running || 0} active,{' '}
-        {tc.failed || 0} failed,{' '}
-        {tc.succeeded || 0} succeeded)
-      </h4>
       <Table
+            title="Summary Metrics"
+            rightTitle={rightTitle}
             defaultSort={{ id: 'id' }}
+            selectRows={true}
             data={this.props.stats}
             columns={statsColumns}
             class="stats"
@@ -91,8 +94,10 @@ SummaryMetricsTable = React.createClass({
 
 // Per-executor table
 var executorColumns = [
-  { id: 'id', label: 'Executor ID', sortBy: 'id', template: 'id' },
+  { id: 'id', label: 'Executor ID', sortBy: 'id' },
   { id: 'address', label: 'Address', sortBy: getHostPort },
+  { id: 'host', label: 'Host', sortBy: 'host', showByDefault: false },
+  { id: 'port', label: 'Port', sortBy: 'port', showByDefault: false },
   taskTimeColumn
 ]
       .concat(taskColumns)
@@ -122,14 +127,13 @@ ExecutorsTable = React.createClass({
     };
   },
   render() {
-    return <div>
-      <h4>Executors ({this.data.executors && this.data.executors.length || 0})</h4>
-      <Table
+    return <Table
+            title={"Executors (" + (this.data.executors && this.data.executors.length || 0) + ")"}
             name='executors'
             defaultSort={{ id: 'id' }}
             data={this.data.executors}
             columns={executorColumns} />
-    </div>;
+    ;
   }
 });
 
@@ -185,11 +189,12 @@ TasksTable = React.createClass({
   },
   render() {
     return <div>
-      <h4>Tasks ({this.data.tasks && this.data.tasks.length || 0})</h4>
-      <Table name='tasks'
-             defaultSort={{ id: 'id' }}
-             data={this.data.tasks}
-             columns={columns} />
+      <Table
+            name='tasks'
+            title={'Tasks (' + (this.data.tasks && this.data.tasks.length || 0) + ')'}
+            defaultSort={{ id: 'id' }}
+            data={this.data.tasks}
+            columns={columns} />
     </div>;
   }
 });

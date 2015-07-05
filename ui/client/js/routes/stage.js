@@ -62,18 +62,16 @@ Router.route("/a/:_appId/stage/:_stageId", {
       }
       var tasks = TaskAttempts.find({ stageId: stageId, stageAttemptId: attemptId }).fetch().sort(makeCmpFn(fn));
       var n = tasks.length;
-      var max = fn(tasks[n-1]);
-      if (max) {
-        stats.push({
-          id: name,
-          template: tpl,
-          min: fn(tasks[0]),
-          tf: fn(tasks[parseInt(n/4)]),
-          median: fn(tasks[parseInt(n/2)]),
-          sf: fn(tasks[parseInt(3*n/4)]),
-          max: max
-        });
-      }
+      stats.push({
+        id: name,
+        label: name,
+        template: tpl,
+        min: fn(tasks[0]),
+        tf: fn(tasks[parseInt(n/4)]),
+        median: fn(tasks[parseInt(n/2)]),
+        sf: fn(tasks[parseInt(3*n/4)]),
+        max: fn(tasks[n-1])
+      });
     });
 
     this.render('stagePage', {

@@ -16,33 +16,74 @@ TableHeader = React.createClass({
   }
 });
 
+
+function emptyColumnCheck(col, rows) {
+  if (!rows || !rows.length) {
+    return col.showInEmptyTable != false;
+  }
+  for (var i = 0; i < rows.length; ++i) {
+    var row = rows[i];
+    if (col.sortBy(row)) return true;
+  }
+  return false;
+}
+
+function emptyRowCheck(row, cols) {
+  for (var i = 1; i < cols.length; i++) {
+    if (cols[i].sortBy(row)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 Table = React.createClass({
   mixins: [ReactMeteorData],
   getInitialState() {
     return jQuery.extend(
           processColumns(this.props.columns),
-          { tableSortKey: this.props.name + '-table-sort' }
+          {
+            tableSortKey: this.props.name + '-table-sort',
+            tableHiddenKey: this.props.name + '-table-hidden',
+            tableColumnsKey: this.props.name + '-table-columns',
+            showSettings: false
+          }
     );
   },
   getMeteorData() {
     return {
       sort: Cookie.get(this.state.tableSortKey),
+      hidden: Cookie.get(this.state.tableHiddenKey),
       rows: this.props.data
+      ,columnSettings: Cookie.get(this.state.tableColumnsKey) || {}
     }
   },
   render() {
-    var displayCols = !this.props.allowEmptyCols ?
+
+    var columnCookieMap = this.data.columnSettings;
+
+    var nonEmptyMap = {};
+    var canDisplayMap = {};
+    var displayedMap = {};
+    var displayCols =
           this.state.columns.filter((col) => {
-            if (!this.data.rows || !this.data.rows.length) {
-              return col.showInEmptyTable != false;
+            var cookie = (col.id in columnCookieMap) ? columnCookieMap[col.id] : null;
+            var canDisplay = (cookie != false) && (col.showByDefault != false);
+            var hasData = this.props.allowEmptyColumns || emptyColumnCheck(col, this.data.rows);
+            var displayed = canDisplay && hasData;
+            if (!this.props.selectRows) {
+              if (hasData) {
+                nonEmptyMap[col.id] = true;
+              }
+              if (canDisplay) {
+                canDisplayMap[col.id] = true;
+              }
+              if (displayed) {
+                displayedMap[col.id] = true;
+              }
             }
-            for (var i = 0; i < this.data.rows.length; ++i) {
-              var row = this.data.rows[i];
-              if (col.sortBy(row)) return true;
-            }
-            return false;
-          }) :
-          this.state.columns;
+            return displayed;
+          });
 
     var sort = this.data.sort || this.props.defaultSort;
     var fn = this.state.colsById[sort.id].cmpFn;
@@ -51,24 +92,34 @@ Table = React.createClass({
       rows = rows.reverse();
     }
 
-    var columns = displayCols.map((column) => {
+    var columnHeaders = displayCols.map((column) => {
       return this.props.disableSort ?
             <th key={column.id}>{column.label}</th> :
-            <TableHeader key={column.id} tableSortKey={this.state.tableSortKey} {...column} />;
+            <TableHeader
+                  key={column.id}
+                  tableSortKey={this.state.tableSortKey}
+                  {...column} />;
     });
 
     var displayRows =
-          this.props.hideEmptyRows ?
-                rows.filter((row) => {
-                  for (var i = 0; i < displayCols.length; i++) {
-                    var c = displayCols[i];
-                    if (c.render(c.sortBy(row))) {
-                      return true;
-                    }
-                  }
-                  return false;
-                }) :
-                rows;
+          rows.filter((row) => {
+            var cookie = (row.id in columnCookieMap) ? columnCookieMap[row.id] : null;
+            var canDisplay = (cookie != false) && (row.showByDefault != false);
+            var hasData = this.props.allowEmptyRows || emptyRowCheck(row, displayCols);
+            var displayed = canDisplay && hasData;
+            if (this.props.selectRows) {
+              if (hasData) {
+                nonEmptyMap[row.id] = true;
+              }
+              if (canDisplay) {
+                canDisplayMap[row.id] = true;
+              }
+              if (displayed) {
+                displayedMap[row.id] = true;
+              }
+            }
+            return displayed;
+          });
 
     var rowElems = displayRows.map((row, idx) => {
       var cols = displayCols.map((column, idx) => {
@@ -80,11 +131,120 @@ Table = React.createClass({
       </tr>;
     });
 
-    var className =
-          "table table-bordered table-striped table-condensed sortable" + (this.props.class ? (" " + this.props.class) : "");
-    return <table className={className}>
-      <thead><tr>{columns}</tr></thead>
-      <tbody>{rowElems}</tbody>
-    </table>;
+    var className = [
+      'table',
+      'table-bordered',
+      'table-striped',
+      'table-condensed',
+      'sortable'
+    ]
+          .concat(this.props.class ? [this.props.class] : [])
+          .concat(this.data.hidden ? ['hidden'] : [])
+          .join(' ');
+
+    var mouseHandlers = {
+      onMouseOver: this.onMouseOver,
+      onMouseOut: this.onMouseOut
+    };
+
+    return <div className="table-container">
+      <h4 className="table-title">
+        <span className="title">{this.props.title}</span>
+        <TableSettings
+              settings={this.props.selectRows ? rows : this.props.columns}
+              mouseHandlers={mouseHandlers}
+              displayedMap={displayedMap}
+              nonEmptyMap={nonEmptyMap}
+              canDisplayMap={canDisplayMap}
+              tableColumnsKey={this.state.tableColumnsKey}
+              tableName={this.props.name}
+              visible={this.state.showSettings} />
+      </h4>
+      {
+        this.props.rightTitle ?
+              <span className="right-title">{this.props.rightTitle}</span> :
+              null
+      }
+      <table className={className}>
+        <thead><tr>{columnHeaders}</tr></thead>
+        <tbody>{rowElems}</tbody>
+      </table>
+    </div>;
+  },
+  onMouseOver(e) {
+    this.setState({ showSettings: true });
+  },
+  onMouseOut(e) {
+    this.setState({ showSettings: false });
+  }
+});
+
+TableSettings = React.createClass({
+  getMeteorData() {
+    return {
+      columnCookieMap: Cookie.get(this.props.tableColumnsKey)
+    };
+  },
+  render() {
+    return <div className="settings-container" {...this.props.mouseHandlers}>
+      <img
+            className='gear'
+            src='/img/gear.png'
+            width="20"
+            height="20"
+             />
+      <div className="settings-tooltip-container">
+        <div className={'settings-tooltip' + (this.props.visible ? '' : ' hidden')}>
+          {
+            this.props.settings.map((c) => {
+              return <TableSettingsTooltipRow
+                    key={c.id}
+                    column={c}
+                    displayed={(c.id in this.props.displayedMap)}
+                    nonEmpty={(c.id in this.props.nonEmptyMap)}
+                    canDisplay={(c.id in this.props.canDisplayMap)}
+                    tableColumnsKey={this.props.tableColumnsKey}
+                    />;
+            })
+          }
+        </div>
+      </div>
+    </div>
+  }
+});
+
+TableSettingsTooltipRow = React.createClass({
+  getCheckbox() {
+    return $(this.getDOMNode()).find('input.tooltip-checkbox');
+  },
+  setCookie(b) {
+    var columnCookieMap = Cookie.get(this.props.tableColumnsKey) || {};
+    columnCookieMap[this.props.column.id] = b;
+    Cookie.set(this.props.tableColumnsKey, columnCookieMap);
+  },
+  onClick(e) {
+    var checkbox = this.getCheckbox();
+    var newValue = !checkbox.prop('checked');
+    this.setCookie(newValue);
+    e.stopPropagation();
+  },
+  onCheckboxClick(e) {
+    e.stopPropagation();
+  },
+  onCheckboxChange(e) {
+    var checkbox = this.getCheckbox();
+    var newValue = checkbox.prop('checked');
+    this.setCookie(newValue);
+  },
+  render() {
+    return <div key={this.props.column.id} className="tooltip-row" onClick={this.onClick}>
+      <input
+            className="tooltip-checkbox"
+            type="checkbox"
+            onChange={this.onCheckboxChange}
+            checked={this.props.canDisplay}
+            onClick={this.onCheckboxClick} />
+      <span className={"tooltip-label" + (this.props.nonEmpty ? '' : ' empty')}>{this.props.column.label}</span>
+    </div>;
   }
 });
