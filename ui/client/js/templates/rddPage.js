@@ -28,7 +28,7 @@ Template.rddExecutorsTable.helpers({
 });
 
 var blockColumns = [
-  { id: 'id', label: 'Block ID', sortBy: "id", template: 'id' },
+  { id: 'id', label: 'Block ID', sortBy: "id" },
   storageLevelColumn
 ]
       .concat(spaceColumns)

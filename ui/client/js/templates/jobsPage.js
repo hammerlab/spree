@@ -1,14 +1,12 @@
 
 var columns = [
-  { id: "id", label: "Job ID", sortBy: "id", template: 'id' },
+  { id: "id", label: "Job ID", sortBy: "id" },
   { id: "desc", label: "Description", sortBy: "name" },
   startColumn,
   durationColumn,
   stagesColumn,
   tasksColumn
 ];
-
-makeTable(columns, 'jobsPage', 'job', null, ['start', -1]);
 
 Template.jobsPage.helpers({
 

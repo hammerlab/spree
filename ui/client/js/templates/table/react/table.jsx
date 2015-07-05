@@ -62,7 +62,6 @@ Table = React.createClass({
     Cookie.set(this.state.tableHiddenKey, !Cookie.get(this.state.tableHiddenKey));
   },
   render() {
-
     var columnCookieMap = this.data.columnSettings;
 
     var nonEmptyMap = {};

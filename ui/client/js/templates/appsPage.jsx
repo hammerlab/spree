@@ -8,8 +8,8 @@ AppLink = React.createClass({
 var columns = [
   { id: 'id', label: 'App ID', sortBy: 'id', render: (id) => { return <AppLink id={id} /> } },
   nameColumn,
-  { id: 'start', label: 'Started', sortBy: 'time.start', template: 'start', render: formatDateTime },
-  { id: 'end', label: 'Completed', sortBy: 'time.end', template: 'end', render: formatDateTime },
+  { id: 'start', label: 'Started', sortBy: 'time.start', render: formatDateTime },
+  { id: 'end', label: 'Completed', sortBy: 'time.end', render: formatDateTime },
   durationColumn,
   { id: 'user', label: 'User', sortBy: 'user' }
 ];

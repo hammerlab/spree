@@ -1,16 +1,10 @@
 
-processColumns = function(originalColumns, tableName, templatePrefix) {
+processColumns = function(originalColumns) {
   var colsById = {};
   var columns = originalColumns.map(function(originalColumn) {
     var column = jQuery.extend({}, originalColumn);
     if (!column.sortBy) {
       throw new Error("Column " + column.id + " requires a 'sortBy' attribute");
-    }
-    if (!column.template && templatePrefix) {
-      column.template = templatePrefix + '-' + column.id;
-    }
-    if (tableName) {
-      column.tableName = tableName + '-table';
     }
     if (typeof column.sortBy == 'string') {
       column.sortKey = column.sortBy;

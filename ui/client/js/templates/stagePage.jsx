@@ -38,14 +38,8 @@ Template.executorLostFailure.helpers({
   getHostPort: getHostPort
 });
 
-Template.summaryStatsTable.helpers({
-  numCompletedTasks: function(taskCounts) {
-    return taskCounts && ((taskCounts.succeeded || 0) + (taskCounts.failed || 0));
-  }
-});
-
 var statsColumns = [
-  { id: 'id', label: 'Metric', sortBy: 'id', template: 'id' },
+  { id: 'id', label: 'Metric', sortBy: 'id' },
   { id: 'min', label: 'Min', sortBy: 'min' },
   { id: 'tf', label: '25th Percentile', sortBy: 'tf' },
   { id: 'median', label: 'Median', sortBy: 'median' },
@@ -146,7 +140,7 @@ statusStr = function(status) {
 // Per-task table
 var columns = [
   { id: 'index', label: 'Index', sortBy: 'index' },
-  { id: 'id', label: 'ID', sortBy: 'id', template: 'id' },
+  { id: 'id', label: 'ID', sortBy: 'id' },
   { id: 'attempt', label: 'Attempt', sortBy: 'attempt' },
   { id: 'status', label: 'Status', sortBy: 'status', render: statusStr },
   { id: 'localityLevel', label: 'Locality Level', sortBy: 'locality' },
