@@ -159,6 +159,7 @@ var columns = [
 TasksTable = React.createClass({
   mixins: [ReactMeteorData],
   getMeteorData() {
+    // Grab tasks when they are embedded as sub-records of StageAttempt record.
     //var tasks = [];
     //var stage = StageAttempts.find({}, { limit: 1 }).fetch()[0];
     //if (!stage) return {};
