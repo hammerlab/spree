@@ -34,18 +34,23 @@
         </ul>
       </div>
     </div>
-    <div class="row-fluid">
-      <div class="span12">
-        <h4>Data Distribution on {{numExecutors}} Executors</h4>
-        {{>table data=sortedExecutors columns=execColumns}}
-      </div>
-    </div>
+    {{>rddExecutorsTable this}}
+    {{>rddPartitionsTable this}}
+  </div>
+</template>
 
-    <div class="row-fluid">
-      <div class="span12">
-        <h4>{{rdd.numCachedPartitions}} Partitions</h4>
-        {{>table data=sortedBlocks columns=blockColumns}}
-      </div>
+<template name="rddExecutorsTable">
+  <div class="row-fluid">
+    <div class="span12">
+      {{>React component=Table name="rdd-executors" title=title data=executors columns=columns}}
+    </div>
+  </div>
+</template>
+
+<template name="rddPartitionsTable">
+  <div class="row-fluid">
+    <div class="span12">
+      {{>React component=Table name="rdd-partitions" title=title data=blocks columns=columns}}
     </div>
   </div>
 </template>

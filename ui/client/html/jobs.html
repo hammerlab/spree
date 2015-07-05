@@ -18,33 +18,19 @@
     <div id="all-link"><a href="#all"><strong>All Jobs:</strong></a> {{all.num}}</div>
 
     {{#if showAll}}
-      <h4 id="all">All Jobs ({{all.num}})</h4>
-      {{#with all.jobs}}
-        {{>table data=sorted columns=columns}}
+      {{#with tableData "jobs" "All Jobs" all "all" true}}
+        {{>objsTable this}}
       {{/with}}
     {{else}}
-      {{#if active.num}}
-        <h4 id="active">Active Jobs ({{active.num}})</h4>
-        {{#with active.jobs}}
-          {{>table data=sorted columns=columns}}
-        {{/with}}
-      {{/if}}
-      {{#if completed.num}}
-        <h4 id="completed">Completed Jobs ({{completed.num}})</h4>
-        {{#with completed.jobs}}
-          {{>table data=sorted columns=columns}}
-        {{/with}}
-      {{/if}}
-      {{#if failed.num}}
-        <h4 id="failed">Failed Jobs ({{failed.num}})</h4>
-        {{#with failed.jobs}}
-          {{>table data=sorted columns=columns}}
-        {{/with}}
-      {{/if}}
+      {{#with tableData "jobs" "Active Jobs" active "active"}}
+        {{>objsTable this}}
+      {{/with}}
+      {{#with tableData "jobs" "Completed Jobs" completed "completed"}}
+        {{>objsTable this}}
+      {{/with}}
+      {{#with tableData "jobs" "Failed Jobs" failed "failed"}}
+        {{>objsTable this}}
+      {{/with}}
     {{/if}}
   </div>
-</template>
-
-<template name="jobRow-desc">
-  <a href="/a/{{appId}}/job/{{id}}">{{name}}</a>
 </template>

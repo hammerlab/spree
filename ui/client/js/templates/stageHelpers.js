@@ -7,12 +7,23 @@ var columns = [
   tasksColumn
 ].concat(ioBytesColumns);
 
-makeTable(columns, 'stagesTables', 'stage', null, ['id', -1]);
+//makeTable(columns, 'stagesTables', 'stage', null, ['id', -1]);
 
 Template.stagesTables.helpers({
   showAll: function() {
     return Cookie.get('stages-showAll') != false;
   }
+  //tableData: function(title, objs, titleId, alwaysShow) {
+  //  return {
+  //    title: title + " (" + objs.num + ")",
+  //    titleId: titleId,
+  //    tableName: "stages-" + titleId,
+  //    objs: objs.stages,
+  //    num: objs.num,
+  //    show: objs.num || (alwaysShow === true),
+  //    columns: columns
+  //  };
+  //}
 });
 
 function unsetShowAll() {

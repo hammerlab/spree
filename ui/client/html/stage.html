@@ -1,10 +1,4 @@
 
-<template name="reactStagePage">
-  <div>
-    {{>React component=StagePage}}
-  </div>
-</template>
-
 <template name="stagePage">
   {{>navbar}}
   {{setTitle this}}
@@ -47,8 +41,6 @@
       {{/with}}
     {{/with}}
 
-    <!--{{> summaryStatsTable this}}-->
-    <!--{{> executorTable this}}-->
     <div>
       {{>React component=SummaryMetricsTable stats=stats taskCounts=stageAttempt.taskCounts}}
     </div>
@@ -61,88 +53,6 @@
   </div>
 </template>
 
-<template name="summaryStatsTable">
-  {{#with stage.taskCounts}}
-    <h4>
-      Summary Metrics for {{numCompletedTasks this}} Completed Tasks
-      ({{num}} total,
-        {{running}} active,
-        {{#if failed}}{{failed}}{{else}}0{{/if}} failed,
-        {{#if succeeded}}{{succeeded}}{{else}}0{{/if}} succeeded)
-    </h4>
-  {{/with}}
-  {{>statsTable data=sorted columns=columns class="stats"}}
-</template>
-
-<template name='summaryStatsRow-min'>
-  {{min}}
-</template>
-
-<template name='summaryStatsRow-25'>
-  {{tf}}
-</template>
-
-<template name='summaryStatsRow-50'>
-  {{median}}
-</template>
-
-<template name='summaryStatsRow-75'>
-  {{sf}}
-</template>
-
-<template name='summaryStatsRow-max'>
-  {{max}}
-</template>
-
-<template name="hostPort">
-  {{host}}:{{port}}
-</template>
-
-<template name="executorTable">
-  <h4>Aggregated Metrics by Executor</h4>
-  {{>table data=sorted columns=columns}}
-</template>
-
-<template name="stageExecRow-address">
-  {{>hostPort}}
-</template>
-
-
-<template name="tasksTable">
-  <!--<h4>Tasks ({{numTasks}})</h4>-->
-  <!--{{#with eTasks}}-->
-  {{log "tasksTable: " this}}
-  <!--{{#with taskAttempts}}-->
-    <!--{{>reactTable data=sorted columns=columns}}-->
-  <!--{{/with}}-->
-  <!--{{else}}-->
-    <!--{{>table columns=columns}}-->
-  <!--{{/with}}-->
-</template>
-
-<template name="taskRow-index">
-  {{index}}
-</template>
-
-<template name="taskRow-attempt">
-  {{attempt}}
-</template>
-
-<template name="taskRow-status">
-  {{status this}}
-</template>
-
-<template name="taskRow-localityLevel">
-  {{locality}}
-</template>
-
-<template name="taskRow-execId">
-  {{execId}}
-</template>
-
-<template name="taskRow-gcTime">
-  {{#if metrics.JVMGCTime}}{{formatTime metrics.JVMGCTime}}{{/if}}
-</template>
 
 <template name="taskRow-errors">
   {{>fetchFailure end}}

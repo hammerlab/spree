@@ -4,18 +4,8 @@
   {{>navbar hideLinks=false}}
   {{log this}}
   <div class="container-fluid">
-    <h3>Spark Applications</h3>
     <div>
-      {{>React component=AppsTable}}
+      {{>React component=Table title="Spark Applications" data=apps columns=columns sortId='id' sortDir=-1 }}
     </div>
   </div>
 </template>
-
-<template name="appRow-id">
-  <a href="/a/{{id}}">{{id}}</a>
-</template>
-
-<template name="appRow-user">
-  {{user}}
-</template>
-

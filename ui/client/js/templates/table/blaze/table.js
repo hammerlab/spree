@@ -84,7 +84,12 @@ makeTable = function(originalColumns,
     var cmpFn = sortColumn.cmpFn;
     var arr = null;
     if (typeof data == 'string') {
-      arr = this[data].fetch();
+      arr = this[data];//.fetch();
+      if (arr.fetch) {
+        arr = arr.fetch();
+      }
+    } else if (typeof data === 'function') {
+      arr = data.bind(this)();
     } else {
       arr = this;
     }

@@ -1,21 +1,19 @@
 
 var columns = [
-  { id: 'id', label: 'ID', sortBy: 'id', template: 'id' },
+  { id: 'id', label: 'ID', sortBy: 'id' },
       hostColumn,
       portColumn,
       numBlocksColumn,
-  { id: 'mem', label: 'Memory Usage', sortBy: 'MemorySize' },
-  diskColumn,
-  offHeapColumn
+      maxMemColumn
 ]
+      .concat(spaceColumns)
       .concat(taskColumns)
       .concat([ taskTimeColumn ])
       .concat(ioBytesColumns);
 
-makeTable(columns, 'executorsPage', 'exec', 'executors');
-
 Template.executorsPage.helpers({
-  numExecutors: function() {
-    return Executors.find().count();
+  columns: function() { return columns; },
+  title: function() {
+    return "Executors (" + Executors.find().count() + ")";
   }
 });

@@ -54,8 +54,8 @@ Table = React.createClass({
     return {
       sort: Cookie.get(this.state.tableSortKey),
       hidden: Cookie.get(this.state.tableHiddenKey),
-      rows: this.props.data
-      ,columnSettings: Cookie.get(this.state.tableColumnsKey) || {}
+      rows: this.props.data ? (this.props.data.sort ? this.props.data : this.props.data.fetch()) : [],
+      columnSettings: Cookie.get(this.state.tableColumnsKey) || {}
     }
   },
   toggleCollapsed() {
@@ -89,9 +89,11 @@ Table = React.createClass({
           });
 
     var sort = this.data.sort || this.props.defaultSort;
-    var fn = this.state.colsById[sort.id].cmpFn;
-    var rows = this.data.rows && this.data.rows.sort(fn) || [];
-    if (sort.dir == -1) {
+    var sortId = sort && sort.id || this.props.sortId || displayCols[0].id || 'id';
+    var sortDir = sort && sort.dir || this.props.sortDir || 1;
+    var fn = this.state.colsById[sortId].cmpFn;
+    var rows = this.data.rows.sort(fn);
+    if (sortDir == -1) {
       rows = rows.reverse();
     }
 
@@ -108,7 +110,7 @@ Table = React.createClass({
           rows.filter((row) => {
             var cookie = (row.id in columnCookieMap) ? columnCookieMap[row.id] : null;
             var canDisplay = (cookie != false) && (row.showByDefault != false);
-            var hasData = this.props.allowEmptyRows || emptyRowCheck(row, displayCols);
+            var hasData = !this.props.hideEmptyRows || emptyRowCheck(row, displayCols);
             var displayed = canDisplay && hasData;
             if (this.props.selectRows) {
               if (hasData) {
@@ -127,7 +129,8 @@ Table = React.createClass({
     var rowElems = displayRows.map((row, idx) => {
       var cols = displayCols.map((column, idx) => {
         var render = column.render || row.render;
-        return <td key={row.id + column.id}>{render ? render(column.sortBy(row)) : column.sortBy(row)}</td>
+        var renderValueFn = column.renderValueFn || column.sortBy;
+        return <td key={row.id + column.id}>{render ? render(renderValueFn(row)) : renderValueFn(row)}</td>
       });
       return <tr key={row.id + "-" + idx}>
         {cols}
@@ -150,7 +153,7 @@ Table = React.createClass({
       onMouseOut: this.onMouseOut
     };
 
-    var title = <h4 className="table-title">
+    var title = <h4 id={this.props.titleId} className="table-title">
       <span className="title">{this.props.title}</span>
       {
         this.data.hidden ? null :
@@ -262,3 +265,5 @@ TableSettingsTooltipRow = React.createClass({
     </div>;
   }
 });
+
+Template.registerHelper("Table", function() { return Table; });

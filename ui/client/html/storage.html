@@ -4,23 +4,6 @@
   {{setTitle "Storage - Spark"}}
   {{log this}}
   <div class="container-fluid">
-    <h3>Storage</h3>
-    {{>table data=sorted columns=columns}}
+    {{>React component=Table name="rdds" title="Storage" data=rdds columns=columns}}
   </div>
-</template>
-
-<template name="rddRow-id">
-  <a href="/a/{{appId}}/rdd/{{id}}">{{id}}</a>
-</template>
-
-<template name="rddRow-name">
-  <a href="/a/{{appId}}/rdd/{{id}}">{{name}}</a>
-</template>
-
-<template name="rddRow-numCachedPartitions">
-  {{numCachedPartitions}}
-</template>
-
-<template name="rddRow-fractionCached">
-  {{fractionCached this}}
 </template>

@@ -16,6 +16,9 @@ processColumns = function(originalColumns, tableName, templatePrefix) {
       column.sortKey = column.sortBy;
       column.sortBy = acc(column.sortBy);
     }
+    if (column.renderKey !== undefined) {
+      column.renderValueFn = acc(column.renderKey);
+    }
     column.cmpFn = function(a, b) {
       var fna = column.sortBy(a);
       var fnb = column.sortBy(b);

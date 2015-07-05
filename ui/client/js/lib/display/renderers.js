@@ -65,3 +65,13 @@ formatDuration = function(start, end, hideIncomplete) {
     return formatTime(moment().unix()*1000 - start) + '...';
   return "-";
 };
+
+getStorageLevel = function(sl) {
+  return sl && [
+          (sl.UseMemory ? "Memory" : (sl.UseExternalBlockStore ? "Tachyon" : (sl.UseDisk ? "Disk" : "???"))),
+          sl.Deserialized ? "Deserialized" : "Serialized",
+          sl.Replication + "x Replicated"
+        ].join(" ") || null;
+};
+Template.registerHelper('getStorageLevel', getStorageLevel);
+

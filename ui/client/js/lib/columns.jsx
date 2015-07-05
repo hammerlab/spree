@@ -36,12 +36,17 @@ ioColumns = [
 nameColumn = { id: 'name', label: 'Name', sortBy: 'name', template: 'nameAttr' };
 startColumn = { label: 'Submitted', id: 'start', sortBy: 'time.start', template: 'start', render: formatDateTime, defaultSort: -1 };
 durationColumn = { label: 'Duration', id: 'duration', sortBy: duration, template: 'duration', render: formatTime, defaultSort: -1 };
-tasksColumn = { id: "tasks", label: "Tasks: Succeeded/Total", sortBy: "taskCounts.succeeded", template: 'tasks' };
-stagesColumn = { id: "stages", label: "Stages: Succeeded/Total", sortBy: "stageCounts.succeeded", template: 'stages' };
 
-memColumn = { id: 'memSize', label: 'Size in Memory', sortBy: "MemorySize", template: 'mem', defaultSort: -1 };
-offHeapColumn = { id: 'offHeapSize', label: 'Size in Tachyon', sortBy: "ExternalBlockStoreSize", template: 'offHeap', defaultSort: -1 };
-diskColumn = { id: 'diskSize', label: 'Size on Disk', sortBy: "DiskSize", template: 'disk', defaultSort: -1 };
+function progressBar(counts) {
+  return <ProgressBar counts={counts} />;
+}
+tasksColumn = { id: "tasks", label: "Tasks: Succeeded/Total", sortBy: "taskCounts.succeeded", template: 'tasks', render: progressBar, renderKey: 'taskCounts' };
+stagesColumn = { id: "stages", label: "Stages: Succeeded/Total", sortBy: "stageCounts.succeeded", template: 'stages', render: progressBar, renderKey: 'stageCounts' };
+
+maxMemColumn = { id: 'maxMemSize', label: 'Max. Memory', sortBy: "maxMem", defaultSort: -1, render: formatBytes };
+memColumn = { id: 'memSize', label: 'Size in Memory', sortBy: "MemorySize", template: 'mem', defaultSort: -1, render: formatBytes };
+offHeapColumn = { id: 'offHeapSize', label: 'Size in Tachyon', sortBy: "ExternalBlockStoreSize", template: 'offHeap', defaultSort: -1, render: formatBytes };
+diskColumn = { id: 'diskSize', label: 'Size on Disk', sortBy: "DiskSize", template: 'disk', defaultSort: -1, render: formatBytes };
 
 spaceColumns = [ memColumn, offHeapColumn, diskColumn ];
 
@@ -49,5 +54,5 @@ hostColumn = { id: 'host', label: 'Host', sortBy: 'host', template: 'host' };
 portColumn = { id: 'port', label: 'Port', sortBy: 'port', template: 'port' };
 numBlocksColumn = { id: 'blocks', label: 'RDD Blocks', sortBy: 'numBlocks', template: 'numBlocks', defaultSort: -1 };
 
-storageLevelColumn = { id: 'storageLevel', label: 'Storage Level', sortBy: 'StorageLevel.UseMemory', template: 'storageLevel' };
+storageLevelColumn = { id: 'storageLevel', label: 'Storage Level', sortBy: 'StorageLevel.UseMemory', template: 'storageLevel', render: getStorageLevel, renderKey: 'StorageLevel' };
 taskTimeColumn = { id: 'taskTime', label: 'Task Time', sortBy: 'metrics.ExecutorRunTime', template: 'taskTime', render: formatTime, defaultSort: -1 };

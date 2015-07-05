@@ -14,24 +14,6 @@ var columns = [
   { id: 'user', label: 'User', sortBy: 'user' }
 ];
 
-AppsTable = React.createClass({
-  mixins: [ReactMeteorData],
-  getMeteorData() {
-    return {
-      apps: Applications.find().fetch()
-    };
-  },
-  render() {
-    return <Table
-          name="apps"
-          defaultSort={{ id:'id', dir: -1 }}
-          data={this.data.apps}
-          columns={columns} />
-
-  }
-});
-
 Template.appsPage.helpers({
-  AppsTable: () => { return AppsTable; }
+  columns: () => { return columns; }
 });
-

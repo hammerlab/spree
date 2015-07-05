@@ -5,29 +5,25 @@
   {{log this}}
   <div class="container-fluid">
     <h3>Environment</h3>
-    <h4>Runtime Information</h4>
     {{#with env.jvm}}
-      {{>table data=sorted columns=columns class="env"}}
+      <div>
+        {{>React component=Table name="jvm" data=this title="Runtime Information" columns=columns class="env"}}
+      </div>
     {{/with}}
-    <h4>Spark Properties</h4>
     {{#with env.spark}}
-      {{>table data=sorted columns=columns class="env"}}
+      <div>
+        {{>React component=Table name="spark" data=this title="Spark Properties" columns=columns class="env"}}
+      </div>
     {{/with}}
-    <h4>System Properties</h4>
     {{#with env.system}}
-      {{>table data=sorted columns=columns class="env"}}
+      <div>
+        {{>React component=Table name="system" data=this title="System Properties" columns=columns class="env"}}
+      </div>
     {{/with}}
-    <h4>Classpath Entries</h4>
     {{#with env.classpath}}
-      {{>table data=sorted columns=columns class="env"}}
+      <div>
+        {{>React component=Table name="classpath" data=this title="Classpath Entries" columns=columns class="env"}}
+      </div>
     {{/with}}
   </div>
-</template>
-
-<template name="envRow-0">
-  {{first this}}
-</template>
-
-<template name="envRow-1">
-  {{second this}}
 </template>

@@ -28,6 +28,7 @@ Template.jobsPage.helpers({
   },
 
   totalDuration: function() {
+    // TODO(ryan): denormalize on to app?
     return this.all.jobs.reduce(
           function(sum, job) {
             return sum + duration(job)
@@ -40,6 +41,18 @@ Template.jobsPage.helpers({
     return moment().unix()*1000 - this.app.time.start;
   }
 
+});
+
+Template.registerHelper("tableData", function(objKey, title, objs, titleId, alwaysShow) {
+  return {
+    title: title + " (" + objs.num + ")",
+    titleId: titleId,
+    tableName: objKey + "-" + titleId,
+    objs: objs[objKey],
+    num: objs.num,
+    show: objs.num || (alwaysShow === true),
+    columns: columns
+  };
 });
 
 function unsetShowAll() {

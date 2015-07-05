@@ -86,6 +86,7 @@ SummaryMetricsTable = React.createClass({
             columns={statsColumns}
             class="stats"
             allowEmptyColumns={true}
+            hideEmptyRows={true}
             disableSort={true}
             />
     </div>;

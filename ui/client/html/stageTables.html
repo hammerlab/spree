@@ -8,48 +8,32 @@
   <div id="all-link"><a href="#all"><strong>All Stages:</strong></a> {{all.num}}</div>
 
   {{#if showAll}}
-    <h4 id="all">All Stages ({{all.num}})</h4>
-    {{#with all.stages}}
-      {{>table data=sorted columns=columns}}
+    {{#with tableData "stages" "All Stages" all "all" true}}
+      {{>objsTable this}}
     {{/with}}
   {{else}}
-    {{#if active.num}}
-      <h4 id="active">Active Stages ({{active.num}})</h4>
-      {{#with active.stages}}
-        {{>table data=sorted columns=columns}}
-      {{/with}}
-    {{/if}}
-    {{#if pending.num}}
-      <h4 id="pending">Pending Stages ({{pending.num}})</h4>
-      {{#with pending.stages}}
-        {{>table data=sorted columns=columns}}
-      {{/with}}
-    {{/if}}
-    {{#if completed.num}}
-      <h4 id="completed">Completed Stages ({{completed.num}})</h4>
-      {{#with completed.stages}}
-        {{>table data=sorted columns=columns}}
-      {{/with}}
-    {{/if}}
-    {{#if failed.num}}
-      <h4 id="failed">Failed Stages ({{failed.num}})</h4>
-      {{#with failed.stages}}
-        {{>table data=sorted columns=columns}}
-      {{/with}}
-    {{/if}}
-    {{#if skipped.num}}
-      <h4 id="skipped">Skipped Stages ({{skipped.num}})</h4>
-      {{#with skipped.stages}}
-        {{>table data=sorted columns=columns}}
-      {{/with}}
-    {{/if}}
+    {{#with tableData "stages" "Active Stages" active "active"}}
+      {{>objsTable this}}
+    {{/with}}
+    {{#with tableData "stages" "Pending Stages" pending "pending"}}
+      {{>objsTable this}}
+    {{/with}}
+    {{#with tableData "stages" "Completed Stages" completed "completed"}}
+      {{>objsTable this}}
+    {{/with}}
+    {{#with tableData "stages" "Failed Stages" failed "failed"}}
+      {{>objsTable this}}
+    {{/with}}
+    {{#with tableData "stages" "Skipped Stages" skipped "skipped"}}
+      {{>objsTable this}}
+    {{/with}}
   {{/if}}
 </template>
 
-<template name="stageRow-id">
-  {{stageId}}
-</template>
-
-<template name="stageRow-desc">
-  <a href="/a/{{appId}}/stage/{{stageId}}?attempt={{id}}">{{name}}</a>
+<template name="objsTable">
+  {{#if show}}
+    <div>
+      {{>React component=Table name=tableName data=objs title=title titleId=titleId columns=columns}}
+    </div>
+  {{/if}}
 </template>
