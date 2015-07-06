@@ -139,49 +139,53 @@ Table = React.createClass({
       onMouseOut: this.onMouseOut
     };
 
-    var title = <h4 id={this.props.titleId} className="table-title">
-      <span className="title">{this.props.title}</span>
-      {
-        this.data.hidden ? null :
-              <TableSettings
-                    settings={this.props.selectRows ? rows : this.props.columns}
-                    showSettingsFn={this.showSettings}
-                    displayedMap={displayedMap}
-                    nonEmptyMap={nonEmptyMap}
-                    canDisplayMap={canDisplayMap}
-                    tableColumnsKey={this.state.tableColumnsKey}
-                    tableName={this.props.name}
-                    visible={this.state.showSettings}
-                    showSettingsGear={this.state.showSettingsGear} />
-      }
-      <span className="toggle-collapsed" onClick={this.toggleCollapsed}>{this.data.hidden ? "▸" : "▾"}</span>
-    </h4>;
+    var title = <TableTitle
+          settings={this.props.selectRows ? rows : this.props.columns}
+          showSettingsFn={this.showSettings}
+          displayedMap={displayedMap}
+          nonEmptyMap={nonEmptyMap}
+          canDisplayMap={canDisplayMap}
+          tableColumnsKey={this.state.tableColumnsKey}
+          tableName={this.props.name}
+          visible={this.state.showSettings}
+          showSettingsGear={this.state.showSettingsGear}
+          tableHidden={this.data.hidden}
+          toggleCollapsed={this.toggleCollapsed}
+          {...this.props}/>;
+
+    var table = this.data.hidden ? null :
+          <TableElem
+                showSettingsGear={this.state.showSettingsGear}
+                className={className}
+                columnHeaders={columnHeaders}
+                rowElems={rowElems} />;
 
     return <div
           className="table-container"
           onMouseEnter={(e) => { this.setState({showSettingsGear: true}); } }
-          onMouseLeave={(e) => {
-            this.setState({showSettingsGear: false});
-          } }>
+          onMouseLeave={(e) => { this.setState({showSettingsGear: false}); } }>
       {title}
-      {
-        this.props.rightTitle ?
-              <span className="right-title">{this.props.rightTitle}</span> :
-              null
-      }
-      {
-        this.data.hidden ? null :
-              <table className={className}>
-                <thead>
-                <tr>{columnHeaders}</tr>
-                </thead>
-                <tbody>{rowElems}</tbody>
-              </table>
-      }
+      {table}
     </div>;
   },
   showSettings: function(b) {
     this.setState({ showSettings: b });
+  }
+});
+
+TableElem = React.createClass({
+  shouldComponentUpdate(nextProps, nextState) {
+    // skip re-rendering if the settings gear is the only thing that changed in the Table
+    // (only relevant to sibling TableTitle)
+    return nextProps.showSettingsGear == this.props.showSettingsGear;
+  },
+  render() {
+    return <table className={this.props.className}>
+      <thead>
+      <tr>{this.props.columnHeaders}</tr>
+      </thead>
+      <tbody>{this.props.rowElems}</tbody>
+    </table>;
   }
 });
 
