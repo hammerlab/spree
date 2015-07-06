@@ -1,18 +1,18 @@
 # Spree
 Spree is a live-updating web UI for Spark built with [MeteorJS](https://www.meteor.com/).
 
-![](http://f.cl.ly/items/1U1Y0x003p0Q1S1J0j3B/spark.gif)
+![Screencast of a Spark job running and UI updating along with it](http://f.cl.ly/items/3r0C1J1Z1v472s1u1F14/Screen%20Recording%202015-07-06%20at%2001.31%20PM.gif)
 
-*Top/Middle: `spree` pages showing all jobs and the details of one running job; bottom: a `spark-shell` running a simple job.*
+*Left: `spree` pages showing all jobs and stages; right: a `spark-shell` running a simple job.*
 
 ## Usage
-Three components work together to make Spree work:
+Spree has three components:
 
-* `spree`: a web-app that displays the contents of a Mongo database populated with information about running Spark applications.
+* [`ui`][]: a web-app that displays the contents of a Mongo database populated with information about running Spark applications.
 * [`slim`][]: a Node server that receives events about running Spark applications, aggregates statistics about them, and writes them to Mongo for `spree` to read/display.
 * [`spark-json-relay`][]: a [`SparkListener`][] that serializes [`SparkListenerEvent`s](https://github.com/apache/spark/blob/658814c898bec04c31a8e57f8da0103497aac6ec/core/src/main/scala/org/apache/spark/scheduler/SparkListener.scala#L32-L128) to JSON and sends them to a listening [`slim`][] process.
 
-The latter two are included in this repo as `git` submodules, so you'll want to have cloned with `git clone --recursive` (or run `git submodule update`) in order for them to be present.
+The latter two are linked in this repo as `git` submodules, so you'll want to have cloned with `git clone --recursive` (or run `git submodule update`) in order for them to be present.
 
 Following are instructions for configuring/running them:
 
@@ -33,7 +33,9 @@ Next, run a `slim` process:
 $ cd slim && node server.js
 ```
 
-[`slim`][] is a Node server that receives events from Spark/`spark-json-relay` and writes them to the Mongo instance that Spree is watching.
+[`slim`][] is a Node server that receives events from Spark/`spark-json-relay` and writes them to the Mongo instance that Spree is watching. 
+
+By default, `slim` listens for events on `localhost:8123` and writes to a Mongo at `localhost:3001`, which is the default Mongo URL for a `spree` started as above.
 
 
 ### Build [`spark-json-relay`][]
@@ -57,8 +59,8 @@ Finally, we'll tell Spark to send events to `spark-json-relay` by passing argume
   --conf spark.extraListeners=org.apache.spark.JsonRelay
   
   # Point it at your `slim` instance
-  --conf slim.host=…
-  --conf slim.port=…
+  --conf spark.slim.host=…
+  --conf spark.slim.port=…
 ```
 
 ## Notes
@@ -66,7 +68,7 @@ Finally, we'll tell Spark to send events to `spark-json-relay` by passing argume
 ### BYO Mongo
 Meteor (hence Spree) spins up its own Mongo instance by default, typically at port 3001.
 
-For a veriety of reasons, you may want to point Spree and Slim at a different Mongo that you are managing otherwise. The handy `ui/start` script makes this easy:
+For a variety of reasons, you may want to point Spree and Slim at a different Mongo instance. The handy `ui/start` script makes this easy:
 
 ```
 $ ui/start -h <mongo host> -p <mongo port> -d <mongo db> --port <meteor port>
@@ -84,7 +86,7 @@ Meteor's default mongo instance will do this, but otherwise you'll need to set i
 
 Now your Spark jobs will write events to the Mongo instance of your choosing, and `spree` will display them to you in real-time!
 
-
+[`ui`]: https://github.com/hammerlab/spree/tree/master/ui
 [Meteor]: https://www.meteor.com/
 [MeteorJS]: https://www.meteor.com/
 [`slim`]: https://github.com/hammerlab/slim
