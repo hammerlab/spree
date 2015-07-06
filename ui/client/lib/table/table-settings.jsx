@@ -10,12 +10,16 @@ TableSettings = React.createClass({
           className="settings-container"
           onMouseEnter={(e) => { this.props.showSettingsFn(true); }}
           onMouseLeave={(e) => { this.props.showSettingsFn(false); }}>
-      <img
-            className='gear'
-            src='/img/gear.png'
-            width="20"
-            height="20"
-            />
+      {
+        this.props.showSettingsGear ?
+              <img
+                    className='gear'
+                    src='/img/gear.png'
+                    width="20"
+                    height="20"
+                    /> :
+              null
+      }
       <div className="settings-tooltip-container">
         <div className={'settings-tooltip' + (this.props.visible ? '' : ' hidden')}>
           {

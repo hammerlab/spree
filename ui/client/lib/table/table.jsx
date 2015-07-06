@@ -28,7 +28,8 @@ Table = React.createClass({
             tableSortKey: this.props.name + '-table-sort',
             tableHiddenKey: this.props.name + '-table-hidden',
             tableColumnsKey: this.props.name + '-table-columns',
-            showSettings: false
+            showSettings: false,
+            showSettingsGear: false
           }
     );
   },
@@ -145,19 +146,24 @@ Table = React.createClass({
         this.data.hidden ? null :
               <TableSettings
                     settings={this.props.selectRows ? rows : this.props.columns}
-                    mouseHandlers={mouseHandlers}
                     showSettingsFn={this.showSettings}
                     displayedMap={displayedMap}
                     nonEmptyMap={nonEmptyMap}
                     canDisplayMap={canDisplayMap}
                     tableColumnsKey={this.state.tableColumnsKey}
                     tableName={this.props.name}
-                    visible={this.state.showSettings} />
+                    visible={this.state.showSettings}
+                    showSettingsGear={this.state.showSettingsGear} />
       }
       <span className="toggle-collapsed" onClick={this.toggleCollapsed}>{this.data.hidden ? "▸" : "▾"}</span>
     </h4>;
 
-    return <div className="table-container">
+    return <div
+          className="table-container"
+          onMouseEnter={(e) => { this.setState({showSettingsGear: true}); } }
+          onMouseLeave={(e) => {
+            this.setState({showSettingsGear: false});
+          } }>
       {title}
       {
         this.props.rightTitle ?
