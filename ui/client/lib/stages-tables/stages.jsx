@@ -1,6 +1,13 @@
 
+function stageAttemptId(attempt) {
+  return attempt && (attempt.stageId + '.' + attempt.id);
+}
+
 getStagesData = function() {
-  var attempts = StageAttempts.find().fetch();
+  var attempts = StageAttempts.find().fetch().map((a) => {
+    a.fullId = stageAttemptId(a);
+    return a;
+  });
 
   var completed = attempts.filter(function(attempt) { return (attempt.ended || (attempt.time && attempt.time.end)) && !attempt.skipped && attempt.status == SUCCEEDED; });
   var active = attempts.filter(function(attempt) { return attempt.started && !attempt.ended; });
@@ -69,7 +76,6 @@ Template.stagesTables.events({
   'click #all-link': setShowAll
 });
 
-
 Template.registerHelper("tableData", function(objType, title, objs, titleId, columns, alwaysShow) {
   return {
     title: title + " (" + objs.num + ")",
@@ -78,7 +84,8 @@ Template.registerHelper("tableData", function(objType, title, objs, titleId, col
     objs: objs[objType],
     num: objs.num,
     show: objs.num || (alwaysShow === true),
-    columns: columns
+    columns: columns,
+    keyAttr: (objType == 'stages' ? 'fullId' : 'id')
   };
 });
 

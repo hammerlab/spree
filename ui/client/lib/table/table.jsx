@@ -117,11 +117,10 @@ Table = React.createClass({
       var cols = displayCols.map((column, idx) => {
         var render = column.render || row.render;
         var renderValueFn = column.renderValueFn || column.sortBy;
-        return <td key={row.id + column.id}>{render ? render(renderValueFn(row)) : renderValueFn(row)}</td>
+        return <td key={column.id}>{render ? render(renderValueFn(row)) : renderValueFn(row)}</td>
       });
-      return <tr key={row.id + "-" + idx}>
-        {cols}
-      </tr>;
+      var key = this.props.keyAttr ? row[this.props.keyAttr] : row.id;
+      return <tr key={key}>{cols}</tr>;
     });
 
     var className = [
