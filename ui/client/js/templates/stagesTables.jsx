@@ -1,6 +1,0 @@
-
-StagesTables = React.createClass({
-  render() {
-
-  }
-});

@@ -75,3 +75,13 @@ getStorageLevel = function(sl) {
 };
 Template.registerHelper('getStorageLevel', getStorageLevel);
 
+getHostPort = function(e) {
+  if (typeof e == 'string') {
+    e = Executors.findOne({id: e});
+  }
+  if (e) {
+    return e.host + ':' + e.port;
+  }
+  return null;
+};
+
