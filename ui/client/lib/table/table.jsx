@@ -1,22 +1,4 @@
 
-TableHeader = React.createClass({
-  onClick(e) {
-    var extantSort = Cookie.get(this.props.tableSortKey);
-    var newSort =
-          (extantSort && extantSort.id == this.props.id) ?
-          { id: this.props.id, dir: -extantSort.dir } :
-          { id: this.props.id, dir: this.props.defaultSort || 1 };
-
-    Cookie.set(this.props.tableSortKey, newSort);
-  },
-  render() {
-    var extantSort = Cookie.get(this.props.tableSortKey);
-    var isCurrentSort = extantSort && extantSort.id == this.props.id;
-    return <th onClick={this.onClick}>{this.props.label + (isCurrentSort ? (extantSort.dir == 1 ? ' ▴' : ' ▾') : '')}</th>
-  }
-});
-
-
 function emptyColumnCheck(col, rows) {
   if (!rows || !rows.length) {
     return col.showInEmptyTable != false;
@@ -67,8 +49,13 @@ Table = React.createClass({
     var nonEmptyMap = {};
     var canDisplayMap = {};
     var displayedMap = {};
+    var columnIDs = {};
     var displayCols =
           this.state.columns.filter((col) => {
+            if (col.id in columnIDs) {
+              throw new Error("Duplicate column ID: ", col.id, col);
+            }
+            columnIDs[col.id] = true;
             var cookie = (col.id in columnCookieMap) ? columnCookieMap[col.id] : null;
             var canDisplay = cookie || ((cookie != false) && (col.showByDefault != false));
             var hasData = this.props.allowEmptyColumns || emptyColumnCheck(col, this.data.rows);
@@ -76,8 +63,6 @@ Table = React.createClass({
             if (!this.props.selectRows) {
               if (hasData) {
                 nonEmptyMap[col.id] = true;
-              } else {
-                console.log("Hiding colunn %s due to lack of data", col.id);
               }
               if (canDisplay) {
                 canDisplayMap[col.id] = true;
@@ -161,6 +146,7 @@ Table = React.createClass({
               <TableSettings
                     settings={this.props.selectRows ? rows : this.props.columns}
                     mouseHandlers={mouseHandlers}
+                    showSettingsFn={this.showSettings}
                     displayedMap={displayedMap}
                     nonEmptyMap={nonEmptyMap}
                     canDisplayMap={canDisplayMap}
@@ -189,81 +175,8 @@ Table = React.createClass({
       }
     </div>;
   },
-  onMouseOver(e) {
-    this.setState({ showSettings: true });
-  },
-  onMouseOut(e) {
-    this.setState({ showSettings: false });
-  }
-});
-
-TableSettings = React.createClass({
-  getMeteorData() {
-    return {
-      columnCookieMap: Cookie.get(this.props.tableColumnsKey)
-    };
-  },
-  render() {
-    return <div className="settings-container" {...this.props.mouseHandlers}>
-      <img
-            className='gear'
-            src='/img/gear.png'
-            width="20"
-            height="20"
-             />
-      <div className="settings-tooltip-container">
-        <div className={'settings-tooltip' + (this.props.visible ? '' : ' hidden')}>
-          {
-            this.props.settings.map((c) => {
-              return <TableSettingsTooltipRow
-                    key={c.id}
-                    column={c}
-                    displayed={(c.id in this.props.displayedMap)}
-                    nonEmpty={(c.id in this.props.nonEmptyMap)}
-                    canDisplay={(c.id in this.props.canDisplayMap)}
-                    tableColumnsKey={this.props.tableColumnsKey}
-                    />;
-            })
-          }
-        </div>
-      </div>
-    </div>
-  }
-});
-
-TableSettingsTooltipRow = React.createClass({
-  getCheckbox() {
-    return $(this.getDOMNode()).find('input.tooltip-checkbox');
-  },
-  setCookie(b) {
-    var columnCookieMap = Cookie.get(this.props.tableColumnsKey) || {};
-    columnCookieMap[this.props.column.id] = b;
-    Cookie.set(this.props.tableColumnsKey, columnCookieMap);
-  },
-  onClick(e) {
-    var checkbox = this.getCheckbox();
-    var newValue = !checkbox.prop('checked');
-    this.setCookie(newValue);
-    e.stopPropagation();
-  },
-  onCheckboxClick(e) {
-    e.stopPropagation();
-  },
-  onCheckboxChange(e) {
-    var checkbox = this.getCheckbox();
-    var newValue = checkbox.prop('checked');
-    this.setCookie(newValue);
-  },
-  render() {
-    return <div key={this.props.column.id} className="tooltip-row" onClick={this.onClick}>
-      <input
-            className="tooltip-checkbox"
-            type="checkbox"
-            onChange={this.onCheckboxChange}
-            checked={this.props.canDisplay}
-            onClick={this.onCheckboxClick} />
-      <span className={"tooltip-label" + (this.props.nonEmpty ? '' : ' empty')}>{this.props.column.label}</span>
-    </div>;
+  showSettings: function(b) {
+    this.setState({ showSettings: b });
   }
 });
 
