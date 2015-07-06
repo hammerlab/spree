@@ -23,15 +23,6 @@ Template.appsPage.helpers({
 });
 
 
-var columns = [
-  { id: "id", label: "Job ID", sortBy: "id" },
-  { id: "desc", label: "Description", sortBy: "name" },
-  startColumn,
-  durationColumn,
-  stagesColumn,
-  tasksColumn
-];
-
 Template.jobsPage.helpers({
 
   showAll: function() {
