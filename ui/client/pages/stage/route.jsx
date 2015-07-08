@@ -93,7 +93,7 @@ Template.stagePage.helpers({
   },
   SummaryMetricsTable: () => { return SummaryMetricsTable; },
   TasksTable: () => { return TasksTable; },
-  ExecutorsTable: () => { return ExecutorsTable; }
+  StageExecutorsTable: () => { return StageExecutorsTable; }
 });
 
 

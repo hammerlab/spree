@@ -10,7 +10,7 @@ var executorColumns = [
       .concat(taskColumns)
       .concat(ioColumns);
 
-ExecutorsTable = React.createClass({
+StageExecutorsTable = React.createClass({
   mixins: [ReactMeteorData],
   getMeteorData() {
     // Pull the data relevant to this stage from the executor's "stages" field out to the top level.
