@@ -1,39 +1,42 @@
 
 <template name="stagesTables">
-  {{#if active.num}}<span id="active-link"><a href="#active"><strong>Active Stages:</strong></a> {{active.num}}</span>{{/if}}
-  {{#if pending.num}}<span id="pending-link"><a href="#pending"><strong>Pending Stages:</strong></a> {{pending.num}}</span>{{/if}}
-  {{#if completed.num}}<span id="completed-link"><a href="#completed"><strong>Completed Stages:</strong></a> {{completed.num}}</span>{{/if}}
-  {{#if skipped.num}}<span id="skipped-link"><a href="#skipped"><strong>Skipped Stages:</strong></a> {{skipped.num}}</span>{{/if}}
-  {{#if failed.num}}<span id="failed-link"><a href="#failed"><strong>Failed Stages:</strong></a> {{failed.num}}</span>{{/if}}
-  <div id="all-link"><a href="#all"><strong>All Stages:</strong></a> {{all.num}}</div>
+  {{#with getStageData}}
 
-  {{#if showAll}}
-    {{#with tableData "stages" "All Stages" all "all" columns true}}
-      {{>objsTable this}}
-    {{/with}}
-  {{else}}
-    {{#with tableData "stages" "Active Stages" active "active" columns}}
-      {{>objsTable this}}
-    {{/with}}
-    {{#with tableData "stages" "Pending Stages" pending "pending" columns}}
-      {{>objsTable this}}
-    {{/with}}
-    {{#with tableData "stages" "Completed Stages" completed "completed" columns}}
-      {{>objsTable this}}
-    {{/with}}
-    {{#with tableData "stages" "Failed Stages" failed "failed" columns}}
-      {{>objsTable this}}
-    {{/with}}
-    {{#with tableData "stages" "Skipped Stages" skipped "skipped" columns}}
-      {{>objsTable this}}
-    {{/with}}
-  {{/if}}
+    {{#if active.num}}<span id="active-link"><a href="#active"><strong>Active Stages:</strong></a> {{active.num}}</span>{{/if}}
+    {{#if pending.num}}<span id="pending-link"><a href="#pending"><strong>Pending Stages:</strong></a> {{pending.num}}</span>{{/if}}
+    {{#if completed.num}}<span id="completed-link"><a href="#completed"><strong>Completed Stages:</strong></a> {{completed.num}}</span>{{/if}}
+    {{#if skipped.num}}<span id="skipped-link"><a href="#skipped"><strong>Skipped Stages:</strong></a> {{skipped.num}}</span>{{/if}}
+    {{#if failed.num}}<span id="failed-link"><a href="#failed"><strong>Failed Stages:</strong></a> {{failed.num}}</span>{{/if}}
+    <div id="all-link"><a href="#all"><strong>All Stages:</strong></a> {{all.num}}</div>
+
+    {{#if showAll}}
+      {{#with tableData "stages" "All Stages" all "all" columns true}}
+        {{>objsTable this}}
+      {{/with}}
+    {{else}}
+      {{#with tableData "stages" "Active Stages" active "active" columns}}
+        {{>objsTable this}}
+      {{/with}}
+      {{#with tableData "stages" "Pending Stages" pending "pending" columns}}
+        {{>objsTable this}}
+      {{/with}}
+      {{#with tableData "stages" "Completed Stages" completed "completed" columns}}
+        {{>objsTable this}}
+      {{/with}}
+      {{#with tableData "stages" "Failed Stages" failed "failed" columns}}
+        {{>objsTable this}}
+      {{/with}}
+      {{#with tableData "stages" "Skipped Stages" skipped "skipped" columns}}
+        {{>objsTable this}}
+      {{/with}}
+    {{/if}}
+  {{/with}}
 </template>
 
 <template name="objsTable">
   {{#if show}}
     <div>
-      {{>React component=Table name=tableName data=objs title=title titleId=titleId columns=columns keyAttr=keyAttr}}
+      {{>React component=Table name=name data=data title=title titleId=titleId columns=columns keyFn=keyFn}}
     </div>
   {{/if}}
 </template>

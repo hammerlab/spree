@@ -6,11 +6,11 @@ Router.route("/a/:_appId/stages", {
   },
   action: function() {
     this.render('stagesPage', {
-      data: jQuery.extend(getStagesData(), {
+      data: {
         appId: this.params._appId,
         app: Applications.findOne(),
         stagesTab: 1
-      })
+      }
     });
   }
 });

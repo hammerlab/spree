@@ -5,27 +5,97 @@ Router.route("/a/:_appId", {
     return Meteor.subscribe("jobs-page", this.params._appId);
   },
   action: function() {
-    var jobs = Jobs.find().map(function(job) {
-      var lastStage = Stages.findOne({ jobId: job.id }, { sort: { id: -1 } });
-      job.name = lastStage && lastStage.name || "";
-      return job;
-    });
-    var completedJobs = jobs.filter(function(job) { return job.succeeded; });
-    var activeJobs = jobs.filter(function(job) { return (job.started || job.time.start) && !job.ended; });
-    var failedJobs = jobs.filter(function(job) { return job.succeeded == false; });
     this.render('jobsPage', {
       data: {
         appId: this.params._appId,
         app: Applications.findOne(),
-        all: { jobs: jobs, num: jobs.length },
-        completed: { jobs: completedJobs, num: completedJobs.length },
-        active: { jobs: activeJobs, num: activeJobs.length },
-        failed: { jobs: failedJobs, num: failedJobs.length },
         env: Environment.findOne(),
         jobsTab: 1
       }
     });
   }
+});
+
+Template.jobsPage.helpers({
+
+  showAll: function() {
+    return !(Cookie.get("jobs-showAll") == false);
+  },
+
+  schedulingMode: function(env) {
+    if (env && env.spark) {
+      for (var i in env.spark) {
+        if (env.spark[i][0] == 'spark.scheduler.mode') {
+          return env.spark[i][1];
+        }
+      }
+    }
+    return "Unknown";
+  },
+
+  totalDuration: function() {
+    // TODO(ryan): denormalize on to app?
+    return this.all.jobs.reduce(
+          function(sum, job) {
+            return sum + duration(job)
+          },
+          0
+    );
+  },
+
+  uptime: function() {
+    return moment().unix()*1000 - this.app.time.start;
+  },
+
+  columns: function() {
+    return [
+      jobIdColumn,
+      stageIDsColumn,
+      jobNameColumn,
+      startColumn,
+      durationColumn,
+      stagesColumn,
+      tasksColumn
+    ].concat(ioBytesColumns);
+  },
+
+  jobs() {
+    var selectors = [
+      [ 'all', {} ],
+      [ 'active', { started: true, ended: { $ne: true }} ],
+      [ 'completed', { succeeded: true } ],
+      [ 'failed', { succeeded: false } ]
+    ];
+
+    var jobsTables = { app: this.app };
+    var opts = Cookie.get("jobs-table-opts");
+    selectors.forEach((arr) => {
+      var name = arr[0];
+      var selector = arr[1];
+      var jobs = Jobs.find(selector, opts).fetch().map((job) => {
+        var lastStage = Stages.findOne({ jobId: job.id }, { sort: { id: -1 } });
+        job.name = lastStage && lastStage.name || "";
+        return job;
+      });
+      jobsTables[name] = { jobs: jobs, num: jobs.length };
+    });
+
+    return jobsTables;
+  }
+
+});
+
+function unsetShowAll() {
+  Cookie.set("jobs-showAll", false);
+}
+
+function setShowAll() {
+  Cookie.set("jobs-showAll", true);
+}
+
+Template.jobsPage.events({
+  'click #active-link, click #completed-link, click #failed-link': unsetShowAll,
+  'click #all-link': setShowAll
 });
 
 var jobIdColumn = { label: 'Job ID', id: 'id', sortBy: 'id' };
@@ -54,16 +124,3 @@ var jobNameColumn = {
   renderKey: ''
 };
 
-Template.jobsPage.helpers({
-  columns: function() {
-    return [
-      jobIdColumn,
-      stageIDsColumn,
-      jobNameColumn,
-      startColumn,
-      durationColumn,
-      stagesColumn,
-      tasksColumn
-    ].concat(ioBytesColumns);
-  }
-});

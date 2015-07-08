@@ -3,28 +3,6 @@ function stageAttemptId(attempt) {
   return attempt && (attempt.stageId + '.' + attempt.id);
 }
 
-getStagesData = function() {
-  var attempts = StageAttempts.find().fetch().map((a) => {
-    a.fullId = stageAttemptId(a);
-    return a;
-  });
-
-  var completed = attempts.filter(function(attempt) { return (attempt.ended || (attempt.time && attempt.time.end)) && !attempt.skipped && attempt.status == SUCCEEDED; });
-  var active = attempts.filter(function(attempt) { return attempt.started && !attempt.ended; });
-  var pending = attempts.filter(function(attempt) { return !attempt.started && !attempt.skipped; });
-  var skipped = attempts.filter(function(attempt) { return attempt.skipped; });
-  var failed = attempts.filter(function(attempt) { return attempt.ended && attempt.status == FAILED; });
-
-  return {
-    all: { stages: attempts, num: attempts.length },
-    completed: { stages: completed, num: completed.length },
-    active: { stages: active, num: active.length },
-    pending: { stages: pending, num: pending.length },
-    skipped: { stages: skipped, num: skipped.length },
-    failed: { stages: failed, num: failed.length }
-  };
-};
-
 function stageAttemptUrl(attempt) {
   return [ '', 'a', attempt.appId, 'stage', attempt.stageId ].join('/') + (attempt.id ? ('?attempt=' + attempt.id) : '');
 }
@@ -47,6 +25,28 @@ var stageNameColumn = {
   render: (attempt) => { return <a href={stageAttemptUrl(attempt)}>{attempt.name}</a>; },
   renderKey: ''
 };
+
+Template.registerHelper('getStageData', () => {
+  var selectors = [
+    [ 'all', {} ],
+    [ 'active', { started: true, ended: { $ne: true }} ],
+    [ 'completed', { status: SUCCEEDED } ],
+    [ 'failed', { status: FAILED } ],
+    [ 'pending', { $or: [ { started: { $exists: false } }, { started: false } ] } ],
+    [ 'skipped', { skipped: true } ]
+  ];
+
+  var stagesTables = {};
+  var opts = Cookie.get("stages-table-opts");
+  selectors.forEach((arr) => {
+    var name = arr[0];
+    var selector = arr[1];
+    var stages = StageAttempts.find(selector, opts).fetch();
+    stagesTables[name] = { stages: stages, num: stages.length };
+  });
+
+  return stagesTables;
+});
 
 Template.stagesTables.helpers({
   showAll: function() {
@@ -80,12 +80,12 @@ Template.registerHelper("tableData", function(objType, title, objs, titleId, col
   return {
     title: title + " (" + objs.num + ")",
     titleId: titleId,
-    tableName: objType,
-    objs: objs[objType],
+    name: objType,
+    data: objs[objType],
     num: objs.num,
     show: objs.num || (alwaysShow === true),
     columns: columns,
-    keyAttr: (objType == 'stages' ? 'fullId' : 'id')
+    keyFn: objType == 'stages' && stageAttemptId
   };
 });
 

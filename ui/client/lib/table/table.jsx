@@ -35,12 +35,21 @@ Table = React.createClass({
     );
   },
   getMeteorData() {
+    var opts = Cookie.get(this.state.tableOptsKey) || {};
+    var sort = opts.sort;
+
+    var obj = {};
+    if (sort) {
+      obj.sort = sort;
+    }
+    var rows = this.props.data || this.props.collection.find(this.props.selector || {}, obj).fetch();
+
     return {
       sort: Cookie.get(this.state.tableSortKey),
       hidden: Cookie.get(this.state.tableHiddenKey),
-      rows: this.props.data ? (this.props.data.sort ? this.props.data : this.props.data.fetch()) : [],
+      rows: rows,
       columnSettings: Cookie.get(this.state.tableColumnsKey) || {},
-      opts: Cookie.get(this.state.tableOptsKey)
+      opts: opts
     }
   },
   toggleCollapsed() {
@@ -77,26 +86,18 @@ Table = React.createClass({
             return displayed;
           });
 
-    var sort = this.data.sort || this.props.defaultSort;
-    var sortId = sort && sort.id || this.props.sortId || displayCols[0].id || 'id';
-    var sortDir = sort && sort.dir || this.props.sortDir || 1;
-    var fn = this.state.colsById[sortId].cmpFn;
-    var rows = this.data.rows.sort(fn);
-    if (sortDir == -1) {
-      rows = rows.reverse();
-    }
-
     var columnHeaders = displayCols.map((column) => {
       return this.props.disableSort ?
             <th key={column.id}>{column.label}</th> :
             <TableHeader
                   key={column.id}
                   tableSortKey={this.state.tableSortKey}
+                  tableOptsKey={this.state.tableOptsKey}
                   {...column} />;
     });
 
     var displayRows =
-          rows.filter((row) => {
+          this.data.rows.filter((row) => {
             var cookie = (row.id in columnCookieMap) ? columnCookieMap[row.id] : null;
             var canDisplay = (cookie != false) && (row.showByDefault != false);
             var hasData = !this.props.hideEmptyRows || emptyRowCheck(row, displayCols);
@@ -121,7 +122,7 @@ Table = React.createClass({
         var renderValueFn = column.renderValueFn || column.sortBy;
         return <td key={column.id}>{render ? render(renderValueFn(row)) : renderValueFn(row)}</td>
       });
-      var key = this.props.keyAttr ? row[this.props.keyAttr] : (row.id || row._id);
+      var key = this.props.keyFn ? this.props.keyFn(row) : (row.id || row._id);
       return <tr key={key}>{cols}</tr>;
     });
 
@@ -137,7 +138,7 @@ Table = React.createClass({
           .join(' ');
 
     var title = <TableTitle
-          settings={this.props.selectRows ? rows : this.props.columns}
+          settings={this.props.selectRows ? this.data.rows : this.props.columns}
           showSettingsFn={this.showSettings}
           displayedMap={displayedMap}
           nonEmptyMap={nonEmptyMap}

@@ -1,18 +1,27 @@
 
+function getKey(o) {
+  for (k in o) return k;
+}
+
 TableHeader = React.createClass({
   onClick(e) {
-    var extantSort = Cookie.get(this.props.tableSortKey);
-    var newSort =
-          (extantSort && extantSort.id == this.props.id) ?
-          { id: this.props.id, dir: -extantSort.dir } :
-          { id: this.props.id, dir: this.props.defaultSort || 1 };
+    var extantOpts = Cookie.get(this.props.tableOptsKey) || {};
+    var extantSort = extantOpts.sort;
 
-    Cookie.set(this.props.tableSortKey, newSort);
+    var newSort = {};
+    newSort[this.props.sortKey] =
+          (extantSort && (this.props.sortKey in extantSort)) ?
+                -extantSort[this.props.sortKey] :
+                (this.props.defaultSort || 1);
+
+    var newOpts = jQuery.extend(extantOpts, { sort: newSort });
+    Cookie.set(this.props.tableOptsKey, extantOpts);
   },
   render() {
-    var extantSort = Cookie.get(this.props.tableSortKey);
-    var isCurrentSort = extantSort && extantSort.id == this.props.id;
-    return <th onClick={this.onClick}>{this.props.label + (isCurrentSort ? (extantSort.dir == 1 ? ' ▴' : ' ▾') : '')}</th>
+    var opts = Cookie.get(this.props.tableOptsKey) || {};
+    var sort = opts.sort;
+    var isCurrentSort = sort && getKey(sort) == this.props.sortKey;
+    return <th onClick={this.onClick}>{this.props.label + (isCurrentSort ? (sort[this.props.sortKey] == 1 ? ' ▴' : ' ▾') : '')}</th>
   }
 });
 
