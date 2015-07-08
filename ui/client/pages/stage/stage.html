@@ -42,10 +42,10 @@
     {{/with}}
 
     <div>
-      {{>React component=SummaryMetricsTable stats=stats taskCounts=stageAttempt.taskCounts}}
+      {{>React component=SummaryMetricsTable stats=stats}}
     </div>
     <div>
-      {{>React component=ExecutorsTable stageId=stageAttempt.stageId attemptId=stageAttempt.id}}
+      {{>React component=ExecutorsTable stageId=stageId attemptId=attemptId}}
     </div>
     <div>
       {{>React component=TasksTable data=taskAttempts}}

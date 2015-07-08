@@ -41,9 +41,7 @@ Router.route("/a/:_appId/stage/:_stageId", {
         data: {
           appId: appId,
           app: Applications.findOne(),
-          executors: Executors.find(),
           stats: [],
-          taskAttempts: TaskAttempts.find(),
           stageId: stageId,
           attemptId: attemptId,
           stagesTab: 1
@@ -82,8 +80,6 @@ Router.route("/a/:_appId/stage/:_stageId", {
         stageId: stageId,
         attemptId: attemptId,
         stats: stats,
-        taskAttempts: TaskAttempts.find(),
-        executors: Executors.find(),
         stagesTab: 1
       }
     });

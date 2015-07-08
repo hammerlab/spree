@@ -12,6 +12,7 @@ SummaryMetricsTable = React.createClass({
   mixins: [ReactMeteorData],
   getMeteorData() {
     return {
+      stage: StageAttempts.findOne(),
       stats: this.props.stats.map((stat) => {
         if (stat.template == 'bytes') {
           stat.render = formatBytes;
@@ -23,7 +24,7 @@ SummaryMetricsTable = React.createClass({
     };
   },
   render() {
-    var tc = this.props.taskCounts || {};
+    var tc = this.data.stage && this.data.stage.taskCounts || {};
     var rightTitle = <span>
       {tc.num || 0} total,{' '}
       {tc.running || 0} active,{' '}
