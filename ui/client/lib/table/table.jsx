@@ -113,8 +113,8 @@ Table = React.createClass({
             return displayed;
           });
 
-    var rowElems = displayRows.map((row, idx) => {
-      var cols = displayCols.map((column, idx) => {
+    var rowElems = displayRows.map((row) => {
+      var cols = displayCols.map((column) => {
         var render = column.render || row.render;
         var renderValueFn = column.renderValueFn || column.sortBy;
         return <td key={column.id}>{render ? render(renderValueFn(row)) : renderValueFn(row)}</td>
@@ -133,11 +133,6 @@ Table = React.createClass({
           .concat(this.props.class ? [this.props.class] : [])
           .concat(this.data.hidden ? ['hidden'] : [])
           .join(' ');
-
-    var mouseHandlers = {
-      onMouseOver: this.onMouseOver,
-      onMouseOut: this.onMouseOut
-    };
 
     var title = <TableTitle
           settings={this.props.selectRows ? rows : this.props.columns}

@@ -86,13 +86,8 @@ Meteor.publish("stages-page", function(appId) {
 });
 
 
-shuffleBytesRead = function(shuffleReadMetrics) {
-  if (!shuffleReadMetrics) return 0;
-  if ('metrics' in shuffleReadMetrics) shuffleReadMetrics = shuffleReadMetrics['metrics'];
-  if ('ShuffleReadMetrics' in shuffleReadMetrics) shuffleReadMetrics = shuffleReadMetrics['ShuffleReadMetrics'];
-  return shuffleReadMetrics && (shuffleReadMetrics.LocalBytesRead + shuffleReadMetrics.RemoteBytesRead) || 0;
-};
-duration = function(x) { return x && x.time && (x.time.end - x.time.start) || 0; };
+
+function identity(x) { return x; }
 acc = function(key) {
   if (!key) {
     return identity;
@@ -107,26 +102,6 @@ acc = function(key) {
     };
   }, function(x) { return x; });
 };
-
-var statRows = [
-  ['Task Deserialization Time', 'metrics.ExecutorDeserializeTime', 'time'],
-  ['Duration', duration, 'time'],
-  ['GC Time', 'metrics.JVMGCTime', 'time'],
-  ['Getting Result Time', 'GettingResultTime', 'time'],
-  ['Result Serialization Time', 'ResultSerializationTime', 'time'],
-  ['Input Bytes', 'metrics.InputMetrics.BytesRead', 'bytes'],
-  ['Input Records', 'metrics.InputMetrics.RecordsRead', 'num'],
-  ['Output Bytes', 'metrics.OutputMetrics.BytesWritten', 'bytes'],
-  ['Output Records', 'metrics.OutputMetrics.RecordsWritten', 'num'],
-  ['Shuffle Read Bytes', shuffleBytesRead, 'bytes'],
-  ['Shuffle Read Records', 'metrics.ShuffleReadMetrics.TotalRecordsRead', 'num'],
-  ['Shuffle Write Bytes', 'metrics.ShuffleWriteMetrics.ShuffleBytesWritten', 'bytes'],
-  ['Shuffle Write Records', 'metrics.ShuffleWriteMetrics.ShuffleRecordsWritten', 'num']
-].map(function(x) {
-        if (typeof x[1] == 'string')
-          return [x[0], acc(x[1]), x[2]];
-        return x;
-      });
 
 //Meteor.publish("stage-execs", function(appId, stageId, attemptId) {
 //  console.log("stage-execs (%s,%d,%d) initing", appId, stageId, attemptId);
