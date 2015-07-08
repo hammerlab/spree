@@ -3,6 +3,28 @@ TaskAttempts = new Mongo.Collection("task_attempts");
 
 console.log("Starting server with Mongo URL: " + process.env.MONGO_URL);
 
+Meteor.startup(function() {
+  collectionsAndIndices = [
+    [ Applications, { id: 1 } ],
+    [ Jobs, { appId: 1, id: 1 } ],
+    [ Stages, { appId: 1, id: 1 } ],
+    [ Stages, { appId: 1, jobId: 1 } ],
+    [ StageAttempts, { appId: 1, stageId: 1, id: 1 } ],
+    [ RDDs, { appId: 1, id: 1 } ],
+    [ Executors, { appId: 1, id: 1 } ],
+    [ Tasks, { appId: 1, stageId: 1, id: 1 } ],
+    [ TaskAttempts, { appId: 1, stageId: 1, stageAttemptId: 1, id: 1 } ],
+    [ Environment, { appId: 1 } ]
+  ];
+
+  collectionsAndIndices.forEach(function(collectionAndIndex) {
+    var collection = collectionAndIndex[0];
+    var fields = collectionAndIndex[1];
+    collection._ensureIndex(fields);
+  });
+});
+
+
 function parseMongoUrl(url) {
   var m = url.match("^mongodb://([^:]+):([0-9]+)/(.*)$");
   if (!m) return {};
