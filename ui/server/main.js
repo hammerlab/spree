@@ -229,7 +229,7 @@ acc = function(key) {
 //});
 
 // StageAttempt page
-Meteor.publish("stage-page", function(appId, stageId, attemptId) {
+Meteor.publish("stage-page", function(appId, stageId, attemptId, pageOpts) {
   var apps = (appId == 'latest') ? lastApp() : Applications.find({ id: appId });
   var app = apps.fetch()[0];
   appId = (appId == 'latest' && app) ? app.id : appId;
@@ -239,12 +239,14 @@ Meteor.publish("stage-page", function(appId, stageId, attemptId) {
   fieldsObj[executorStageKey] = 1;
   var executors = Executors.find({ appId: appId }, { fields: fieldsObj });
 
+  pageOpts.limit = pageOpts.limit || 100;
+
   return [
     apps,
     Stages.find({ appId: appId, id: stageId }),
     StageAttempts.find({ appId: appId, stageId: stageId, id: attemptId }),
     //Tasks.find({ appId: appId, stageId: stageId }),
-    TaskAttempts.find({ appId: appId, stageId: stageId, stageAttemptId: attemptId }),
+    TaskAttempts.find({ appId: appId, stageId: stageId, stageAttemptId: attemptId }, pageOpts || {}),
     executors
   ];
 });

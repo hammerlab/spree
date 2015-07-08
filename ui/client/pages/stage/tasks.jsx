@@ -40,7 +40,8 @@ TasksTable = React.createClass({
           t.host = e.host;
           t.port = e.port;
           return t;
-        })
+        }),
+        opts: Cookie.get('tasks-table-opts')
       };
     } else {
       // Tasks are embedded as sub-records of StageAttempt record.
@@ -51,18 +52,25 @@ TasksTable = React.createClass({
       }
       return {
         stage: stage,
-        tasks: tasks
+        tasks: tasks,
+        opts: Cookie.get('tasks-table-opts')
       };
     }
   },
   render() {
+    var opts = this.data.opts;
+    var start = (opts.skip || 0);
+    var total = this.data.stage && this.data.stage.taskCounts && this.data.stage.taskCounts.num || 0;
+    var end = Math.min(start + (opts.limit || 100), total);
+    var title = 'Tasks (' + (total ? ((start+1) + '-' + end) : 0) + ' of ' + total + ')';
     return <div>
       <Table
             name='tasks'
-            title={'Tasks (' + (this.data.tasks && this.data.tasks.length || 0) + ')'}
+            title={title}
             defaultSort={{ id: 'id' }}
             data={this.data.tasks}
-            columns={columns} />
+            columns={columns}
+            total={total} />
     </div>;
   }
 });

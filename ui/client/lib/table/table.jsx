@@ -28,6 +28,7 @@ Table = React.createClass({
             tableSortKey: this.props.name + '-table-sort',
             tableHiddenKey: this.props.name + '-table-hidden',
             tableColumnsKey: this.props.name + '-table-columns',
+            tableOptsKey: this.props.name + '-table-opts',
             showSettings: false,
             showSettingsGear: false
           }
@@ -38,7 +39,8 @@ Table = React.createClass({
       sort: Cookie.get(this.state.tableSortKey),
       hidden: Cookie.get(this.state.tableHiddenKey),
       rows: this.props.data ? (this.props.data.sort ? this.props.data : this.props.data.fetch()) : [],
-      columnSettings: Cookie.get(this.state.tableColumnsKey) || {}
+      columnSettings: Cookie.get(this.state.tableColumnsKey) || {},
+      opts: Cookie.get(this.state.tableOptsKey)
     }
   },
   toggleCollapsed() {
@@ -146,6 +148,8 @@ Table = React.createClass({
           showSettingsGear={this.state.showSettingsGear}
           tableHidden={this.data.hidden}
           toggleCollapsed={this.toggleCollapsed}
+          opts={this.data.opts}
+          optsKey={this.state.tableOptsKey}
           {...this.props}/>;
 
     var table = this.data.hidden ? null :
