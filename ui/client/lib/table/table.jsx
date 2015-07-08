@@ -119,7 +119,7 @@ Table = React.createClass({
         var renderValueFn = column.renderValueFn || column.sortBy;
         return <td key={column.id}>{render ? render(renderValueFn(row)) : renderValueFn(row)}</td>
       });
-      var key = this.props.keyAttr ? row[this.props.keyAttr] : row.id;
+      var key = this.props.keyAttr ? row[this.props.keyAttr] : (row.id || row._id);
       return <tr key={key}>{cols}</tr>;
     });
 

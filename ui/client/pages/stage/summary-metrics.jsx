@@ -1,11 +1,11 @@
 
 var statsColumns = [
-  { id: 'id', label: 'Metric', sortBy: 'id' },
-  { id: 'min', label: 'Min', sortBy: 'min' },
-  { id: 'tf', label: '25th Percentile', sortBy: 'tf' },
-  { id: 'median', label: 'Median', sortBy: 'median' },
-  { id: 'sf', label: '75th Percentile', sortBy: 'sf' },
-  { id: 'max', label: 'Max', sortBy: 'max' }
+  { id: 'id', label: 'Metric', sortBy: 'label' },
+  { id: 'min', label: 'Min', sortBy: 'stats.min' },
+  { id: 'tf', label: '25th Percentile', sortBy: 'stats.tf' },
+  { id: 'median', label: 'Median', sortBy: 'stats.median' },
+  { id: 'sf', label: '75th Percentile', sortBy: 'stats.sf' },
+  { id: 'max', label: 'Max', sortBy: 'stats.max' }
 ];
 
 SummaryMetricsTable = React.createClass({
@@ -13,11 +13,14 @@ SummaryMetricsTable = React.createClass({
   getMeteorData() {
     return {
       stage: StageAttempts.findOne(),
-      stats: this.props.stats.map((stat) => {
-        if (stat.template == 'bytes') {
+      stats: SummaryMetrics.find().fetch().map((stat) => {
+        stat.id = stat._id;
+        if (stat.render == 'bytes') {
           stat.render = formatBytes;
-        } else if (stat.template == 'time') {
+        } else if (stat.render == 'time') {
           stat.render = formatTime;
+        } else {
+          stat.render = function(x) { if (!x) return '-'; return x; };
         }
         return stat;
       })
@@ -38,7 +41,7 @@ SummaryMetricsTable = React.createClass({
             rightTitle={rightTitle}
             defaultSort={{ id: 'id' }}
             selectRows={true}
-            data={this.props.stats}
+            data={this.data.stats}
             columns={statsColumns}
             class="stats"
             allowEmptyColumns={true}
