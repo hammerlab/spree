@@ -25,29 +25,35 @@ var columns = [
 TasksTable = React.createClass({
   mixins: [ReactMeteorData],
   getMeteorData() {
-    // Grab tasks when they are embedded as sub-records of StageAttempt record.
-    //var tasks = [];
-    //var stage = StageAttempts.find({}, { limit: 1 }).fetch()[0];
-    //if (!stage) return {};
-    //var tasksObj = stage.tasks;
-    //for (var k in tasksObj) {
-    //  tasks.push(tasksObj[k]);
-    //}
-    //return {
-    //  //stage: StageAttempts.find({}, { limit: 1 }),
-    //  tasks: tasks
-    //};
-    var eById = {};
-    Executors.find().forEach((e) => {
-      eById[e.id] = { host: e.host, port: e.port };
-    });
-    return {
-      tasks: TaskAttempts.find().fetch().map((t) => {
-        t.host = eById[t.execId].host;
-        t.port = eById[t.execId].port;
-        return t;
-      })
-    };
+    var stage = StageAttempts.find({}, { limit: 1 }).fetch()[0];
+    if (!stage || !('tasks' in stage)) {
+      // Tasks are standalone records in the TaskAttempts collection.
+      var eById = {};
+      Executors.find().forEach((e) => {
+        eById[e.id] = { host: e.host, port: e.port };
+      });
+      return {
+        stage: stage,
+        tasks: TaskAttempts.find().fetch().map((t) => {
+          var e = eById[t.execId];
+          if (!e) return t;
+          t.host = e.host;
+          t.port = e.port;
+          return t;
+        })
+      };
+    } else {
+      // Tasks are embedded as sub-records of StageAttempt record.
+      var tasks = [];
+      var tasksObj = stage.tasks;
+      for (var k in tasksObj) {
+        tasks.push(tasksObj[k]);
+      }
+      return {
+        stage: stage,
+        tasks: tasks
+      };
+    }
   },
   render() {
     return <div>
