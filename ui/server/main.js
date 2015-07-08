@@ -360,7 +360,9 @@ var statRows = [
   { label: 'Shuffle Write Records', key: 'metrics.ShuffleWriteMetrics.ShuffleRecordsWritten', render: 'num' }
 ];
 
+var moment = Meteor.npmRequire('moment');
 Meteor.publish("stage-summary-metrics", function(appId, stageId, attemptId) {
+  var before = moment();
   var apps = (appId == 'latest') ? lastApp() : Applications.find({ id: appId });
   var app = apps.fetch()[0];
   appId = (appId == 'latest' && app) ? app.id : appId;
@@ -376,7 +378,6 @@ Meteor.publish("stage-summary-metrics", function(appId, stageId, attemptId) {
 
   var summaryMetricsTrie = new SummaryMetricsTrie(metrics);
 
-  console.log("stage-summary-metrics: adding tasks");
   var self = this;
   var handle = TaskAttempts.find({ appId: appId, stageId: stageId, stageAttemptId: attemptId }).observeChanges({
     added: function(_id, task) {
@@ -392,15 +393,13 @@ Meteor.publish("stage-summary-metrics", function(appId, stageId, attemptId) {
       summaryMetricsTrie.walk(fields, self, initializing);
     }
   });
-  console.log(
-        "stage-summary-metrics: ready.. %s",
-        JSON.stringify(metrics.map(function(s) { return { label: s.label, stats: s.stats }; }))
-  );
   initializing = false;
   metrics.forEach(function (metric) {
     this.added("summary-metrics", metric._id, { label: metric.label, stats: metric.stats, render: metric.render });
   }.bind(this));
   this.ready();
+  var after = moment();
+  console.log("stage-summary-metrics finished in %d ms", after - before);
 
   self.onStop(function () {
     handle.stop();
