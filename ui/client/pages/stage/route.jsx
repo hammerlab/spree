@@ -86,6 +86,16 @@ Router.route("/a/:_appId/stage/:_stageId", {
   }
 });
 
+Template.stagePage.helpers({
+  setTitle: function(data) {
+    document.title = "Stage " + data.stageId + " (" + data.attemptId + ")";
+    return null;
+  },
+  SummaryMetricsTable: () => { return SummaryMetricsTable; },
+  TasksTable: () => { return TasksTable; },
+  ExecutorsTable: () => { return ExecutorsTable; }
+});
+
 
 
 
