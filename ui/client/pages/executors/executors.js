@@ -24,8 +24,8 @@ var columns = [
   maxMemColumn
 ]
       .concat(spaceColumns)
-      .concat(taskColumns)
-      .concat([ taskTimeColumn ])
+      .concat(taskColumns())
+      .concat([ taskTimeColumn() ])
       .concat(ioBytesColumns);
 
 Template.executorsPage.helpers({

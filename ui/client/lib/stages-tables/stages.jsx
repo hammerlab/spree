@@ -37,7 +37,7 @@ Template.registerHelper('getStageData', () => {
   ];
 
   var stagesTables = {};
-  var opts = Cookie.get("stages-table-opts");
+  var opts = Cookie.get("stages-table-opts") || {};
   selectors.forEach((arr) => {
     var name = arr[0];
     var selector = arr[1];

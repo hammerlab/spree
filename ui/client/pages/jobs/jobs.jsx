@@ -68,7 +68,7 @@ Template.jobsPage.helpers({
     ];
 
     var jobsTables = { app: this.app };
-    var opts = Cookie.get("jobs-table-opts");
+    var opts = Cookie.get("jobs-table-opts") || {};
     selectors.forEach((arr) => {
       var name = arr[0];
       var selector = arr[1];

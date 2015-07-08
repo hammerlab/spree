@@ -5,25 +5,35 @@
   {{log this}}
   <div class="container-fluid">
     <h3>Environment</h3>
-    {{#with env.jvm}}
-      <div>
-        {{>React component=Table name="jvm" data=this title="Runtime Information" columns=columns class="env"}}
-      </div>
-    {{/with}}
-    {{#with env.spark}}
-      <div>
-        {{>React component=Table name="spark" data=this title="Spark Properties" columns=columns class="env"}}
-      </div>
-    {{/with}}
-    {{#with env.system}}
-      <div>
-        {{>React component=Table name="system" data=this title="System Properties" columns=columns class="env"}}
-      </div>
-    {{/with}}
-    {{#with env.classpath}}
-      <div>
-        {{>React component=Table name="classpath" data=this title="Classpath Entries" columns=columns class="env"}}
-      </div>
-    {{/with}}
+    {{>environmentTable name="jvm" data=env.jvm title="Runtime Information"}}
+    {{>environmentTable name="spark" data=env.spark title="Spark Properties"}}
+    {{>environmentTable name="system" data=env.system title="System Properties"}}
+    {{>environmentTable name="classpath" data=env.classpath title="Classpath Entries"}}
+    <!--{{#with env.jvm}}-->
+      <!--<div>-->
+        <!--{{>React component=Table name="jvm" data=this title="Runtime Information" columns=columns class="env"}}-->
+      <!--</div>-->
+    <!--{{/with}}-->
+    <!--{{#with env.spark}}-->
+      <!--<div>-->
+        <!--{{>React component=Table name="spark" data=this title="Spark Properties" columns=columns class="env"}}-->
+      <!--</div>-->
+    <!--{{/with}}-->
+    <!--{{#with env.system}}-->
+      <!--<div>-->
+        <!--{{>React component=Table name="system" data=this title="System Properties" columns=columns class="env"}}-->
+      <!--</div>-->
+    <!--{{/with}}-->
+    <!--{{#with env.classpath}}-->
+      <!--<div>-->
+        <!--{{>React component=Table name="classpath" data=this title="Classpath Entries" columns=columns class="env"}}-->
+      <!--</div>-->
+    <!--{{/with}}-->
+  </div>
+</template>
+
+<template name="environmentTable">
+  <div>
+    {{>React component=Table name=name data=data title=title columns=columns class="env" clientSort=true}}
   </div>
 </template>

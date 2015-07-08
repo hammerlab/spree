@@ -34,6 +34,19 @@ Table = React.createClass({
           }
     );
   },
+  maybeSortData(data) {
+    if (this.props.clientSort) {
+      var sort = Cookie.get(this.state.tableSortKey) || this.props.defaultSort;
+      var sortId = sort && sort.id || this.props.sortId || this.props.columns[0].id || 'id';
+      var sortDir = sort && sort.dir || this.props.sortDir || 1;
+      var fn = this.state.colsById[sortId].cmpFn;
+      var rows = data.sort(fn);
+      if (sortDir == -1) {
+        rows = rows.reverse();
+      }
+    }
+    return data;
+  },
   getMeteorData() {
     var opts = Cookie.get(this.state.tableOptsKey) || {};
     var sort = opts.sort;
@@ -42,7 +55,12 @@ Table = React.createClass({
     if (sort) {
       obj.sort = sort;
     }
-    var rows = this.props.data || this.props.collection.find(this.props.selector || {}, obj).fetch();
+    var rows =
+          this.maybeSortData(this.props.data) ||
+          ((typeof this.props.collection === 'string') ?
+                window[this.props.collection] :
+                this.props.collection
+          ).find(this.props.selector || {}, obj).fetch();
 
     return {
       sort: Cookie.get(this.state.tableSortKey),
@@ -93,6 +111,7 @@ Table = React.createClass({
                   key={column.id}
                   tableSortKey={this.state.tableSortKey}
                   tableOptsKey={this.state.tableOptsKey}
+                  clientSort={this.props.clientSort}
                   {...column} />;
     });
 
@@ -116,13 +135,16 @@ Table = React.createClass({
             return displayed;
           });
 
-    var rowElems = displayRows.map((row) => {
+    var rowElems = displayRows.map((row, idx) => {
       var cols = displayCols.map((column) => {
         var render = column.render || row.render;
         var renderValueFn = column.renderValueFn || column.sortBy;
         return <td key={column.id}>{render ? render(renderValueFn(row)) : renderValueFn(row)}</td>
       });
-      var key = this.props.keyFn ? this.props.keyFn(row) : (row.id || row._id);
+      var key = row.id || row._id;
+      if (key === undefined) {
+         key = this.props.keyFn ? this.props.keyFn(row) : idx;
+      }
       return <tr key={key}>{cols}</tr>;
     });
 

@@ -1,37 +1,45 @@
 
-taskColumns = [
-  { id: 'activeTasks', label: 'Active Tasks', sortBy: 'taskCounts.running' },
-  { id: 'failedTasks', label: 'Failed Tasks', sortBy: 'taskCounts.failed' },
-  { id: 'completeTasks', label: 'Complete Tasks', sortBy: 'taskCounts.succeeded' },
-  { id: 'totalTasks', label: 'Total Tasks', sortBy: 'taskCounts.num' }
-];
+function maybePrefix(prefix, suffix) {
+  return prefix ? (prefix + '.' + suffix) : suffix;
+}
 
-inputBytesColumn = { id: 'input', label: 'Input', sortBy: 'metrics.InputMetrics.BytesRead', showInEmptyTable: false, render: formatBytes, defaultSort: -1 };
-inputRecordsColumn = { id: 'inputRecords', label: 'Records', sortBy: 'metrics.InputMetrics.RecordsRead', showInEmptyTable: false, defaultSort: -1 };
-outputBytesColumn = { id: 'output', label: 'Output', sortBy: 'metrics.OutputMetrics.BytesWritten', showInEmptyTable: false, render: formatBytes, defaultSort: -1 };
-outputRecordsColumn = { id: 'outputRecords', label: 'Records', sortBy: 'metrics.OutputMetrics.RecordsWritten', showInEmptyTable: false, defaultSort: -1 };
-shuffleReadBytesColumn = { id: 'shuffleRead', label: 'Shuffle Read', sortBy: 'metrics.ShuffleReadMetrics.TotalBytesRead', showInEmptyTable: false, render: formatBytes, defaultSort: -1 };
-shuffleReadRecordsColumn = { id: 'shuffleReadRecords', label: 'Records', sortBy: 'metrics.ShuffleReadMetrics.TotalRecordsRead', showInEmptyTable: false, defaultSort: -1 };
-shuffleWriteBytesColumn = { id: 'shuffleWrite', label: 'Shuffle Write', sortBy: 'metrics.ShuffleWriteMetrics.ShuffleBytesWritten', showInEmptyTable: false, render: formatBytes, defaultSort: -1 };
-shuffleWriteRecordsColumn = { id: 'shuffleWriteRecords', label: 'Records', sortBy: 'metrics.ShuffleWriteMetrics.ShuffleRecordsWritten', showInEmptyTable: false, defaultSort: -1 };
+taskColumns = (prefix) => {
+  return [
+    { id: 'activeTasks', label: 'Active Tasks', sortBy: maybePrefix(prefix, 'taskCounts.running') },
+    { id: 'failedTasks', label: 'Failed Tasks', sortBy: maybePrefix(prefix, 'taskCounts.failed') },
+    { id: 'completeTasks', label: 'Complete Tasks', sortBy: maybePrefix(prefix, 'taskCounts.succeeded') },
+    { id: 'totalTasks', label: 'Total Tasks', sortBy: maybePrefix(prefix, 'taskCounts.num') }
+  ];
+};
+
+inputBytesColumn = (prefix) => { return { id: 'input', label: 'Input', sortBy: maybePrefix(prefix, 'metrics.InputMetrics.BytesRead'), showInEmptyTable: false, render: formatBytes, defaultSort: -1 }; };
+inputRecordsColumn = (prefix) => { return { id: 'inputRecords', label: 'Records', sortBy: maybePrefix(prefix, 'metrics.InputMetrics.RecordsRead'), showInEmptyTable: false, defaultSort: -1 }; };
+outputBytesColumn = (prefix) => { return { id: 'output', label: 'Output', sortBy: maybePrefix(prefix, 'metrics.OutputMetrics.BytesWritten'), showInEmptyTable: false, render: formatBytes, defaultSort: -1 }; };
+outputRecordsColumn = (prefix) => { return { id: 'outputRecords', label: 'Records', sortBy: maybePrefix(prefix, 'metrics.OutputMetrics.RecordsWritten'), showInEmptyTable: false, defaultSort: -1 }; };
+shuffleReadBytesColumn = (prefix) => { return { id: 'shuffleRead', label: 'Shuffle Read', sortBy: maybePrefix(prefix, 'metrics.ShuffleReadMetrics.TotalBytesRead'), showInEmptyTable: false, render: formatBytes, defaultSort: -1 }; };
+shuffleReadRecordsColumn = (prefix) => { return { id: 'shuffleReadRecords', label: 'Records', sortBy: maybePrefix(prefix, 'metrics.ShuffleReadMetrics.TotalRecordsRead'), showInEmptyTable: false, defaultSort: -1 }; };
+shuffleWriteBytesColumn = (prefix) => { return { id: 'shuffleWrite', label: 'Shuffle Write', sortBy: maybePrefix(prefix, 'metrics.ShuffleWriteMetrics.ShuffleBytesWritten'), showInEmptyTable: false, render: formatBytes, defaultSort: -1 }; };
+shuffleWriteRecordsColumn = (prefix) => { return { id: 'shuffleWriteRecords', label: 'Records', sortBy: maybePrefix(prefix, 'metrics.ShuffleWriteMetrics.ShuffleRecordsWritten'), showInEmptyTable: false, defaultSort: -1 }; };
 
 ioBytesColumns = [
-  inputBytesColumn,
-  outputBytesColumn,
-  shuffleReadBytesColumn,
-  shuffleWriteBytesColumn
-];
+    inputBytesColumn,
+    outputBytesColumn,
+    shuffleReadBytesColumn,
+    shuffleWriteBytesColumn
+  ].map((fn) => fn());
 
-ioColumns = [
-  inputBytesColumn,
-  inputRecordsColumn,
-  outputBytesColumn,
-  outputRecordsColumn,
-  shuffleReadBytesColumn,
-  shuffleReadRecordsColumn,
-  shuffleWriteBytesColumn,
-  shuffleWriteRecordsColumn
-];
+ioColumns = (prefix) => {
+  return [
+    inputBytesColumn,
+    inputRecordsColumn,
+    outputBytesColumn,
+    outputRecordsColumn,
+    shuffleReadBytesColumn,
+    shuffleReadRecordsColumn,
+    shuffleWriteBytesColumn,
+    shuffleWriteRecordsColumn
+  ].map((fn) => fn(prefix));;
+};
 
 nameColumn = { id: 'name', label: 'Name', sortBy: 'name' };
 startColumn = { label: 'Submitted', id: 'start', sortBy: 'time.start', render: formatDateTime, defaultSort: -1 };
@@ -55,4 +63,12 @@ portColumn = { id: 'port', label: 'Port', sortBy: 'port' };
 numBlocksColumn = { id: 'blocks', label: 'RDD Blocks', sortBy: 'numBlocks', defaultSort: -1 };
 
 storageLevelColumn = { id: 'storageLevel', label: 'Storage Level', sortBy: 'StorageLevel.UseMemory', render: getStorageLevel, renderKey: 'StorageLevel' };
-taskTimeColumn = { id: 'taskTime', label: 'Task Time', sortBy: 'metrics.ExecutorRunTime', render: formatTime, defaultSort: -1 };
+taskTimeColumn = (prefix) => {
+  return {
+    id: 'taskTime',
+    label: 'Task Time',
+    sortBy: (prefix ? (prefix + '.') : '') + 'metrics.ExecutorRunTime',
+    render: formatTime,
+    defaultSort: -1
+  };
+};
