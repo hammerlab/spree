@@ -289,7 +289,8 @@ Meteor.publish("rdd-page", function(appId, rddId) {
   return [
     apps,
     RDDs.find({ appId: appId, id: rddId }),
-    Executors.find(queryObj, { fields: fieldsObj })
+    Executors.find(queryObj, { fields: fieldsObj }),
+    RDDBlocks.find({ appId: appId, rddId: rddId })
   ];
 });
 

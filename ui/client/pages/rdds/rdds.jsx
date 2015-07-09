@@ -16,40 +16,46 @@ Router.route("/a/:_appId/storage", {
   }
 });
 
+var rddIdColumn = {
+  id: 'id',
+  label: 'RDD ID',
+  sortBy: "id",
+  render: function(rdd) {
+    var href = [ "", "a", rdd.appId, "rdd", rdd.id ].join('/');
+    return <a href={href}>{rdd.id}</a>;
+  },
+  renderKey: ''
+};
+
+var rddNameColumn = {
+  id: 'name',
+  label: 'RDD Name',
+  sortBy: 'name',
+  render: function(rdd) {
+    var href = [ "", "a", rdd.appId, "rdd", rdd.id ].join('/');
+    return <a href={href}>{rdd.name}</a>;
+  },
+  renderKey: ''
+};
+
+var fractionCachedColumn = {
+  id: 'fractionCached',
+  label: '% Cached',
+  sortBy: function(rdd) {
+    return rdd.numCachedPartitions / rdd.numPartitions;
+  },
+  render: function(f) {
+    return (parseInt(f * 100) || 0) + '%';
+  }
+};
 
 var columns = [
-  {
-    id: 'id',
-    label: 'RDD ID',
-    sortBy: "id",
-    render: function(rdd) {
-      var href = [ "", "a", rdd.appId, "rdd", rdd.id ].join('/');
-      return <a href={href}>{rdd.id}</a>;
-    },
-    renderKey: ''
-  },
-  {
-    id: 'name',
-    label: 'RDD Name',
-    sortBy: 'name',
-    render: function(rdd) {
-      var href = [ "", "a", rdd.appId, "rdd", rdd.id ].join('/');
-      return <a href={href}>{rdd.name}</a>;
-    },
-    renderKey: ''
-  },
+  rddIdColumn,
+  rddNameColumn,
   storageLevelColumn,
   { id: 'numCachedPartitions', label: 'Cached Partitions', sortBy: "numCachedPartitions" },
-  {
-    id: 'fractionCached',
-    label: '% Cached',
-    sortBy: function(rdd) {
-      return rdd.numCachedPartitions / rdd.numPartitions;
-    },
-    render: function(f) {
-      return (parseInt(f * 100) || 0) + '%';
-    }
-  }
+  { id: 'numPartitions', label: 'Total Partitions', sortBy: "numPartitions" },
+  fractionCachedColumn
 ].concat(spaceColumns);
 
 Template.rddsPage.helpers({

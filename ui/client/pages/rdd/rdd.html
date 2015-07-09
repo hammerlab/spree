@@ -42,7 +42,7 @@
 <template name="rddExecutorsTable">
   <div class="row-fluid">
     <div class="span12">
-      {{>React component=Table name="rdd-execs" title=title data=executors columns=columns}}
+      {{>React component=Table name="rdd-execs" title=title collection="Executors" columns=columns}}
     </div>
   </div>
 </template>
@@ -50,7 +50,7 @@
 <template name="rddPartitionsTable">
   <div class="row-fluid">
     <div class="span12">
-      {{>React component=Table name="rdd-partitions" title=title data=blocks columns=columns}}
+      {{>React component=Table name="rdd-partitions" title=title collection="RDDBlocks" columns=columns}}
     </div>
   </div>
 </template>

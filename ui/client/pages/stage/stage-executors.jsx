@@ -14,10 +14,10 @@ StageExecutorsTable = React.createClass({
       { id: 'id', label: 'Executor ID', sortBy: 'id' },
       { id: 'host', label: 'Host', sortBy: 'host', showByDefault: false },
       { id: 'port', label: 'Port', sortBy: 'port', showByDefault: false },
-      taskTimeColumn(stageKey)
+      taskTimeColumn.prefix(stageKey)
     ]
-          .concat(taskColumns(stageKey))
-          .concat(ioColumns(stageKey));
+          .concat(taskColumns.map((c) => { return c.prefix(stageKey); }))
+          .concat(ioColumns.map((c) => { return c.prefix(stageKey) }));
 
     return <Table
           title={"Executors (" + this.data.numExecutors + ")"}

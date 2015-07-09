@@ -17,7 +17,7 @@ var columns = [
   durationColumn,
   { id: 'gcTime', label: 'GC Time', sortBy: 'metrics.JVMGCTime', render: formatTime, defaultSort: -1 }
 ]
-      .concat(ioColumns())
+      .concat(ioColumns)
       .concat([
         { id: 'errors', label: 'Errors', sortBy: 'errors' }
       ]);
