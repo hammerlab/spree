@@ -1,9 +1,50 @@
 # Spree
-Spree is a live-updating web UI for Spark built with [MeteorJS](https://www.meteor.com/).
+Spree is a live-updating web UI for Spark built with [MeteorJS][Meteor].
 
 ![Screencast of a Spark job running and UI updating along with it](http://f.cl.ly/items/3r0C1J1Z1v472s1u1F14/Screen%20Recording%202015-07-06%20at%2001.31%20PM.gif)
 
-*Left: `spree` pages showing all jobs and stages; right: a `spark-shell` running a simple job.*
+*Left: `spree` pages showing all jobs and stages, updating in real-time; right: a `spark-shell` running a simple job.*
+
+The front-end is a near-clone of [the web UI that ships with Spark](https://spark.apache.org/docs/1.4.0/spark-standalone.html#monitoring-and-logging), but the back-end is a complete rewrite, providing several notable benefits…
+
+### Real-time Updating
+All data on all pages updates in real-time, thanks to [Meteor][] magic.
+
+### Pagination, Scalability
+Many UI-scaling issues are solved, since all data about all applications is persisted to Mongo instead of maintained in-memory on the driver.
+
+In particular, all tables are paginated (and sort-able by any column) on the server, for graceful handling of arbitrarily large stages, RDDs, etc.
+
+### Persistence
+Spree combines functionality found in the Spark web UI, textual "event log" files, and the "history server" that consumes the latter, and improves on them in several ways, including:
+
+* Executors are not forgotten about when they are removed.
+* Several history-server issues are obviated:
+  * clumsiness loading many/large event-log files into memory:
+    * long start-up time,
+    * caching thorniness,
+  * clumsiness reading in-progress event-log files,
+  * capped number of event-log files that can be processed.
+
+### Usability
+All tables allow easy customization of displayed columns; the tables themselves can also be collapsed/uncollapsed for easy access to content that would otherwise be "below the fold".
+
+Additionally, all table state is stored in cookies for persistence across refreshes / sessions, including:
+* sorted column and direction, 
+* table collapsed/uncollapsed status, 
+* table columns shown/hidden.
+
+### Extensibility
+Being outside of the the Spark repo, Spree is easier to fork/customize than the stock Spark UI / history server.
+
+It also includes two useful modules for exporting/persisting data from Spark applications:
+
+* The [`json-relay`][] module broadcasts all Spark events over a network socket.
+* The [`slim`][] module aggregates stats about running Spark jobs and persists them to indexed Mongo collections.
+
+These offer favorable alternatives to Spark's [`EventLoggingListener`][] and event-log files, respectively, as the tools for exporting and persisting historical data about past and current Spark applications.
+
+Finally, Spree's data models clearly and consistently distinguish between [tasks vs. task-attempts] and [stages vs. stage attempts], which should allow for clearer and more informative presentations of {job, stage, task}s' progress.
 
 ## Usage
 Spree has three components:
@@ -65,6 +106,45 @@ Finally, we'll tell Spark to send events to `spark-json-relay` by passing argume
 
 ## Notes
 
+### Comparison to Spark UI
+Below is a journey through Spark JIRAs past, present, and future, comparing the current state of Spree with Spark's web UI.
+
+#### ~Fixed JIRAs
+I believe the following are resolved, or rather worked around, by Spree:
+* Live updating: [SPARK-5106](https://issues.apache.org/jira/browse/SPARK-5106).
+* Scalability / Pagination: [SPARK-2015](https://issues.apache.org/jira/browse/SPARK-2015), [SPARK-2016](https://issues.apache.org/jira/browse/SPARK-2016), [SPARK-2017](https://issues.apache.org/jira/browse/SPARK-2017), [SPARK-4598](https://issues.apache.org/jira/browse/SPARK-4598).
+* Customizability / Usability: [SPARK-1301](https://issues.apache.org/jira/browse/SPARK-1301), [SPARK-4024](https://issues.apache.org/jira/browse/SPARK-4024)
+
+
+#### Missing Functionality
+Functionality known to be present in the existing Spark web UI / history server and missing from Spree:
+* Updating metrics for in-progress tasks ([hammerlab/slim#7](https://github.com/hammerlab/slim/issues/7))
+* Most viz covered by [SPARK-6942](https://issues.apache.org/jira/browse/SPARK-6942), including:
+  * RDD DAG viz ([SPARK-6943](https://issues.apache.org/jira/browse/SPARK-6943))
+  * Event timeline viz (jobs: [SPARK-3468](https://issues.apache.org/jira/browse/SPARK-3468), stages: [SPARK-7296](https://issues.apache.org/jira/browse/SPARK-7296))
+* Accumulators table
+* Executor thread-dumps
+* Duration confusion ([SPARK-5179](https://issues.apache.org/jira/browse/SPARK-5179))
+* Streaming UI
+
+#### Future Nice-to-haves
+A motley collection of open Spark-UI JIRAs that might be well-suited for fixing in Spree:
+* [SPARK-1622](https://issues.apache.org/jira/browse/SPARK-1622): expose input splits
+* [SPARK-1832](https://issues.apache.org/jira/browse/SPARK-1832): better use of warning colors
+* [SPARK-2533](https://issues.apache.org/jira/browse/SPARK-2533): summary stats about locality-levels
+* [SPARK-3682](https://issues.apache.org/jira/browse/SPARK-3682): call out anomalous/concerning/spiking stats, e.g. heavy spilling.
+* [SPARK-3957](https://issues.apache.org/jira/browse/SPARK-3957): distinguish/separate RDD- vs. non-RDD-storage.
+* [SPARK-4072](https://issues.apache.org/jira/browse/SPARK-4072): better support for streaming blocks.
+* Control spark application / driver from Spree:
+  * [SPARK-4411](https://issues.apache.org/jira/browse/SPARK-4411): Job kill links
+* [SPARK-4906](https://issues.apache.org/jira/browse/SPARK-4906): unpersist applications in `slim` that haven't been heard from in a while.
+* [SPARK-7729](https://issues.apache.org/jira/browse/SPARK-7729): display executors' killed/active status.
+* [SPARK-8469](https://issues.apache.org/jira/browse/SPARK-8469): page-able viz?
+* Various duration-confusion clarification/bug-fixing:
+  * [SPARK-8950](https://issues.apache.org/jira/browse/SPARK-8950): "scheduler delay time"-calculation bug
+  * [SPARK-8778](https://issues.apache.org/jira/browse/SPARK-8778): "scheduler delay" mismatch between event timeline, task list.
+* [SPARK-4800](https://issues.apache.org/jira/browse/SPARK-4800): preview/sample RDD elements.
+
 ### BYO Mongo
 Meteor (hence Spree) spins up its own Mongo instance by default, typically at port 3001.
 
@@ -88,7 +168,7 @@ Now your Spark jobs will write events to the Mongo instance of your choosing, an
 
 [`ui`]: https://github.com/hammerlab/spree/tree/master/ui
 [Meteor]: https://www.meteor.com/
-[MeteorJS]: https://www.meteor.com/
 [`slim`]: https://github.com/hammerlab/slim
+[`json-relay`]: https://github.com/hammerlab/spark-json-relay
 [`spark-json-relay`]: https://github.com/hammerlab/spark-json-relay
 [`SparkListener`]: https://github.com/apache/spark/blob/658814c898bec04c31a8e57f8da0103497aac6ec/core/src/main/scala/org/apache/spark/scheduler/SparkListener.scala#L137
