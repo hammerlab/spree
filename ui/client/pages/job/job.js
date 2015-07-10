@@ -6,12 +6,12 @@ Router.route("/a/:_appId/job/:_jobId", {
   },
   action: function() {
     this.render('jobPage', {
-      data: jQuery.extend(getStagesData(), {
+      data: {
         appId: this.params._appId,
         app: Applications.findOne(),
         job: Jobs.findOne(),
         jobsTab: 1
-      })
+      }
     });
   }
 });

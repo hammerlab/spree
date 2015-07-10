@@ -28,17 +28,46 @@ Table = React.createClass({
             tableSortKey: this.props.name + '-table-sort',
             tableHiddenKey: this.props.name + '-table-hidden',
             tableColumnsKey: this.props.name + '-table-columns',
+            tableOptsKey: this.props.name + '-table-opts',
             showSettings: false,
             showSettingsGear: false
           }
     );
   },
+  maybeSortData(data) {
+    if (this.props.clientSort) {
+      var sort = Cookie.get(this.state.tableSortKey) || this.props.defaultSort;
+      var sortId = sort && sort.id || this.props.sortId || this.props.columns[0].id || 'id';
+      var sortDir = sort && sort.dir || this.props.sortDir || 1;
+      var fn = this.state.colsById[sortId].cmpFn;
+      var rows = data.sort(fn);
+      if (sortDir == -1) {
+        rows = rows.reverse();
+      }
+    }
+    return data;
+  },
   getMeteorData() {
+    var opts = Cookie.get(this.state.tableOptsKey) || {};
+    var sort = opts.sort;
+
+    var obj = {};
+    if (sort) {
+      obj.sort = sort;
+    }
+    var rows =
+          this.maybeSortData(this.props.data) ||
+          ((typeof this.props.collection === 'string') ?
+                window[this.props.collection] :
+                this.props.collection
+          ).find(this.props.selector || {}, obj).fetch();
+
     return {
       sort: Cookie.get(this.state.tableSortKey),
       hidden: Cookie.get(this.state.tableHiddenKey),
-      rows: this.props.data ? (this.props.data.sort ? this.props.data : this.props.data.fetch()) : [],
-      columnSettings: Cookie.get(this.state.tableColumnsKey) || {}
+      rows: rows,
+      columnSettings: Cookie.get(this.state.tableColumnsKey) || {},
+      opts: opts
     }
   },
   toggleCollapsed() {
@@ -75,26 +104,19 @@ Table = React.createClass({
             return displayed;
           });
 
-    var sort = this.data.sort || this.props.defaultSort;
-    var sortId = sort && sort.id || this.props.sortId || displayCols[0].id || 'id';
-    var sortDir = sort && sort.dir || this.props.sortDir || 1;
-    var fn = this.state.colsById[sortId].cmpFn;
-    var rows = this.data.rows.sort(fn);
-    if (sortDir == -1) {
-      rows = rows.reverse();
-    }
-
     var columnHeaders = displayCols.map((column) => {
       return this.props.disableSort ?
             <th key={column.id}>{column.label}</th> :
             <TableHeader
                   key={column.id}
                   tableSortKey={this.state.tableSortKey}
+                  tableOptsKey={this.state.tableOptsKey}
+                  clientSort={this.props.clientSort}
                   {...column} />;
     });
 
     var displayRows =
-          rows.filter((row) => {
+          this.data.rows.filter((row) => {
             var cookie = (row.id in columnCookieMap) ? columnCookieMap[row.id] : null;
             var canDisplay = (cookie != false) && (row.showByDefault != false);
             var hasData = !this.props.hideEmptyRows || emptyRowCheck(row, displayCols);
@@ -113,13 +135,16 @@ Table = React.createClass({
             return displayed;
           });
 
-    var rowElems = displayRows.map((row) => {
+    var rowElems = displayRows.map((row, idx) => {
       var cols = displayCols.map((column) => {
         var render = column.render || row.render;
         var renderValueFn = column.renderValueFn || column.sortBy;
         return <td key={column.id}>{render ? render(renderValueFn(row)) : renderValueFn(row)}</td>
       });
-      var key = this.props.keyAttr ? row[this.props.keyAttr] : (row.id || row._id);
+      var key = row.id || row._id;
+      if (key === undefined) {
+         key = this.props.keyFn ? this.props.keyFn(row) : idx;
+      }
       return <tr key={key}>{cols}</tr>;
     });
 
@@ -135,7 +160,7 @@ Table = React.createClass({
           .join(' ');
 
     var title = <TableTitle
-          settings={this.props.selectRows ? rows : this.props.columns}
+          settings={this.props.selectRows ? this.data.rows : this.props.columns}
           showSettingsFn={this.showSettings}
           displayedMap={displayedMap}
           nonEmptyMap={nonEmptyMap}
@@ -146,6 +171,8 @@ Table = React.createClass({
           showSettingsGear={this.state.showSettingsGear}
           tableHidden={this.data.hidden}
           toggleCollapsed={this.toggleCollapsed}
+          opts={this.data.opts}
+          optsKey={this.state.tableOptsKey}
           {...this.props}/>;
 
     var table = this.data.hidden ? null :

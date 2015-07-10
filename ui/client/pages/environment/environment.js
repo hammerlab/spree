@@ -22,6 +22,6 @@ var columns = [
   { id: '1', label: 'Value', sortBy: "1" }
 ];
 
-Template.environmentPage.helpers({
+Template.environmentTable.helpers({
   columns: function() { return columns; }
 });

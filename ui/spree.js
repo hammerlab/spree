@@ -1,5 +1,7 @@
 
 Applications = new Mongo.Collection("apps");
+RDDBlocks = new Mongo.Collection("rdd_blocks");
+NonRDDBlocks = new Mongo.Collection("non_rdd_blocks");
 Jobs = new Mongo.Collection("jobs");
 Stages = new Mongo.Collection("stages");
 StageAttempts = new Mongo.Collection("stage_attempts");
