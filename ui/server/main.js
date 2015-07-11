@@ -235,7 +235,7 @@ acc = function(key) {
 //});
 
 // StageAttempt page
-Meteor.publish("stage-page", function(appId, stageId, attemptId, pageOpts) {
+Meteor.publish("stage-page", function(appId, stageId, attemptId, tasksOpts, execsOpts) {
   var apps = (appId == 'latest') ? lastApp() : Applications.find({ id: appId });
   var app = apps.fetch()[0];
   appId = (appId == 'latest' && app) ? app.id : appId;
@@ -243,18 +243,24 @@ Meteor.publish("stage-page", function(appId, stageId, attemptId, pageOpts) {
   var executorStageKey = ["stages", stageId, attemptId].join('.');
   var fieldsObj = { id: 1, host: 1, port: 1 };
   fieldsObj[executorStageKey] = 1;
-  var executors = Executors.find({ appId: appId }, { fields: fieldsObj });
 
-  pageOpts = pageOpts || {};
-  pageOpts.limit = pageOpts.limit || 100;
-  pageOpts.sort = pageOpts.sort || { _id: 1 };
+  execsOpts = execsOpts || {};
+  execsOpts.limit = execsOpts.limit || 100;
+  execsOpts.sort = execsOpts.sort || { id: 1 };
+  execsOpts.fields = fieldsObj;
+
+  var executors = Executors.find({ appId: appId }, execsOpts);
+
+  tasksOpts = tasksOpts || {};
+  tasksOpts.limit = tasksOpts.limit || 100;
+  tasksOpts.sort = tasksOpts.sort || { id: 1 };
 
   return [
     apps,
     Stages.find({ appId: appId, id: stageId }),
     StageAttempts.find({ appId: appId, stageId: stageId, id: attemptId }),
     //Tasks.find({ appId: appId, stageId: stageId }),
-    TaskAttempts.find({ appId: appId, stageId: stageId, stageAttemptId: attemptId }, pageOpts),
+    TaskAttempts.find({ appId: appId, stageId: stageId, stageAttemptId: attemptId }, tasksOpts),
     executors
   ];
 });
@@ -314,12 +320,13 @@ Meteor.publish("environment-page", function(appId) {
 Meteor.publish('executors-page', function(appId, opts) {
   apps = (appId == 'latest') ? lastApp() : Applications.find({ id: appId });
   appId = (appId == 'latest') ? apps.fetch()[0].id : appId;
+  opts = opts || {};
   if (opts.limit === undefined) {
     opts.limit = 100;
   }
   return [
     apps,
-    Executors.find({ appId: appId }, opts || {})
+    Executors.find({ appId: appId }, opts)
   ];
 });
 

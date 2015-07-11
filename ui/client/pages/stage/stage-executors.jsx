@@ -21,7 +21,7 @@ StageExecutorsTable = React.createClass({
 
     return <Table
           title={"Executors"}
-          name='executors'
+          name='stage-executors'
           defaultSort={{ id: 'id' }}
           collection={Executors}
           totalCollection="NumExecutors"
