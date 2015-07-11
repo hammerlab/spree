@@ -3,7 +3,7 @@
 Router.route("/", {
   waitOn: function() {
     return [
-      Meteor.subscribe("apps"),
+      Meteor.subscribe("apps", Cookie.get("apps-table-opts")),
       Meteor.subscribe("num-applications")
     ];
   },
