@@ -1,6 +1,4 @@
 
-SummaryMetrics = new Mongo.Collection("summary-metrics");
-
 // StageAttempt page
 Router.route("/a/:_appId/stage/:_stageId", {
   waitOn: function() {
