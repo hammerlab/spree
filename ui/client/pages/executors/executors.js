@@ -9,7 +9,6 @@ Router.route("/a/:_appId/executors", {
       data: {
         appId: this.params._appId,
         app: Applications.findOne(),
-        executors: Executors.find(),
         executorsTab: 1
       }
     });

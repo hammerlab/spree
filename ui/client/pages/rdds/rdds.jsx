@@ -9,7 +9,6 @@ Router.route("/a/:_appId/storage", {
       data: {
         appId: this.params._appId,
         app: Applications.findOne(),
-        rdds: RDDs.find(),
         storageTab: 1
       }
     });
