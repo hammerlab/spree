@@ -5,14 +5,14 @@ function emptyColumnCheck(col, rows) {
   }
   for (var i = 0; i < rows.length; ++i) {
     var row = rows[i];
-    if (col.sortBy(row)) return true;
+    if (col.sortBy(row) !== undefined) return true;
   }
   return false;
 }
 
 function emptyRowCheck(row, cols) {
   for (var i = 1; i < cols.length; i++) {
-    if (cols[i].sortBy(row)) {
+    if (cols[i].sortBy(row) !== undefined) {
       return true;
     }
   }
