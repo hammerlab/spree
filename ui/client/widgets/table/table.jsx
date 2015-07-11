@@ -5,14 +5,15 @@ function emptyColumnCheck(col, rows) {
   }
   for (var i = 0; i < rows.length; ++i) {
     var row = rows[i];
-    if (col.sortBy(row) !== undefined) return true;
+    var val = col.sortBys[0](row);
+    if (val || (val == 0 && col.truthyZero)) return true;
   }
   return false;
 }
 
 function emptyRowCheck(row, cols) {
   for (var i = 1; i < cols.length; i++) {
-    if (cols[i].sortBy(row) !== undefined) {
+    if (cols[i].sortBys[0](row) !== undefined) {
       return true;
     }
   }
@@ -22,17 +23,19 @@ function emptyRowCheck(row, cols) {
 Table = React.createClass({
   mixins: [ReactMeteorData],
   getInitialState() {
-    return jQuery.extend(
-          processColumns(this.props.columns),
-          {
-            tableSortKey: this.props.name + '-table-sort',
-            tableHiddenKey: this.props.name + '-table-hidden',
-            tableColumnsKey: this.props.name + '-table-columns',
-            tableOptsKey: this.props.name + '-table-opts',
-            showSettings: false,
-            showSettingsGear: false
-          }
-    );
+    var colsById = {};
+    this.props.columns.forEach((c) => {
+      colsById[c.id] = c;
+    });
+    return {
+      colsById: colsById,
+      tableSortKey: this.props.name + '-table-sort',
+      tableHiddenKey: this.props.name + '-table-hidden',
+      tableColumnsKey: this.props.name + '-table-columns',
+      tableOptsKey: this.props.name + '-table-opts',
+      showSettings: false,
+      showSettingsGear: false
+    };
   },
   maybeSortData(data) {
     if (this.props.clientSort) {
@@ -81,7 +84,7 @@ Table = React.createClass({
     var displayedMap = {};
     var columnIDs = {};
     var displayCols =
-          this.state.columns.filter((col) => {
+          this.props.columns.filter((col) => {
             if (col.id in columnIDs) {
               throw new Error("Duplicate column ID: ", col.id, col);
             }
@@ -135,10 +138,12 @@ Table = React.createClass({
             return displayed;
           });
 
+    var numRows = displayRows.length;
+
     var rowElems = displayRows.map((row, idx) => {
       var cols = displayCols.map((column) => {
         var render = column.render || row.render;
-        var renderValueFn = column.renderValueFn || column.sortBy;
+        var renderValueFn = column.renderValueFn || column.sortBys[0];
         return <td key={column.id}>{render ? render(renderValueFn(row)) : renderValueFn(row)}</td>
       });
       var key = row.id || row._id;
@@ -159,21 +164,23 @@ Table = React.createClass({
           .concat(this.data.hidden ? ['hidden'] : [])
           .join(' ');
 
-    var title = <TableTitle
-          settings={this.props.selectRows ? this.data.rows : this.props.columns}
-          showSettingsFn={this.showSettings}
-          displayedMap={displayedMap}
-          nonEmptyMap={nonEmptyMap}
-          canDisplayMap={canDisplayMap}
-          tableColumnsKey={this.state.tableColumnsKey}
-          tableName={this.props.name}
-          visible={this.state.showSettings}
-          showSettingsGear={this.state.showSettingsGear}
-          tableHidden={this.data.hidden}
-          toggleCollapsed={this.toggleCollapsed}
-          opts={this.data.opts}
-          optsKey={this.state.tableOptsKey}
-          {...this.props}/>;
+    var title =
+          <TableTitle
+                settings={this.props.selectRows ? this.data.rows : this.props.columns}
+                showSettingsFn={this.showSettings}
+                displayedMap={displayedMap}
+                nonEmptyMap={nonEmptyMap}
+                canDisplayMap={canDisplayMap}
+                tableColumnsKey={this.state.tableColumnsKey}
+                tableName={this.props.name}
+                visible={this.state.showSettings}
+                showSettingsGear={this.state.showSettingsGear}
+                tableHidden={this.data.hidden}
+                toggleCollapsed={this.toggleCollapsed}
+                opts={this.data.opts}
+                optsKey={this.state.tableOptsKey}
+                numRows={numRows}
+                {...this.props}/>;
 
     var table = this.data.hidden ? null :
           <TableElem

@@ -46,7 +46,7 @@ Template.rddExecutorsTable.helpers({
 
 // RDD per-partition table
 var blockColumns = [
-  { id: 'id', label: 'Block ID', sortBy: "id" },
+  new Column('id', 'Block ID', 'id', { truthyZero: true }),
   storageLevelColumn
 ]
       .concat(spaceColumns)

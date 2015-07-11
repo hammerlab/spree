@@ -1,4 +1,6 @@
 
+extend = Meteor.npmRequire("extend");
+
 TaskAttempts = new Mongo.Collection("task_attempts");
 
 console.log("Starting server with Mongo URL: " + process.env.MONGO_URL);
@@ -256,7 +258,7 @@ Meteor.publish("stage-page", function(appId, stageId, attemptId, pageOpts) {
 
 
 // Storage page
-Meteor.publish("rdds-page", function(appId) {
+Meteor.publish("rdds-page", function(appId, opts) {
   apps = (appId == 'latest') ? lastApp() : Applications.find({ id: appId });
   appId = (appId == 'latest') ? apps.fetch()[0].id : appId;
   var rdds = RDDs.find({
@@ -269,7 +271,7 @@ Meteor.publish("rdds-page", function(appId) {
       { "StorageLevel.Replication": { $ne: 1} }
     ],
     unpersisted: { $ne: true }
-  });
+  }, opts || {});
   return [
     apps,
     rdds
@@ -317,47 +319,114 @@ Meteor.publish('executors-page', function(appId, opts) {
   ];
 });
 
-Meteor.publish('num-executors', function(appId) {
+function publishNum(collectionName, collection, findFields, endedFn) {
+  findFields = findFields || {};
+
+  Meteor.publish(collectionName, function(appId) {
+    var initializing = true;
+    var self = this;
+    var count = 0;
+
+    var appObjId = null;
+    var appHandle = Applications.find({ id: appId }, { fields: {} }).observeChanges({
+      added: function(_id, a) {
+        appObjId = _id;
+        if (!initializing) {
+          self.added(collectionName, appObjId, { count: count });
+        }
+      }
+    });
+
+    var extraArgs = Array.prototype.slice.call(arguments, 1);
+    var findObj = extend(
+          { appId: appId },
+          (typeof findFields === 'function') ?
+                findFields.call(this, extraArgs) :
+                findFields
+    );
+    var handle = collection.find(findObj, { fields: {} }).observeChanges({
+      added: function (_id, o) {
+        count++;
+        if (!initializing && appObjId) {
+          self.changed(collectionName, appObjId, { count: count });
+        }
+      },
+      changed: function (_id, o) {
+        if (!endedFn || endedFn(o)) {
+          count--;
+          if (!initializing && appObjId) {
+            self.changed(collectionName, appObjId, { count: count });
+          }
+        }
+      }
+    });
+
+    initializing = false;
+    if (appObjId) {
+      this.added(collectionName, appObjId, { count: count });
+    }
+    this.ready();
+
+    this.onStop(function() {
+      appHandle.stop();
+      handle.stop();
+    });
+  });
+}
+
+[
+  [ 'num-executors', Executors ],
+  [
+    'num-rdds',
+    RDDs,
+    {
+      $or: [
+        { "StorageLevel.UseDisk": true },
+        { "StorageLevel.UseMemory": true },
+        { "StorageLevel.UseExternalBlockStore": true },
+        { "StorageLevel.Deserialized": true },
+        { "StorageLevel.Replication": { $ne: 1} }
+      ],
+      unpersisted: { $ne: true }
+    }
+  ],
+  [ 'num-jobs', Jobs ],
+  [ 'num-stage-attempts', StageAttempts, function(jobId) { return { jobId: jobId }; } ]
+].forEach(
+      function(arr) {
+        publishNum.apply(this, arr);
+      }
+);
+
+Meteor.publish("num-applications", function() {
   var initializing = true;
   var self = this;
   var count = 0;
 
-  var appObjId = null;
-  var added = false;
-  var appHandle = Applications.find({ id: appId }, { fields: {} }).observeChanges({
-    added: function(_id, a) {
-      appObjId = _id;
-      if (!initializing) {
-        self.added("num-executors", appObjId, { count: count });
-      }
-    }
-  });
+  var _id = new Mongo.ObjectID();
 
-  var handle = Executors.find({appId: appId}, {fields: {}}).observeChanges({
-    added: function (_id, e) {
+  var handle = Applications.find({}, { fields: {} }).observeChanges({
+    added: function (_id, a) {
       count++;
-      if (!initializing && appObjId) {
-        self.changed("num-executors", appObjId, { count: count });
+      if (!initializing) {
+        self.changed("num-applications", _id, { count: count });
       }
     },
     changed: function (_id, e) {
-      if ('time' in e && 'end' in e.time) {
+      if ('unpersisted' in e) {
         count--;
-        if (!initializing && appObjId) {
-          self.changed("num-executors", appObjId, { count: count });
+        if (!initializing) {
+          self.changed("num-applications", _id, { count: count });
         }
       }
     }
   });
 
   initializing = false;
-  if (appObjId) {
-    this.added("num-executors", appObjId, { count: count });
-  }
+  this.added("num-applications", _id, { count: count });
   this.ready();
 
   this.onStop(function() {
-    appHandle.stop();
     handle.stop();
   });
 });

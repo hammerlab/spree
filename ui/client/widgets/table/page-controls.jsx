@@ -52,6 +52,9 @@ TablePageControls = React.createClass({
     }
   },
   render() {
+    if (!this.props.paginate || !(this.props.total && this.props.total > this.props.size)) {
+      return null;
+    }
     var pageIdx = parseInt(this.props.start / this.props.size);
     var maxPageIdx = parseInt(Math.ceil(this.props.total / this.props.size));
     var pageLinkIdxs = [];
@@ -75,14 +78,12 @@ TablePageControls = React.createClass({
             content :
             <a key={idx} className="page-link" onClick={this.onPageClick(idx).bind(this)}>{content}</a>;
     }.bind(this));
-    return (this.props.total && this.props.total > this.props.size) ?
-          <span className="page-controls">
-            {this.props.start ? <span className="double-left left" onClick={this.firstPage}></span> : null}
-            {this.props.start ? <span className="single-left left" onClick={this.prevPage}>️</span> : null}
-            {pageLinks.length ? pageLinks : null}
-            {(this.props.end < this.props.total) ? <span className="single-right right" onClick={this.nextPage}>️︎</span> : null }
-            {(this.props.end < this.props.total) ? <span className="double-right right" onClick={this.lastPage}>︎</span> : null }
-          </span> :
-          null;
+    return <span className="page-controls">
+      {this.props.start ? <span className="double-left left" onClick={this.firstPage}></span> : null}
+      {this.props.start ? <span className="single-left left" onClick={this.prevPage}>️</span> : null}
+      {pageLinks.length ? pageLinks : null}
+      {(this.props.end < this.props.total) ? <span className="single-right right" onClick={this.nextPage}>️︎</span> : null }
+      {(this.props.end < this.props.total) ? <span className="double-right right" onClick={this.lastPage}>︎</span> : null }
+    </span>;
   }
 });

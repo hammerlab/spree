@@ -2,7 +2,12 @@
 // Job page
 Router.route("/a/:_appId/job/:_jobId", {
   waitOn: function() {
-    return Meteor.subscribe('job-page', this.params._appId, parseInt(this.params._jobId));
+    var appId = this.params._appId;
+    var jobId = parseInt(this.params._jobId);
+    return [
+      Meteor.subscribe('job-page', appId, jobId),
+      Meteor.subscribe('num-stage-attempts', appId, jobId)
+    ];
   },
   action: function() {
     this.render('jobPage', {

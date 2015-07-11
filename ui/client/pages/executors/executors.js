@@ -19,7 +19,7 @@ Router.route("/a/:_appId/executors", {
 });
 
 var columns = [
-  { id: 'id', label: 'ID', sortBy: 'id' },
+  new Column('id', 'ID', 'id', { truthyZero: 0 }),
   hostColumn,
   portColumn,
   numBlocksColumn,

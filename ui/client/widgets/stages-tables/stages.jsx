@@ -7,24 +7,29 @@ function stageAttemptUrl(attempt) {
   return [ '', 'a', attempt.appId, 'stage', attempt.stageId ].join('/') + (attempt.id ? ('?attempt=' + attempt.id) : '');
 }
 
-var stageIDColumn = {
-  label: 'Stage ID',
-  id: 'id',
-  sortBy: 'stageId',
-  render: (attempt) => {
-    return <a href={stageAttemptUrl(attempt)}>{
-      attempt.stageId + (attempt.id ? (" (" + attempt.id + ")") : "")
-    }</a>;
-  },
-  renderKey: ''
-};
-var stageNameColumn = {
-  label: 'Description',
-  id: 'desc',
-  sortBy: 'name',
-  render: (attempt) => { return <a href={stageAttemptUrl(attempt)}>{attempt.name}</a>; },
-  renderKey: ''
-};
+var stageIDColumn = new Column(
+      'id',
+      'Stage ID',
+      'stageId',
+      {
+        render: (attempt) => {
+          return <a href={stageAttemptUrl(attempt)}>{
+            attempt.stageId + (attempt.id ? (" (" + attempt.id + ")") : "")
+          }</a>;
+        },
+        renderKey: '',
+        truthyZero: true
+      }
+);
+var stageNameColumn = new Column(
+      'desc',
+      'Description',
+      'name',
+      {
+        render: (attempt) => { return <a href={stageAttemptUrl(attempt)}>{attempt.name}</a>; },
+        renderKey: ''
+      }
+);
 
 Template.registerHelper('getStageData', () => {
   var selectors = [
@@ -80,6 +85,7 @@ Template.registerHelper("tableData", function(objType, title, objs, titleId, col
   return {
     title: title,
     titleId: titleId,
+    totalCollection: objType == 'stages' ? 'NumStages' : 'NumJobs',
     name: objType,
     data: objs[objType],
     num: objs.num,

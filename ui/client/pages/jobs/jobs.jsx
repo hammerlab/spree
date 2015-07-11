@@ -2,7 +2,10 @@
 // Application/Jobs page
 Router.route("/a/:_appId", {
   waitOn: function() {
-    return Meteor.subscribe("jobs-page", this.params._appId);
+    return [
+      Meteor.subscribe("jobs-page", this.params._appId),
+      Meteor.subscribe("num-jobs", this.params._appId)
+    ];
   },
   action: function() {
     this.render('jobsPage', {
@@ -98,29 +101,33 @@ Template.jobsPage.events({
   'click #all-link': setShowAll
 });
 
-var jobIdColumn = { label: 'Job ID', id: 'id', sortBy: 'id' };
-var stageIDsColumn = {
-  label: 'Stage IDs',
-  id: 'stageIDs',
-  sortBy: 'stageIDs',
-  render: function(job) {
-    return job.stageIDs.map((stageID, idx) => {
-      return <span key={stageID}>
+var jobIdColumn = new Column('id', 'Job ID', 'id', { truthyZero: true });
+var stageIDsColumn = new Column(
+      'stageIDs',
+      'Stage IDs',
+      'stageIDs',
+      {
+        render: function(job) {
+          return job.stageIDs.map((stageID, idx) => {
+            return <span key={stageID}>
               {idx ? ", " : ""}
-        <a href={[ '', 'a', job.appId, 'stage', stageID ].join('/')}>{stageID}</a>
+              <a href={[ '', 'a', job.appId, 'stage', stageID ].join('/')}>{stageID}</a>
             </span>;
-    });
-  },
-  renderKey: '',
-  showByDefault: false
-};
-var jobNameColumn = {
-  label: 'Description',
-  id: 'desc',
-  sortBy: 'name',
-  render: function (job) {
-    return <a href={[ "", "a", job.appId, "job", job.id ].join('/')}>{job.name}</a>;
-  },
-  renderKey: ''
-};
+          });
+        },
+        renderKey: '',
+        showByDefault: false
+      }
+);
+var jobNameColumn = new Column(
+      'name',
+      'Description',
+      'name',
+      {
+        render: function (job) {
+          return <a href={[ "", "a", job.appId, "job", job.id ].join('/')}>{job.name}</a>;
+        },
+        renderKey: ''
+      }
+);
 

@@ -2,7 +2,10 @@
 // Storage page
 Router.route("/a/:_appId/storage", {
   waitOn: function() {
-    return Meteor.subscribe("rdds-page", this.params._appId);
+    return [
+      Meteor.subscribe("rdds-page", this.params._appId, Cookie.get("rdds-table-opts")),
+      Meteor.subscribe("num-rdds", this.params._appId)
+    ];
   },
   action: function() {
     this.render('rddsPage', {
@@ -15,45 +18,49 @@ Router.route("/a/:_appId/storage", {
   }
 });
 
-var rddIdColumn = {
-  id: 'id',
-  label: 'RDD ID',
-  sortBy: "id",
-  render: function(rdd) {
-    var href = [ "", "a", rdd.appId, "rdd", rdd.id ].join('/');
-    return <a href={href}>{rdd.id}</a>;
-  },
-  renderKey: ''
-};
+var rddIdColumn = new Column(
+      'id',
+      'RDD ID',
+      "id",
+      {
+        render: function(rdd) {
+          var href = [ "", "a", rdd.appId, "rdd", rdd.id ].join('/');
+          return <a href={href}>{rdd.id}</a>;
+        },
+        renderKey: ''
+      }
+);
 
-var rddNameColumn = {
-  id: 'name',
-  label: 'RDD Name',
-  sortBy: 'name',
-  render: function(rdd) {
-    var href = [ "", "a", rdd.appId, "rdd", rdd.id ].join('/');
-    return <a href={href}>{rdd.name}</a>;
-  },
-  renderKey: ''
-};
+var rddNameColumn = new Column(
+      'name',
+      'RDD Name',
+      'name',
+      {
+        render: function(rdd) {
+          var href = [ "", "a", rdd.appId, "rdd", rdd.id ].join('/');
+          return <a href={href}>{rdd.name}</a>;
+        },
+        renderKey: ''
+      }
+);
 
-var fractionCachedColumn = {
-  id: 'fractionCached',
-  label: '% Cached',
-  sortBy: function(rdd) {
-    return rdd.numCachedPartitions / rdd.numPartitions;
-  },
-  render: function(f) {
-    return (parseInt(f * 100) || 0) + '%';
-  }
-};
+var fractionCachedColumn = new Column(
+      'fractionCached',
+      '% Cached',
+      'fractionCached',
+      {
+        render: function(f) {
+          return (parseInt(f * 100) || 0) + '%';
+        }
+      }
+);
 
 var columns = [
   rddIdColumn,
   rddNameColumn,
   storageLevelColumn,
-  { id: 'numCachedPartitions', label: 'Cached Partitions', sortBy: "numCachedPartitions" },
-  { id: 'numPartitions', label: 'Total Partitions', sortBy: "numPartitions" },
+  new Column('numCachedPartitions', 'Cached Partitions', "numCachedPartitions"),
+  new Column('numPartitions', 'Total Partitions', "numPartitions"),
   fractionCachedColumn
 ].concat(spaceColumns);
 

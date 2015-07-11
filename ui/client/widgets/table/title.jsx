@@ -24,20 +24,30 @@ TableTitle = React.createClass({
       sort: this.props.opts && this.props.opts.sort,
       total: total
     };
+
+    var titlePageInfo =
+          !this.props.hideRowCount &&
+          (
+                ' (' +
+                (
+                      this.props.paginate ?
+                            (
+                                  (end < total || start > 0) ?
+                                        ((total ?
+                                                    ((start+1 == end) ? end : ((start+1) + '-' + end)) :
+                                                    0
+                                        ) + ' of ' + total) :
+                                        end
+                            ) :
+                            this.props.numRows
+                ) +
+                ')'
+          );
+
     return <div className="title-container">
       <h4 id={this.props.titleId} className="title">
         <span className="title-label">{
-          this.props.title +
-          ' (' +
-          (
-                (end < total || start > 0) ?
-                      ((total ?
-                                  ((start+1 == end) ? end : ((start+1) + '-' + end)) :
-                                  0
-                      ) + ' of ' + total) :
-                      end
-          ) +
-          ')'
+          this.props.title + (titlePageInfo ? titlePageInfo : '')
         }</span>
         {
           this.props.tableHidden ? null :

@@ -2,7 +2,10 @@
 // Applications page
 Router.route("/", {
   waitOn: function() {
-    return Meteor.subscribe("apps");
+    return [
+      Meteor.subscribe("apps"),
+      Meteor.subscribe("num-applications")
+    ];
   },
   action:function() {
     this.render('appsPage', { data: { apps: Applications.find() } });
@@ -10,12 +13,12 @@ Router.route("/", {
 });
 
 var columns = [
-  { id: 'id', label: 'App ID', sortBy: 'id', render: (id) => { return <a href={"/a/" + id}>{id}</a>; } },
+  new Column('id', 'App ID', 'id', { render: (id) => { return <a href={"/a/" + id}>{id}</a>; } }),
   nameColumn,
-  { id: 'start', label: 'Started', sortBy: 'time.start', render: formatDateTime },
-  { id: 'end', label: 'Completed', sortBy: 'time.end', render: formatDateTime },
+  new Column('start', 'Started', 'time.start', { render: formatDateTime }),
+  new Column('end', 'Completed', 'time.end', { render: formatDateTime }),
   durationColumn,
-  { id: 'user', label: 'User', sortBy: 'user' }
+  new Column('user', 'User', 'user')
 ];
 
 Template.appsPage.helpers({

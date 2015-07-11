@@ -18,8 +18,8 @@ Router.route("/a/:_appId/environment", {
 
 
 var columns = [
-  { id: '0', label: 'Name', sortBy: "0" },
-  { id: '1', label: 'Value', sortBy: "1" }
+  new Column('0', 'Name', "0" ),
+  new Column('1', 'Value', "1" )
 ];
 
 Template.environmentTable.helpers({

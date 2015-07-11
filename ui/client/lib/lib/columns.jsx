@@ -1,26 +1,56 @@
 
+Column = function(id, label, sortKeys, opts) {
+  this.id = id;
+  this.label = label;
+  if (typeof sortKeys === 'string') {
+    this.sortKeys = [ sortKeys ];
+  } else if (sortKeys instanceof Array) {
+    this.sortKeys = sortKeys;
+  } else {
+    throw new Error("Invalid sort keys: ", sortKeys);
+  }
+  this.sortBys = this.sortKeys.map(function(key) { return acc(key); });
+
+  this.cmpFn = function(a, b) {
+    for (var i = 0; i < this.sortBys.length; i++) {
+      var fna = this.sortBys[i](a);
+      var fnb = this.sortBys[i](b);
+      if (fna < fnb || fna === undefined) return -1;
+      if (fna > fnb || fnb === undefined) return 1;
+    }
+    return 0;
+  }.bind(this);
+
+  if (opts) {
+    this.showInEmptyTable = opts.showInEmptyTable;
+    this.render = opts.render;
+    this.renderKey = opts.renderKey;
+    this.defaultSort = opts.defaultSort;
+    this.truthyZero = opts.truthyZero;
+  }
+
+  if (this.renderKey !== undefined) {
+    this.renderValueFn = acc(this.renderKey);
+  }
+
+  this.prefix = function(prefix) {
+    return new Column(
+          id,
+          label,
+          prefix ?
+                this.sortKeys.map((key) => { return prefix + '.' + key; }) :
+                this.sortKeys,
+          opts
+    );
+  }
+};
+
 taskColumns = [
   new Column('activeTasks', 'Active Tasks', 'taskCounts.running'),
   new Column('failedTasks', 'Failed Tasks', 'taskCounts.failed'),
   new Column('completeTasks', 'Complete Tasks', 'taskCounts.succeeded'),
   new Column('totalTasks', 'Total Tasks', 'taskCounts.num')
 ];
-
-function Column(id, label, sortBy, opts) {
-  this.id = id;
-  this.label = label;
-  this.sortBy = sortBy;
-  if (opts) {
-    this.showInEmptyTable = opts.showInEmptyTable;
-    this.render = opts.render;
-    this.renderKey = opts.renderKey;
-    this.defaultSort = opts.defaultSort;
-  }
-
-  this.prefix = function(prefix) {
-    return new Column(id, label, prefix ? (prefix + '.' + sortBy) : sortBy, opts);
-  }
-}
 
 inputBytesColumn = new Column('input', 'Input', 'metrics.InputMetrics.BytesRead', { showInEmptyTable: false, render: formatBytes, defaultSort: -1 });
 inputRecordsColumn = new Column('inputRecords', 'Records', 'metrics.InputMetrics.RecordsRead', { showInEmptyTable: false, defaultSort: -1 });

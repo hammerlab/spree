@@ -48,6 +48,7 @@ TasksTable = React.createClass({
     var start = (opts.skip || 0);
     var total = this.data.stage && this.data.stage.taskCounts && this.data.stage.taskCounts.num || 0;
     var end = Math.min(start + (opts.limit || 100), total);
+    //var title = 'Tasks (' + (total ? ((start+1) + '-' + end) : 0) + ' of ' + total + ')';
     var title = 'Tasks';
     return <div>
       <Table
