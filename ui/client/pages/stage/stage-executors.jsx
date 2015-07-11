@@ -20,10 +20,11 @@ StageExecutorsTable = React.createClass({
           .concat(ioColumns.map((c) => { return c.prefix(stageKey) }));
 
     return <Table
-          title={"Executors (" + this.data.numExecutors + ")"}
+          title={"Executors"}
           name='executors'
           defaultSort={{ id: 'id' }}
           collection={Executors}
+          totalCollection={NumExecutors}
           columns={executorColumns} />
           ;
   }

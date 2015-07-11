@@ -78,7 +78,7 @@ Template.stagesTables.events({
 
 Template.registerHelper("tableData", function(objType, title, objs, titleId, columns, alwaysShow) {
   return {
-    title: title + " (" + objs.num + ")",
+    title: title,
     titleId: titleId,
     name: objType,
     data: objs[objType],

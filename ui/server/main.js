@@ -305,11 +305,59 @@ Meteor.publish("environment-page", function(appId) {
 });
 
 // Executors Page
-Meteor.publish('executors-page', function(appId) {
+Meteor.publish('executors-page', function(appId, opts) {
   apps = (appId == 'latest') ? lastApp() : Applications.find({ id: appId });
   appId = (appId == 'latest') ? apps.fetch()[0].id : appId;
+  if (opts.limit === undefined) {
+    opts.limit = 100;
+  }
   return [
     apps,
-    Executors.find({ appId: appId })
+    Executors.find({ appId: appId }, opts || {})
   ];
+});
+
+Meteor.publish('num-executors', function(appId) {
+  var initializing = true;
+  var self = this;
+  var count = 0;
+
+  var appObjId = null;
+  var added = false;
+  var appHandle = Applications.find({ id: appId }, { fields: {} }).observeChanges({
+    added: function(_id, a) {
+      appObjId = _id;
+      if (!initializing) {
+        self.added("num-executors", appObjId, { count: count });
+      }
+    }
+  });
+
+  var handle = Executors.find({appId: appId}, {fields: {}}).observeChanges({
+    added: function (_id, e) {
+      count++;
+      if (!initializing && appObjId) {
+        self.changed("num-executors", appObjId, { count: count });
+      }
+    },
+    changed: function (_id, e) {
+      if ('time' in e && 'end' in e.time) {
+        count--;
+        if (!initializing && appObjId) {
+          self.changed("num-executors", appObjId, { count: count });
+        }
+      }
+    }
+  });
+
+  initializing = false;
+  if (appObjId) {
+    this.added("num-executors", appObjId, { count: count });
+  }
+  this.ready();
+
+  this.onStop(function() {
+    appHandle.stop();
+    handle.stop();
+  });
 });

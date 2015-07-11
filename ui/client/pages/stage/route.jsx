@@ -7,7 +7,8 @@ Router.route("/a/:_appId/stage/:_stageId", {
     var attemptId = this.params.query.attempt ? parseInt(this.params.query.attempt) : 0;
     return [
       Meteor.subscribe('stage-page', appId, stageId, attemptId, Cookie.get("tasks-table-opts")),
-      Meteor.subscribe("stage-summary-metrics", appId, stageId, attemptId)
+      Meteor.subscribe("stage-summary-metrics", appId, stageId, attemptId),
+      Meteor.subscribe("num-executors", appId)
     ];
   },
   action: function() {

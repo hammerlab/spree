@@ -2,7 +2,10 @@
 // Executors Page
 Router.route("/a/:_appId/executors", {
   waitOn: function() {
-    return Meteor.subscribe('executors-page', this.params._appId);
+    return [
+      Meteor.subscribe('executors-page', this.params._appId, Cookie.get("executors-table-opts")),
+      Meteor.subscribe('num-executors', this.params._appId)
+    ];
   },
   action: function() {
     this.render("executorsPage", {
@@ -28,8 +31,5 @@ var columns = [
       .concat(ioBytesColumns);
 
 Template.executorsPage.helpers({
-  columns: function() { return columns; },
-  title: function() {
-    return "Executors (" + Executors.find().count() + ")";
-  }
+  columns: function() { return columns; }
 });
