@@ -13,9 +13,8 @@ function emptyColumnCheck(col, rows) {
 
 function emptyRowCheck(row, cols) {
   for (var i = 1; i < cols.length; i++) {
-    if (cols[i].sortBys[0](row) !== undefined) {
-      return true;
-    }
+    var val = cols[i].sortBys[0](row);
+    if (val || (val == 0 && cols[i].truthyZero)) return true;
   }
   return false;
 }

@@ -1,11 +1,11 @@
 
 var statsColumns = [
-  { id: 'id', label: 'Metric', sortBy: 'label' },
-  { id: 'min', label: 'Min', sortBy: 'stats.min' },
-  { id: 'tf', label: '25th Percentile', sortBy: 'stats.tf' },
-  { id: 'median', label: 'Median', sortBy: 'stats.median' },
-  { id: 'sf', label: '75th Percentile', sortBy: 'stats.sf' },
-  { id: 'max', label: 'Max', sortBy: 'stats.max' }
+  new Column('id', 'Metric', 'label'),
+  new Column('min', 'Min', 'stats.min'),
+  new Column('tf', '25th Percentile', 'stats.tf'),
+  new Column('median', 'Median', 'stats.median'),
+  new Column('sf', '75th Percentile', 'stats.sf'),
+  new Column('max', 'Max', 'stats.max')
 ];
 
 SummaryMetricsTable = React.createClass({

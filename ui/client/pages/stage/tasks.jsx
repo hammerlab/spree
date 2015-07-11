@@ -5,21 +5,21 @@ statusStr = function(status) {
 
 // Per-task table
 var columns = [
-  { id: 'index', label: 'Index', sortBy: 'index' },
-  { id: 'id', label: 'ID', sortBy: 'id' },
-  { id: 'attempt', label: 'Attempt', sortBy: 'attempt' },
-  { id: 'status', label: 'Status', sortBy: 'status', render: statusStr },
-  { id: 'localityLevel', label: 'Locality Level', sortBy: 'locality' },
-  { id: 'execId', label: 'Executor', sortBy: 'execId' },
+  new Column('index', 'Index', 'index', { truthyZero: true }),
+  new Column('id', 'ID', 'id'),
+  new Column('attempt', 'Attempt', 'attempt'),
+  new Column('status', 'Status', 'status', { render: statusStr }),
+  new Column('localityLevel', 'Locality Level', 'locality'),
+  new Column('execId', 'Executor', 'execId'),
   hostColumn,
   portColumn,
   startColumn,
   durationColumn,
-  { id: 'gcTime', label: 'GC Time', sortBy: 'metrics.JVMGCTime', render: formatTime, defaultSort: -1 }
+  new Column('gcTime', 'GC Time', 'metrics.JVMGCTime', { render: formatTime, defaultSort: -1 })
 ]
       .concat(ioColumns)
       .concat([
-        { id: 'errors', label: 'Errors', sortBy: 'errors' }
+        new Column('errors', 'Errors', 'errors')
       ]);
 
 TasksTable = React.createClass({
