@@ -63,7 +63,8 @@ Template.stagesTables.helpers({
       stageNameColumn,
       startColumn,
       durationColumn,
-      tasksColumn
+      tasksColumn,
+      taskIdxsColumn
     ].concat(ioBytesColumns);
   }
 });

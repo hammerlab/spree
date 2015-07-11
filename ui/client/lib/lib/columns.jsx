@@ -27,6 +27,7 @@ Column = function(id, label, sortKeys, opts) {
     this.renderKey = opts.renderKey;
     this.defaultSort = opts.defaultSort;
     this.truthyZero = opts.truthyZero;
+    this.showByDefault = opts.showByDefault;
   }
 
   if (this.renderKey !== undefined) {
@@ -86,7 +87,8 @@ durationColumn = new Column('duration', 'Duration', 'duration', { render: format
 function progressBar(counts) {
   return <ProgressBar counts={counts} />;
 }
-tasksColumn = new Column('tasks', 'Tasks: Succeeded/Total', 'taskCounts.succeeded', { render: progressBar, renderKey: 'taskCounts' });
+tasksColumn = new Column('tasks', 'Tasks Attempts', 'taskCounts.succeeded', { render: progressBar, renderKey: 'taskCounts', showByDefault: false });
+taskIdxsColumn = new Column('tasksIdxs', 'Tasks: Succeeded/Total', 'taskIdxCounts.succeeded', { render: progressBar, renderKey: 'taskIdxCounts' });
 stagesColumn = new Column('stages', 'Stages: Succeeded/Total', 'stageCounts.succeeded', { render: progressBar, renderKey: 'stageCounts' });
 
 maxMemColumn = new Column('maxMemSize', 'Max. Memory', 'maxMem', { defaultSort: -1, render: formatBytes });

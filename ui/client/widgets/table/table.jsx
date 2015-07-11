@@ -67,8 +67,8 @@ Table = React.createClass({
     return {
       sort: Cookie.get(this.state.tableSortKey),
       hidden: Cookie.get(this.state.tableHiddenKey),
-      rows: rows,
       columnSettings: Cookie.get(this.state.tableColumnsKey) || {},
+      rows: rows,
       opts: opts
     }
   },
