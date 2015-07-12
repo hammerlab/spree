@@ -52,6 +52,15 @@ Table = React.createClass({
   getMeteorData() {
     var opts = Cookie.get(this.state.tableOptsKey) || {};
     var sort = opts.sort;
+    if (!sort) {
+      if (this.props.sortId) {
+        var sortCol = this.state.colsById[this.props.sortId];
+        sort = {};
+        sortCol.sortKeys.forEach((k) => {
+          sort[k] = sortCol.defaultSort || 1;
+        });
+      }
+    }
 
     var obj = {};
     if (sort) {

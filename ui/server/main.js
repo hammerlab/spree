@@ -52,9 +52,6 @@ Meteor.publish("test-page", function() {
 // Apps page
 Meteor.publish("apps", function(opts) {
   opts = opts || {};
-  if (!opts.sort) {
-    opts.sort = { id: -1 }
-  }
   return Applications.find({}, opts);
 });
 

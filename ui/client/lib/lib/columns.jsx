@@ -47,10 +47,10 @@ Column = function(id, label, sortKeys, opts) {
 };
 
 taskColumns = [
-  new Column('activeTasks', 'Active Tasks', 'taskCounts.running'),
-  new Column('failedTasks', 'Failed Tasks', 'taskCounts.failed'),
-  new Column('completeTasks', 'Complete Tasks', 'taskCounts.succeeded'),
-  new Column('totalTasks', 'Total Tasks', 'taskCounts.num')
+  new Column('activeTasks', 'Active Tasks', 'taskCounts.running', { defaultSort: -1 }),
+  new Column('failedTasks', 'Failed Tasks', 'taskCounts.failed', { defaultSort: -1 }),
+  new Column('completeTasks', 'Complete Tasks', 'taskCounts.succeeded', { defaultSort: -1 }),
+  new Column('totalTasks', 'Total Tasks', 'taskCounts.num', { defaultSort: -1 })
 ];
 
 inputBytesColumn = new Column('input', 'Input', 'metrics.InputMetrics.BytesRead', { showInEmptyTable: false, render: formatBytes, defaultSort: -1 });
