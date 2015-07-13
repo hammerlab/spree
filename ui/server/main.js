@@ -285,7 +285,7 @@ Meteor.publish("rdds-page", function(appId, opts) {
   ];
 });
 
-Meteor.publish("rdd-page", function(appId, rddId) {
+Meteor.publish("rdd-page", function(appId, rddId, execOpts, blockOpts) {
   apps = (appId == 'latest') ? lastApp() : Applications.find({ id: appId });
   appId = (appId == 'latest') ? apps.fetch()[0].id : appId;
   var rddKey = ['blocks', 'rdd', rddId].join('.');
@@ -298,8 +298,8 @@ Meteor.publish("rdd-page", function(appId, rddId) {
   return [
     apps,
     RDDs.find({ appId: appId, id: rddId }),
-    Executors.find(queryObj, { fields: fieldsObj }),
-    RDDBlocks.find({ appId: appId, rddId: rddId })
+    Executors.find(queryObj, extend({ fields: fieldsObj }, execOpts || {})),
+    RDDBlocks.find({ appId: appId, rddId: rddId }, blockOpts || {})
   ];
 });
 
