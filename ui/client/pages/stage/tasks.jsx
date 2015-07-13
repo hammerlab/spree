@@ -26,20 +26,9 @@ TasksTable = React.createClass({
   mixins: [ReactMeteorData],
   getMeteorData() {
     var stage = StageAttempts.find({}, { limit: 1 }).fetch()[0];
-    // Tasks are standalone records in the TaskAttempts collection.
-    var eById = {};
-    Executors.find().forEach((e) => {
-      eById[e.id] = { host: e.host, port: e.port };
-    });
     return {
       stage: stage,
-      tasks: TaskAttempts.find().fetch().map((t) => {
-        var e = eById[t.execId];
-        if (!e) return t;
-        t.host = e.host;
-        t.port = e.port;
-        return t;
-      }),
+      tasks: TaskAttempts.find().fetch(),
       opts: Cookie.get('tasks-table-opts')
     };
   },
@@ -48,7 +37,6 @@ TasksTable = React.createClass({
     var start = (opts.skip || 0);
     var total = this.data.stage && this.data.stage.taskCounts && this.data.stage.taskCounts.num || 0;
     var end = Math.min(start + (opts.limit || 100), total);
-    //var title = 'Tasks (' + (total ? ((start+1) + '-' + end) : 0) + ' of ' + total + ')';
     var title = 'Tasks';
     return <div>
       <Table
