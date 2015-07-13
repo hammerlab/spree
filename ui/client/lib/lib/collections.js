@@ -5,4 +5,5 @@ NumStages = new Mongo.Collection("num-stage-attempts");
 NumJobs = new Mongo.Collection("num-jobs");
 NumExecutors = new Mongo.Collection("num-executors");
 NumRDDs = new Mongo.Collection("num-rdds");
+NumRDDBlocks = new Mongo.Collection("num-rdd-blocks");
 NumApplications = new Mongo.Collection("num-applications");

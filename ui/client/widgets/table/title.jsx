@@ -30,7 +30,7 @@ TableTitle = React.createClass({
           (
                 ' (' +
                 (
-                      this.props.paginate ?
+                      (this.props.paginate != false) ?
                             (
                                   (end < total || start > 0) ?
                                         ((total ?

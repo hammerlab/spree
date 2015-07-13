@@ -2,7 +2,13 @@
 // RDD Page
 Router.route("/a/:_appId/rdd/:_rddId", {
   waitOn: function() {
-    return Meteor.subscribe('rdd-page', this.params._appId, parseInt(this.params._rddId));
+    var appId = this.params._appId;
+    var rddId = parseInt(this.params._rddId);
+    return [
+      Meteor.subscribe('rdd-page', appId, rddId),
+      Meteor.subscribe('num-executors', appId),
+      Meteor.subscribe('num-rdd-blocks', appId, rddId)
+    ];
   },
   action: function() {
     this.render('rddPage', {

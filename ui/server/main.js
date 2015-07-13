@@ -327,7 +327,7 @@ Meteor.publish('executors-page', function(appId, opts) {
   ];
 });
 
-function publishNum(collectionName, collection, findFields, endedFn) {
+function publishNum(collectionName, collection, findFields) {
   findFields = findFields || {};
 
   Meteor.publish(collectionName, function(appId) {
@@ -349,7 +349,7 @@ function publishNum(collectionName, collection, findFields, endedFn) {
     var findObj = extend(
           { appId: appId },
           (typeof findFields === 'function') ?
-                findFields.call(this, extraArgs) :
+                findFields.apply(this, extraArgs) :
                 findFields
     );
     var handle = collection.find(findObj, { fields: {} }).observeChanges({
@@ -359,12 +359,10 @@ function publishNum(collectionName, collection, findFields, endedFn) {
           self.changed(collectionName, appObjId, { count: count });
         }
       },
-      changed: function (_id, o) {
-        if (!endedFn || endedFn(o)) {
-          count--;
-          if (!initializing && appObjId) {
-            self.changed(collectionName, appObjId, { count: count });
-          }
+      removed: function (_id) {
+        count--;
+        if (!initializing && appObjId) {
+          self.changed(collectionName, appObjId, { count: count });
         }
       }
     });
@@ -399,7 +397,20 @@ function publishNum(collectionName, collection, findFields, endedFn) {
     }
   ],
   [ 'num-jobs', Jobs ],
-  [ 'num-stage-attempts', StageAttempts, function(jobId) { return { jobId: jobId }; } ]
+  [
+    'num-stage-attempts',
+    StageAttempts,
+    function(jobId) {
+      return (jobId !== undefined) ? { jobId: jobId } : {};
+    }
+  ],
+  [
+    'num-rdd-blocks',
+    RDDBlocks,
+    function(rddId) {
+      return (rddId !== undefined) ? { rddId: rddId } : {};
+    }
+  ]
 ].forEach(
       function(arr) {
         publishNum.apply(this, arr);
