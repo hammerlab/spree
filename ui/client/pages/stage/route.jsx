@@ -8,7 +8,7 @@ Router.route("/a/:_appId/stage/:_stageId", {
     return [
       Meteor.subscribe('stage-page', appId, stageId, attemptId, Cookie.get("tasks-table-opts"), Cookie.get("stageExecutors-table-opts")),
       Meteor.subscribe("stage-summary-metrics", appId, stageId, attemptId),
-      Meteor.subscribe("num-executors", appId)
+      Meteor.subscribe("num-stage-executors", appId, stageId, attemptId)
     ];
   },
   action: function() {

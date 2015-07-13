@@ -83,8 +83,8 @@ Meteor.publish("jobs-page", function(appId) {
 
 // Job page
 Meteor.publish("job-page", function(appId, jobId) {
-  apps = (appId == 'latest') ? lastApp() : Applications.find({ id: appId });
-  appId = (appId == 'latest') ? apps.fetch()[0].id : appId;
+  var apps = (appId == 'latest') ? lastApp() : Applications.find({ id: appId });
+  var appId = (appId == 'latest') ? apps.fetch()[0].id : appId;
 
   var stages = Stages.find({ appId: appId, jobId: jobId }, { sort: { id: -1 }});
   var stageIDs = stages.map(function(stage) { return stage.id; });
@@ -237,16 +237,9 @@ Meteor.publish("stage-page", function(appId, stageId, attemptId, tasksOpts, exec
   var app = apps.fetch()[0];
   appId = (appId == 'latest' && app) ? app.id : appId;
 
-  var executorStageKey = ["stages", stageId, attemptId].join('.');
-  var fieldsObj = { id: 1, host: 1, port: 1 };
-  fieldsObj[executorStageKey] = 1;
-
   execsOpts = execsOpts || {};
   execsOpts.limit = execsOpts.limit || 100;
   execsOpts.sort = execsOpts.sort || { id: 1 };
-  execsOpts.fields = fieldsObj;
-
-  var executors = Executors.find({ appId: appId }, execsOpts);
 
   tasksOpts = tasksOpts || {};
   tasksOpts.limit = tasksOpts.limit || 100;
@@ -256,9 +249,8 @@ Meteor.publish("stage-page", function(appId, stageId, attemptId, tasksOpts, exec
     apps,
     Stages.find({ appId: appId, id: stageId }),
     StageAttempts.find({ appId: appId, stageId: stageId, id: attemptId }),
-    //Tasks.find({ appId: appId, stageId: stageId }),
     TaskAttempts.find({ appId: appId, stageId: stageId, stageAttemptId: attemptId }, tasksOpts),
-    executors
+    StageExecutors.find({ appId: appId, stageId: stageId, stageAttemptId: attemptId }, execsOpts)
   ];
 });
 
@@ -288,17 +280,11 @@ Meteor.publish("rdds-page", function(appId, opts) {
 Meteor.publish("rdd-page", function(appId, rddId, execOpts, blockOpts) {
   apps = (appId == 'latest') ? lastApp() : Applications.find({ id: appId });
   appId = (appId == 'latest') ? apps.fetch()[0].id : appId;
-  var rddKey = ['blocks', 'rdd', rddId].join('.');
-  var queryObj = { appId: appId };
-  queryObj[rddKey] = { $exists: true };
-
-  var fieldsObj = { host: 1, port: 1, id: 1, maxMem: 1 };
-  fieldsObj[rddKey] = 1;
 
   return [
     apps,
     RDDs.find({ appId: appId, id: rddId }),
-    Executors.find(queryObj, extend({ fields: fieldsObj }, execOpts || {})),
+    RDDExecutors.find({ appId: appId, rddId: rddId }, execOpts || {}),
     RDDBlocks.find({ appId: appId, rddId: rddId }, blockOpts || {})
   ];
 });
@@ -402,6 +388,20 @@ function publishNum(collectionName, collection, findFields) {
     StageAttempts,
     function(jobId) {
       return (jobId !== undefined) ? { jobId: jobId } : {};
+    }
+  ],
+  [
+    'num-stage-executors',
+    StageExecutors,
+    function(stageId, stageAttemptId) {
+      return (stageId !== undefined) ? { stageId: stageId, stageAttemptId: stageAttemptId } : {};
+    }
+  ],
+  [
+    'num-rdd-executors',
+    RDDExecutors,
+    function(rddId) {
+      return (rddId !== undefined) ? { rddId: rddId } : {};
     }
   ],
   [

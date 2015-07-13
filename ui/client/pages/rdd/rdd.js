@@ -18,7 +18,7 @@ Router.route("/a/:_appId/rdd/:_rddId", {
                   Cookie.get("rddBlocks-table-opts")
             )
       ),
-      Meteor.subscribe('num-executors', appId),
+      Meteor.subscribe('num-rdd-executors', appId, rddId),
       Meteor.subscribe('num-rdd-blocks', appId, rddId)
     ];
   },
@@ -46,14 +46,14 @@ Template.rddPage.helpers({
 // RDD per-executor-stats table
 Template.rddExecutorsTable.helpers({
   columns: function() {
-    var rddKey = this.rdd ? ['blocks', 'rdd', this.rdd.id].join('.') : '';
     return [
+      new Column('id', 'Executor ID', 'execId', { truthyZero: true }),
       hostColumn,
       portColumn,
-      numBlocksColumn.prefix(rddKey),
-      memColumn.prefix(rddKey),
-      offHeapColumn.prefix(rddKey),
-      diskColumn.prefix(rddKey)
+      numBlocksColumn,
+      memColumn,
+      offHeapColumn,
+      diskColumn
     ];
   }
 });

@@ -98,8 +98,8 @@ diskColumn = new Column('diskSize', 'Size on Disk', 'DiskSize', { defaultSort: -
 
 spaceColumns = [ memColumn, offHeapColumn, diskColumn ];
 
-hostColumn = new Column('host', 'Host', 'host', {  });
-portColumn = new Column('port', 'Port', 'port', {  });
+hostColumn = new Column('host', 'Host', 'host');
+portColumn = new Column('port', 'Port', 'port', { showByDefault: false });
 numBlocksColumn = new Column('blocks', 'RDD Blocks', 'numBlocks', { defaultSort: -1 });
 
 storageLevelColumn = new Column('storageLevel', 'Storage Level', 'StorageLevel.UseMemory', { render: getStorageLevel, renderKey: 'StorageLevel' });
