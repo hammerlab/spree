@@ -57,9 +57,10 @@ Template.jobsPage.helpers({
       jobNameColumn,
       startColumn,
       durationColumn,
+      stageIdxsColumn,
       stagesColumn,
-      tasksColumn,
-      taskIdxsColumn
+      taskIdxsColumn,
+      tasksColumn
     ].concat(ioBytesColumns);
   },
 

@@ -47,7 +47,7 @@ Template.rddPage.helpers({
 Template.rddExecutorsTable.helpers({
   columns: function() {
     return [
-      new Column('id', 'Executor ID', 'execId', { truthyZero: true }),
+      executorIdColumn,
       hostColumn,
       portColumn,
       numBlocksColumn,
@@ -61,7 +61,8 @@ Template.rddExecutorsTable.helpers({
 
 // RDD per-partition table
 var blockColumns = [
-  new Column('id', 'Block ID', 'id', { truthyZero: true }),
+  blockIdColumn,
+  executorIdColumn,
   storageLevelColumn
 ]
       .concat(spaceColumns)

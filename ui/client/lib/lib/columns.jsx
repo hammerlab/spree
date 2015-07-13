@@ -87,9 +87,44 @@ durationColumn = new Column('duration', 'Duration', 'duration', { render: format
 function progressBar(counts) {
   return <ProgressBar counts={counts} />;
 }
-tasksColumn = new Column('tasks', 'Tasks Attempts', 'taskCounts.succeeded', { render: progressBar, renderKey: 'taskCounts', showByDefault: false });
-taskIdxsColumn = new Column('tasksIdxs', 'Tasks: Succeeded/Total', 'taskIdxCounts.succeeded', { render: progressBar, renderKey: 'taskIdxCounts' });
-stagesColumn = new Column('stages', 'Stages: Succeeded/Total', 'stageCounts.succeeded', { render: progressBar, renderKey: 'stageCounts' });
+tasksColumn = new Column(
+      'tasks',
+      'Tasks Attempts: Succeeded/Total',
+      'taskCounts.succeeded',
+      {
+        render: progressBar,
+        renderKey: 'taskCounts',
+        showByDefault: false
+      }
+);
+taskIdxsColumn = new Column(
+      'tasksIdxs',
+      'Tasks: Succeeded/Total',
+      'taskIdxCounts.succeeded',
+      {
+        render: progressBar,
+        renderKey: 'taskIdxCounts'
+      }
+);
+stagesColumn = new Column(
+      'stages',
+      'Stage attempts: Succeeded/Total',
+      'stageCounts.succeeded',
+      {
+        render: progressBar,
+        renderKey: 'stageCounts',
+        showByDefault: false
+      }
+);
+stageIdxsColumn = new Column(
+      'stagesIdxs',
+      'Stages: Succeeded/Total',
+      'stageIdxCounts.succeeded',
+      {
+        render: progressBar,
+        renderKey: 'stageIdxCounts'
+      }
+);
 
 maxMemColumn = new Column('maxMemSize', 'Max. Memory', 'maxMem', { defaultSort: -1, render: formatBytes });
 memColumn = new Column('memSize', 'Size in Memory', 'MemorySize', { defaultSort: -1, render: formatBytes });
@@ -98,6 +133,8 @@ diskColumn = new Column('diskSize', 'Size on Disk', 'DiskSize', { defaultSort: -
 
 spaceColumns = [ memColumn, offHeapColumn, diskColumn ];
 
+blockIdColumn = new Column('id', 'Block ID', 'id', { truthyZero: true });
+executorIdColumn = new Column('eid', 'Executor ID', 'execId', { truthyZero: true });
 hostColumn = new Column('host', 'Host', 'host');
 portColumn = new Column('port', 'Port', 'port', { showByDefault: false });
 numBlocksColumn = new Column('blocks', 'RDD Blocks', 'numBlocks', { defaultSort: -1 });
