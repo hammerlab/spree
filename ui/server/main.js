@@ -425,13 +425,13 @@ Meteor.publish("num-applications", function() {
   var _id = new Mongo.ObjectID();
 
   var handle = Applications.find({}, { fields: {} }).observeChanges({
-    added: function (_id, a) {
+    added: function (id, a) {
       count++;
       if (!initializing) {
         self.changed("num-applications", _id, { count: count });
       }
     },
-    changed: function (_id, e) {
+    changed: function (id, e) {
       if ('unpersisted' in e) {
         count--;
         if (!initializing) {
