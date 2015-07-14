@@ -25,27 +25,31 @@ var columns = [
 TasksTable = React.createClass({
   mixins: [ReactMeteorData],
   getMeteorData() {
+    var app = Applications.findOne();
     var stage = StageAttempts.find({}, { limit: 1 }).fetch()[0];
     return {
-      stage: stage,
-      tasks: TaskAttempts.find().fetch(),
-      opts: Cookie.get('tasks-table-opts')
+      app: app,
+      stage: stage
     };
   },
   render() {
-    var opts = this.data.opts || {};
-    var start = (opts.skip || 0);
     var total = this.data.stage && this.data.stage.taskCounts && this.data.stage.taskCounts.num || 0;
-    var end = Math.min(start + (opts.limit || 100), total);
     var title = 'Tasks';
+
+    var appId = this.data.app.id;
+    var stageId = this.data.stage.stageId;
+    var stageAttemptId = this.data.stage.id;
+
     return <div>
       <Table
             name='tasks'
             title={title}
             defaultSort={{ id: 'id' }}
+            subscriptionFn={(opts) => { return Meteor.subscribe('stage-tasks', appId, stageId, stageAttemptId, opts); }}
             collection={TaskAttempts}
             columns={columns}
-            total={total} />
+            total={total}
+            />
     </div>;
   }
 });

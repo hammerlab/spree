@@ -1,8 +1,12 @@
 
 TableTitle = React.createClass({
+  shouldComponentUpdate(nextProps, nextState) {
+    return (nextProps.ready != false);
+  },
   render() {
-    var start = this.props.opts && this.props.opts.skip || 0;
-    var size = this.props.opts && this.props.opts.limit || 100;
+    var opts = this.props.opts || {};
+    var start = opts && opts.skip || 0;
+    var size = opts && opts.limit || 100;
     var total = this.props.total;
     if (total === undefined) {
       if (this.props.totalCollection) {
@@ -21,7 +25,7 @@ TableTitle = React.createClass({
       start: start,
       size: size,
       end: end,
-      sort: this.props.opts && this.props.opts.sort,
+      sort: opts.sort,
       total: total
     };
 

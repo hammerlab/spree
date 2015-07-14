@@ -6,7 +6,7 @@ Router.route("/a/:_appId/stage/:_stageId", {
     var stageId = parseInt(this.params._stageId);
     var attemptId = this.params.query.attempt ? parseInt(this.params.query.attempt) : 0;
     return [
-      Meteor.subscribe('stage-page', appId, stageId, attemptId, Cookie.get("tasks-table-opts"), Cookie.get("stageExecutors-table-opts")),
+      Meteor.subscribe('stage-page', appId, stageId, attemptId, Cookie.get("stageExecutors-table-opts")),
       Meteor.subscribe("stage-summary-metrics", appId, stageId, attemptId),
       Meteor.subscribe("num-stage-executors", appId, stageId, attemptId)
     ];
@@ -16,7 +16,6 @@ Router.route("/a/:_appId/stage/:_stageId", {
     var stageId = parseInt(this.params._stageId);
     var attemptId = this.params.query.attempt ? parseInt(this.params.query.attempt) : 0;
     var stageAttempt = StageAttempts.findOne();
-
     if (!stageAttempt) {
       this.render('stagePage', {
         data: {

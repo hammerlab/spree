@@ -52,6 +52,9 @@ Table = React.createClass({
   getMeteorData() {
     var opts = Cookie.get(this.state.tableOptsKey) || {};
     var sort = opts.sort;
+
+    var handle = this.props.subscriptionFn && this.props.subscriptionFn(opts);
+
     if (!sort) {
       if (this.props.sortId) {
         var sortCol = this.state.colsById[this.props.sortId];
@@ -78,7 +81,8 @@ Table = React.createClass({
       hidden: Cookie.get(this.state.tableHiddenKey),
       columnSettings: Cookie.get(this.state.tableColumnsKey) || {},
       rows: rows,
-      opts: opts
+      opts: opts,
+      handle: handle
     }
   },
   toggleCollapsed() {
@@ -86,6 +90,7 @@ Table = React.createClass({
   },
   render() {
     var columnCookieMap = this.data.columnSettings;
+    var ready = this.data.handle && this.data.handle.ready();
 
     var nonEmptyMap = {};
     var canDisplayMap = {};
@@ -187,11 +192,13 @@ Table = React.createClass({
                 toggleCollapsed={this.toggleCollapsed}
                 opts={this.data.opts}
                 optsKey={this.state.tableOptsKey}
+                ready={ready}
                 numRows={numRows}
                 {...this.props}/>;
 
     var table = this.data.hidden ? null :
           <TableElem
+                ready={ready}
                 showSettingsGear={this.state.showSettingsGear}
                 className={className}
                 columnHeaders={columnHeaders}
@@ -213,8 +220,8 @@ Table = React.createClass({
 TableElem = React.createClass({
   shouldComponentUpdate(nextProps, nextState) {
     // skip re-rendering if the settings gear is the only thing that changed in the Table
-    // (only relevant to sibling TableTitle)
-    return nextProps.showSettingsGear == this.props.showSettingsGear;
+    // (only relevant to sibling TableTitle), or there is a subscription updating.
+    return nextProps.showSettingsGear == this.props.showSettingsGear && (nextProps.ready != false);
   },
   render() {
     return <table className={this.props.className}>

@@ -232,29 +232,30 @@ acc = function(key) {
 //});
 
 // StageAttempt page
-Meteor.publish("stage-page", function(appId, stageId, attemptId, tasksOpts, execsOpts) {
+Meteor.publish("stage-page", function(appId, stageId, attemptId, opts) {
   var apps = (appId == 'latest') ? lastApp() : Applications.find({ id: appId });
   var app = apps.fetch()[0];
   appId = (appId == 'latest' && app) ? app.id : appId;
 
-  execsOpts = execsOpts || {};
-  execsOpts.limit = execsOpts.limit || 100;
-  execsOpts.sort = execsOpts.sort || { id: 1 };
-
-  tasksOpts = tasksOpts || {};
-  tasksOpts.limit = tasksOpts.limit || 100;
-  tasksOpts.sort = tasksOpts.sort || { id: 1 };
+  opts = opts || {};
+  opts.limit = opts.limit || 100;
+  opts.sort = opts.sort || { id: 1 };
 
   return [
     apps,
     Stages.find({ appId: appId, id: stageId }),
     StageAttempts.find({ appId: appId, stageId: stageId, id: attemptId }),
-    TaskAttempts.find({ appId: appId, stageId: stageId, stageAttemptId: attemptId }, tasksOpts),
-    StageExecutors.find({ appId: appId, stageId: stageId, stageAttemptId: attemptId }, execsOpts)
+    StageExecutors.find({ appId: appId, stageId: stageId, stageAttemptId: attemptId }, opts)
   ];
 });
 
+Meteor.publish("stage-tasks", function(appId, stageId, attemptId, opts) {
+  opts = opts || {};
+  opts.limit = opts.limit || 100;
+  opts.sort = opts.sort || { id: 1 };
 
+  return TaskAttempts.find({ appId: appId, stageId: stageId, stageAttemptId: attemptId }, opts);
+});
 
 // Storage page
 Meteor.publish("rdds-page", function(appId, opts) {
