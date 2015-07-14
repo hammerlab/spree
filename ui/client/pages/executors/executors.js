@@ -22,13 +22,16 @@ var columns = [
   new Column('id', 'ID', 'id', { truthyZero: 0 }),
   hostColumn,
   portColumn,
+  startColumn,
+  endColumn,
+  durationColumn,
   numBlocksColumn,
   maxMemColumn
 ]
       .concat(spaceColumns)
       .concat(taskColumns)
       .concat([ taskTimeColumn ])
-      .concat(ioBytesColumns);
+      .concat(ioColumns);
 
 Template.executorsPage.helpers({
   columns: function() { return columns; }

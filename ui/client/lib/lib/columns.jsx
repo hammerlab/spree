@@ -81,7 +81,8 @@ ioColumns = [
 ];
 
 nameColumn = new Column('name', 'Name', 'name', {  });
-startColumn = new Column('start', 'Submitted', 'time.start', { render: formatDateTime, defaultSort: -1 });
+startColumn = new Column('start', 'Started', 'time.start', { render: formatDateTime, defaultSort: -1 });
+endColumn = new Column('end', 'Ended', 'time.end', { render: formatDateTime, defaultSort: -1 });
 durationColumn = new Column('duration', 'Duration', 'duration', { render: formatTime, defaultSort: -1 });
 
 function progressBar(counts) {
@@ -94,7 +95,8 @@ tasksColumn = new Column(
       {
         render: progressBar,
         renderKey: 'taskCounts',
-        showByDefault: false
+        showByDefault: false,
+        truthyZero: true
       }
 );
 taskIdxsColumn = new Column(
@@ -103,7 +105,8 @@ taskIdxsColumn = new Column(
       'taskIdxCounts.succeeded',
       {
         render: progressBar,
-        renderKey: 'taskIdxCounts'
+        renderKey: 'taskIdxCounts',
+        truthyZero: true
       }
 );
 stagesColumn = new Column(
@@ -113,7 +116,8 @@ stagesColumn = new Column(
       {
         render: progressBar,
         renderKey: 'stageCounts',
-        showByDefault: false
+        showByDefault: false,
+        truthyZero: true
       }
 );
 stageIdxsColumn = new Column(
@@ -122,7 +126,8 @@ stageIdxsColumn = new Column(
       'stageIdxCounts.succeeded',
       {
         render: progressBar,
-        renderKey: 'stageIdxCounts'
+        renderKey: 'stageIdxCounts',
+        truthyZero: true
       }
 );
 
