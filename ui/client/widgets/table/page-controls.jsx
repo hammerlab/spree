@@ -52,7 +52,7 @@ TablePageControls = React.createClass({
     }
   },
   render() {
-    if (!this.props.paginate || !(this.props.total && this.props.total > this.props.size)) {
+    if (this.props.paginate === false || !(this.props.total && this.props.total > this.props.size)) {
       return null;
     }
     var pageIdx = parseInt(this.props.start / this.props.size);
