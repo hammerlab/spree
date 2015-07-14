@@ -37,12 +37,42 @@ function SummaryMetric(label, key, render) {
     ];
   }
 
-  this.process = function(value, handle, initializing) {
-    this.values.push(value);
-    for (var i = this.values.length - 2; i >= 0 && value < this.values[i]; i--) {
-      var t = this.values[i];
-      this.values[i] = this.values[i + 1];
-      this.values[i + 1] = t;
+  this.process = function(newValue, prevValue, handle, initializing) {
+    var idx = -1;
+    var dir = -1;
+    if (prevValue === undefined) {
+      this.values.push(newValue);
+      idx = this.values.length - 1;
+    } else {
+      idx = this.values.lastIndexOf(prevValue);
+      if (idx < 0) {
+        console.error("Metrics %s didn't find previous value %s:\n%s", this.label, prevValue, this.values.join(','));
+        // Most graceful way to handle this is just insert a new record; stats won't be exactly correct anymore but they
+        // can't be at this point, something has gone wrong and an ERROR has been logged.
+        this.values.push(newValue);
+        idx = this.values.length;
+      } else {
+        if (newValue >= prevValue) {
+          dir = 1;
+        }
+        this.values[idx] = newValue;
+      }
+    }
+    for (
+          var i = idx + dir;
+          0 <= i &&
+          i < this.values.length &&
+          (
+                (dir > 0) ?
+                      (newValue > this.values[i]) :
+                      (newValue < this.values[i])
+          );
+          i += dir
+    ) {
+      var t = this.values[idx];
+      this.values[idx] = this.values[i];
+      this.values[i] = t;
+      idx = i;
     }
     var changed = {};
     stats(this.values.length).forEach(function(o) {
@@ -75,25 +105,27 @@ function SummaryMetricsTrie(metrics) {
     }, this.trie);
   }.bind(this));
 
-  this.walk = function(task, handle, initializing) {
-    this._walk(this.trie, task, handle, initializing);
+  this.walk = function(newFields, prevTask, handle, initializing) {
+    return this._walk(this.trie, newFields, prevTask, handle, initializing);
   };
-  this._walk = function(trie, task, handle, initializing) {
-    if (typeof task != 'object') {
-      trie.process(task, handle, initializing);
-      return;
+  this._walk = function(trie, newFields, prevTask, handle, initializing) {
+    if (typeof newFields != 'object') {
+      trie.process(newFields, prevTask, handle, initializing);
+      return newFields;
     }
-    for (k in task) {
+    prevTask = prevTask || {};
+    for (k in newFields) {
       if (k in trie) {
-        this._walk(trie[k], task[k], handle, initializing);
+        prevTask[k] = this._walk(trie[k], newFields[k], prevTask[k], handle, initializing);
       }
     }
+    return prevTask;
   };
 }
 
 var statRows = [
   { label: 'Task Deserialization Time', key: 'metrics.ExecutorDeserializeTime', render: 'time' },
-  //{ label: 'Duration', key: duration, render: 'time' },
+  { label: 'Duration', key: 'duration', render: 'time' },
   { label: 'Run Time', key: 'metrics.ExecutorRunTime', render: 'time' },
   { label: 'GC Time', key: 'metrics.JVMGCTime', render: 'time' },
   { label: 'Getting Result Time', key: 'GettingResultTime', render: 'time' },
@@ -131,14 +163,15 @@ Meteor.publish("stage-summary-metrics", function(appId, stageId, attemptId) {
     added: function(_id, task) {
       numTasks++;
       taskById[_id] = task;
-      summaryMetricsTrie.walk(task, self, initializing);
+      summaryMetricsTrie.walk(task, undefined, self, initializing);
     },
     changed: function(_id, fields) {
       if (!(_id in taskById)) {
         throw new Error("Task with _id " + _id + " not found. Fields: ", fields);
       }
       var task = taskById[_id];
-      summaryMetricsTrie.walk(fields, self, initializing);
+      taskById[_id] = summaryMetricsTrie.walk(fields, task, self, initializing);
+
     }
   });
   initializing = false;
