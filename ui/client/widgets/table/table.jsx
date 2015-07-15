@@ -19,6 +19,12 @@ function emptyRowCheck(row, cols) {
   return false;
 }
 
+renderers = {
+  bytes: formatBytes,
+  time: formatTime
+};
+defaultRenderer = (x) => { if (!x) return '-'; return x; };
+
 Table = React.createClass({
   mixins: [ReactMeteorData],
   getInitialState() {
@@ -51,10 +57,16 @@ Table = React.createClass({
   },
   getMeteorData() {
     var opts = Cookie.get(this.state.tableOptsKey) || {};
-    var sort = opts.sort;
+    if (opts.limit === undefined) {
+      opts.limit = 100;
+    }
+    if (opts.sort === undefined) {
+      opts.sort = { id: 1 };
+    }
 
     var handle = this.props.subscriptionFn && this.props.subscriptionFn(opts);
 
+    var sort = opts.sort;
     if (!sort) {
       if (this.props.sortId) {
         var sortCol = this.state.colsById[this.props.sortId];
@@ -75,6 +87,18 @@ Table = React.createClass({
                 window[this.props.collection] :
                 this.props.collection
           ).find(this.props.selector || {}, obj).fetch();
+
+    if (this.props.selectRows) {
+      rows.forEach((row) => {
+        if (!row.id) {
+          if (!row._id) {
+            console.error("Row lacking 'id' and '_id':", row);
+          } else {
+            row.id = row._id.toHexString();
+          }
+        }
+      });
+    }
 
     return {
       sort: Cookie.get(this.state.tableSortKey),
@@ -133,19 +157,20 @@ Table = React.createClass({
 
     var displayRows =
           this.data.rows.filter((row) => {
-            var cookie = (row.id in columnCookieMap) ? columnCookieMap[row.id] : null;
+            var id = row.id;
+            var cookie = (id in columnCookieMap) ? columnCookieMap[id] : null;
             var canDisplay = (cookie != false) && (row.showByDefault != false);
             var hasData = !this.props.hideEmptyRows || emptyRowCheck(row, displayCols);
             var displayed = canDisplay && hasData;
             if (this.props.selectRows) {
               if (hasData) {
-                nonEmptyMap[row.id] = true;
+                nonEmptyMap[id] = true;
               }
               if (canDisplay) {
-                canDisplayMap[row.id] = true;
+                canDisplayMap[id] = true;
               }
               if (displayed) {
-                displayedMap[row.id] = true;
+                displayedMap[id] = true;
               }
             }
             return displayed;
@@ -155,11 +180,19 @@ Table = React.createClass({
 
     var rowElems = displayRows.map((row, idx) => {
       var cols = displayCols.map((column) => {
-        var render = column.render || row.render;
+        var render =
+              column.render ||
+              (typeof row.render === 'string' ?
+                    (row.render in renderers ?
+                          renderers[row.render] :
+                          defaultRenderer
+                    ) :
+                    row.render
+              );
         var renderValueFn = column.renderValueFn || column.sortBys[0];
         return <td key={column.id}>{render ? render(renderValueFn(row)) : renderValueFn(row)}</td>
       });
-      var key = row.id || row._id;
+      var key = row.id;
       if (key === undefined) {
          key = this.props.keyFn ? this.props.keyFn(row) : idx;
       }

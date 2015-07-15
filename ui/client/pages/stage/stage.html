@@ -4,52 +4,77 @@
   {{setTitle this}}
   {{log this}}
   <div class="container-fluid">
-    <h3>Details for Stage {{stageId}}, Attempt {{attemptId}}</h3>
-    {{#with stageAttempt.metrics}}
-      <div><strong>Total time across all tasks:</strong> {{formatTime ExecutorRunTime}}</div>
+    {{#with stageAttempt}}
+      <h3>Details for Stage {{stageId}}, Attempt {{id}}</h3>
+      {{#with taskCounts}}
+        {{succeeded}}/{{num}} succeeded, {{running}} active, {{orZero failed}} failed.
+      {{/with}}
+      {{#with metrics}}
+        <div><strong>Total time across all tasks:</strong> {{formatTime ExecutorRunTime}}</div>
 
-      {{#with InputMetrics}}
-        {{#if BytesRead}}
-        <div>
-          <strong>Input Size / Records:</strong> {{formatBytes BytesRead}} / {{RecordsRead}} records
-        </div>
-        {{/if}}
+        {{#with InputMetrics}}
+          {{#if BytesRead}}
+          <div>
+            <strong>Input Size / Records:</strong> {{formatBytes BytesRead}} / {{RecordsRead}} records
+          </div>
+          {{/if}}
+        {{/with}}
+
+        {{#with OutputMetrics}}
+          {{#if BytesWritten}}
+          <div>
+            <strong>Output Size / Records:</strong> {{formatBytes BytesWritten}} / {{RecordsWritten}} records
+          </div>
+          {{/if}}
+        {{/with}}
+
+        {{#with ShuffleReadMetrics}}
+          {{#if shuffleBytesRead this}}
+          <div>
+            <strong>Shuffle read:</strong> {{shuffleBytesReadStr this}} / {{TotalRecordsRead}} records
+          </div>
+          {{/if}}
+        {{/with}}
+
+        {{#with ShuffleWriteMetrics}}
+          {{#if ShuffleBytesWritten}}
+          <div>
+            <strong>Shuffle write:</strong> {{formatBytes ShuffleBytesWritten}} / {{ShuffleRecordsWritten}} records
+          </div>
+          {{/if}}
+        {{/with}}
       {{/with}}
 
-      {{#with OutputMetrics}}
-        {{#if BytesWritten}}
+      {{#with getSubscriptionFn "stage-summary-metrics" this}}
         <div>
-          <strong>Output Size / Records:</strong> {{formatBytes BytesWritten}} / {{RecordsWritten}} records
+          {{>React
+              component=Table
+              name="summaryMetrics"
+              title="Summary Metrics"
+              columns=statsColumns
+              subscriptionFn=this
+              collection="SummaryMetrics"
+              allowEmptyColumns=true
+              hideEmptyRows=true
+              hideRowCount=true
+              paginate=false
+              disableSort=true
+              selectRows=true
+              class="stats"
+          }}
         </div>
-        {{/if}}
       {{/with}}
-
-      {{#with ShuffleReadMetrics}}
-        {{#if shuffleBytesRead this}}
+      {{#with getSubscriptionFn "stage-executors" this}}
         <div>
-          <strong>Shuffle read:</strong> {{shuffleBytesReadStr this}} / {{TotalRecordsRead}} records
+          {{>React component=Table columns=executorColumns subscriptionFn=this collection="StageExecutors" name="stageExecutors" title="Executors" totalCollection="NumStageExecutors"}}
         </div>
-        {{/if}}
       {{/with}}
-
-      {{#with ShuffleWriteMetrics}}
-        {{#if ShuffleBytesWritten}}
+      {{#with getSubscriptionFn "stage-tasks" this}}
         <div>
-          <strong>Shuffle write:</strong> {{formatBytes ShuffleBytesWritten}} / {{ShuffleRecordsWritten}} records
+          {{>React component=Table columns=taskColumns subscriptionFn=this collection="TaskAttempts" name="tasks" title="Tasks" total=../taskCounts.num}}
         </div>
-        {{/if}}
       {{/with}}
     {{/with}}
-
-    <div>
-      {{>React component=SummaryMetricsTable}}
-    </div>
-    <div>
-      {{>React component=StageExecutorsTable stageId=stageId attemptId=attemptId}}
-    </div>
-    <div>
-      {{>React component=TasksTable}}
-    </div>
   </div>
 </template>
 

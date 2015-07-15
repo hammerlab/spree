@@ -24,10 +24,11 @@ TableSettings = React.createClass({
         <div className={'settings-tooltip' + (this.props.visible ? '' : ' hidden')}>
           {
             this.props.settings.map((setting) => {
-              var id = setting.id || setting._id;
+              var id = setting.id;
               return <TableSettingsTooltipRow
                     key={id}
-                    column={setting}
+                    id={id}
+                    label={setting.label}
                     displayed={(id in this.props.displayedMap)}
                     nonEmpty={(id in this.props.nonEmptyMap)}
                     canDisplay={(id in this.props.canDisplayMap)}
