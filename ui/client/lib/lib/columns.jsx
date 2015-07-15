@@ -33,17 +33,6 @@ Column = function(id, label, sortKeys, opts) {
   if (this.renderKey !== undefined) {
     this.renderValueFn = acc(this.renderKey);
   }
-
-  this.prefix = function(prefix) {
-    return new Column(
-          id,
-          label,
-          prefix ?
-                this.sortKeys.map((key) => { return prefix + '.' + key; }) :
-                this.sortKeys,
-          opts
-    );
-  }
 };
 
 taskColumns = [
