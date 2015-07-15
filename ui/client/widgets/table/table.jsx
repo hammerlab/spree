@@ -1,14 +1,11 @@
 
-function emptyColumnCheck(col, rows) {
-  if (!rows || !rows.length) {
+function emptyColumnCheck(col, rows, columnOracle) {
+  if (!rows || !rows.length || !columnOracle) {
     return col.showInEmptyTable != false;
   }
-  for (var i = 0; i < rows.length; ++i) {
-    var row = rows[i];
-    var val = col.sortBys[0](row);
-    if (val || (val == 0 && col.truthyZero)) return true;
-  }
-  return false;
+  if (!col.requireOracle) return true;
+  var val = col.sortBys[0](columnOracle);
+  return val || (val == 0 && col.truthyZero)
 }
 
 function emptyRowCheck(row, cols) {
@@ -126,9 +123,10 @@ Table = React.createClass({
               throw new Error("Duplicate column ID: ", col.id, col);
             }
             columnIDs[col.id] = true;
+
             var cookie = (col.id in columnCookieMap) ? columnCookieMap[col.id] : null;
-            var canDisplay = cookie || ((cookie != false) && (col.showByDefault != false));
-            var hasData = this.props.allowEmptyColumns || emptyColumnCheck(col, this.data.rows);
+            var canDisplay = (cookie != false) && (col.showByDefault != false);
+            var hasData = this.props.allowEmptyColumns || emptyColumnCheck(col, this.data.rows, this.props.columnOracle);
             var displayed = canDisplay && hasData;
             if (!this.props.selectRows) {
               if (hasData) {

@@ -66,12 +66,30 @@
       {{/with}}
       {{#with getSubscriptionFn "stage-executors" this}}
         <div>
-          {{>React component=Table columns=executorColumns subscriptionFn=this collection="StageExecutors" name="stageExecutors" title="Executors" totalCollection="NumStageExecutors"}}
+          {{>React
+              component=Table
+              columns=executorColumns
+              subscriptionFn=this
+              collection="StageExecutors"
+              name="stageExecutors"
+              title="Executors"
+              totalCollection="NumStageExecutors"
+              columnOracle=..
+          }}
         </div>
       {{/with}}
       {{#with getSubscriptionFn "stage-tasks" this}}
         <div>
-          {{>React component=Table columns=taskColumns subscriptionFn=this collection="TaskAttempts" name="tasks" title="Tasks" total=../taskCounts.num}}
+          {{>React
+              component=Table
+              columns=taskColumns
+              subscriptionFn=this
+              collection="TaskAttempts"
+              name="tasks"
+              title="Tasks"
+              total=../taskCounts.num
+              columnOracle=..
+          }}
         </div>
       {{/with}}
     {{/with}}
