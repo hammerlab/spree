@@ -16,12 +16,6 @@ function emptyRowCheck(row, cols) {
   return false;
 }
 
-renderers = {
-  bytes: formatBytes,
-  time: formatTime
-};
-defaultRenderer = (x) => { if (!x) return '-'; return x; };
-
 Table = React.createClass({
   mixins: [ReactMeteorData],
   getInitialState() {
@@ -96,7 +90,6 @@ Table = React.createClass({
         }
       });
     }
-
     return {
       sort: Cookie.get(this.state.tableSortKey),
       hidden: Cookie.get(this.state.tableHiddenKey),
@@ -125,7 +118,7 @@ Table = React.createClass({
             columnIDs[col.id] = true;
 
             var cookie = (col.id in columnCookieMap) ? columnCookieMap[col.id] : null;
-            var canDisplay = (cookie != false) && (col.showByDefault != false);
+            var canDisplay = cookie || ((cookie != false) && (col.showByDefault != false));
             var hasData = this.props.allowEmptyColumns || emptyColumnCheck(col, this.data.rows, this.props.columnOracle);
             var displayed = canDisplay && hasData;
             if (!this.props.selectRows) {
@@ -176,7 +169,7 @@ Table = React.createClass({
 
     var numRows = displayRows.length;
 
-    var rowElems = displayRows.map((row, idx) => {
+    var rowElems = displayRows.map((row) => {
       var cols = displayCols.map((column) => {
         var render =
               column.render ||
@@ -190,10 +183,11 @@ Table = React.createClass({
         var renderValueFn = column.renderValueFn || column.sortBys[0];
         return <td key={column.id}>{render ? render(renderValueFn(row)) : renderValueFn(row)}</td>
       });
-      var key = row.id;
-      if (key === undefined) {
-         key = this.props.keyFn ? this.props.keyFn(row) : idx;
+      var keyFn = this.props.keyFn;
+      if (typeof keyFn === 'string') {
+        keyFn = acc(keyFn);
       }
+      var key = keyFn ? keyFn(row) : row.id;
       return <tr key={key}>{cols}</tr>;
     });
 
@@ -255,7 +249,7 @@ TableElem = React.createClass({
     return nextProps.showSettingsGear == this.props.showSettingsGear && (nextProps.ready != false);
   },
   render() {
-    return <table className={this.props.className}>
+    return <table id={this.props.name} className={this.props.className}>
       <thead>
       <tr>{this.props.columnHeaders}</tr>
       </thead>

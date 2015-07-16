@@ -3,7 +3,7 @@
 Router.route("/a/:_appId/executors", {
   waitOn: function() {
     return [
-      Meteor.subscribe('executors-page', this.params._appId, Cookie.get("executors-table-opts")),
+      Meteor.subscribe('app', this.params._appId),
       Meteor.subscribe('num-executors', this.params._appId)
     ];
   },
@@ -34,5 +34,10 @@ var columns = [
       .concat(ioColumns);
 
 Template.executorsPage.helpers({
-  columns: function() { return columns; }
+  columns: function() { return columns; },
+  subscriptionFn: (appId) => {
+    return (opts) => {
+      return Meteor.subscribe("executors", appId, opts);
+    };
+  }
 });

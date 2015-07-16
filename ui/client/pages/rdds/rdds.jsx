@@ -3,7 +3,7 @@
 Router.route("/a/:_appId/storage", {
   waitOn: function() {
     return [
-      Meteor.subscribe("rdds-page", this.params._appId, Cookie.get("rdds-table-opts")),
+      Meteor.subscribe("app", this.params._appId),
       Meteor.subscribe("num-rdds", this.params._appId)
     ];
   },
@@ -65,5 +65,10 @@ var columns = [
 ].concat(spaceColumns);
 
 Template.rddsPage.helpers({
-  columns: function() { return columns; }
+  columns: function() { return columns; },
+  subscriptionFn: (appId) => {
+    return (opts) => {
+      return Meteor.subscribe("rdds", appId, opts);
+    };
+  }
 });

@@ -1,32 +1,31 @@
 
 <template name="stagesTables">
-  {{#with getStageData}}
-
-    {{#if active.num}}<span id="active-link"><a href="#active"><strong>Active Stages:</strong></a> {{active.num}}</span>{{/if}}
-    {{#if pending.num}}<span id="pending-link"><a href="#pending"><strong>Pending Stages:</strong></a> {{pending.num}}</span>{{/if}}
-    {{#if completed.num}}<span id="completed-link"><a href="#completed"><strong>Completed Stages:</strong></a> {{completed.num}}</span>{{/if}}
-    {{#if skipped.num}}<span id="skipped-link"><a href="#skipped"><strong>Skipped Stages:</strong></a> {{skipped.num}}</span>{{/if}}
-    {{#if failed.num}}<span id="failed-link"><a href="#failed"><strong>Failed Stages:</strong></a> {{failed.num}}</span>{{/if}}
-    <div id="all-link"><a href="#all"><strong>All Stages:</strong></a> {{all.num}}</div>
+  {{#with getStageData jobId}}
+    {{#if active}}<span id="active-link"><a href="#active"><strong>Active Stages:</strong></a> {{active}}</span>{{/if}}
+    {{#if pending}}<span id="pending-link"><a href="#pending"><strong>Pending Stages:</strong></a> {{pending}}</span>{{/if}}
+    {{#if succeeded}}<span id="succeeded-link"><a href="#succeeded"><strong>Completed Stages:</strong></a> {{succeeded}}</span>{{/if}}
+    {{#if skipped}}<span id="skipped-link"><a href="#skipped"><strong>Skipped Stages:</strong></a> {{skipped}}</span>{{/if}}
+    {{#if failed}}<span id="failed-link"><a href="#failed"><strong>Failed Stages:</strong></a> {{failed}}</span>{{/if}}
+    <div id="all-link"><a href="#all"><strong>All Stages:</strong></a> {{all}}</div>
 
     {{#if showAll}}
-      {{#with tableData "stages" "All Stages" all "all" columns true}}
+      {{#with tableData ../appId "stages" "All Stages" all "AllStages" "all" columns true ../jobId}}
         {{>objsTable this}}
       {{/with}}
     {{else}}
-      {{#with tableData "stages" "Active Stages" active "active" columns}}
+      {{#with tableData ../appId "stages" "Active Stages" active "ActiveStages" "active" columns false ../jobId}}
         {{>objsTable this}}
       {{/with}}
-      {{#with tableData "stages" "Pending Stages" pending "pending" columns}}
+      {{#with tableData ../appId "stages" "Pending Stages" pending "PendingStages" "pending" columns false ../jobId}}
         {{>objsTable this}}
       {{/with}}
-      {{#with tableData "stages" "Completed Stages" completed "completed" columns}}
+      {{#with tableData ../appId "stages" "Completed Stages" succeeded "CompletedStages" "succeeded" columns false ../jobId}}
         {{>objsTable this}}
       {{/with}}
-      {{#with tableData "stages" "Failed Stages" failed "failed" columns}}
+      {{#with tableData ../appId "stages" "Failed Stages" failed "FailedStages" "failed" columns false ../jobId}}
         {{>objsTable this}}
       {{/with}}
-      {{#with tableData "stages" "Skipped Stages" skipped "skipped" columns}}
+      {{#with tableData ../appId "stages" "Skipped Stages" skipped "SkippedStages" "skipped" columns false ../jobId}}
         {{>objsTable this}}
       {{/with}}
     {{/if}}
@@ -36,7 +35,7 @@
 <template name="objsTable">
   {{#if show}}
     <div>
-      {{>React component=Table name=name data=data title=title titleId=titleId columns=columns totalCollection=totalCollection keyFn=keyFn}}
+      {{>React component=Table name=name subscriptionFn=subscriptionFn collection=collection title=title titleId=titleId columns=columns total=total keyFn=keyFn}}
     </div>
   {{/if}}
 </template>

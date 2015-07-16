@@ -4,6 +4,22 @@
   {{setTitle "Storage - Spark"}}
   {{log this}}
   <div class="container-fluid">
-    {{>React component=Table name="rdds" title="Storage" collection="RDDs" totalCollection="NumRDDs" columns=columns}}
+    {{#if app.MemorySize}}<div><strong>Memory Usage:</strong> {{formatBytes app.MemorySize}}</div>{{/if}}
+    {{#if app.DiskSize}}<div><strong>Disk Usage:</strong> {{formatBytes app.DiskSize}}</div>{{/if}}
+    {{#if app.ExternalBlockStoreSize}}<div><strong>Off-Heap Usage:</strong> {{formatBytes app.ExternalBlockStoreSize}}</div>{{/if}}
+    {{#with subscriptionFn appId}}
+      <div>
+        {{>React
+            component=Table
+            name="rdds"
+            title="Storage"
+            collection="RDDs"
+            subscriptionFn=this
+            totalCollection="NumRDDs"
+            columns=columns
+            columnOracle=../app
+        }}
+      </div>
+    {{/with}}
   </div>
 </template>

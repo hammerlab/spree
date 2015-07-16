@@ -32,25 +32,7 @@ var stageNameColumn = new Column(
 );
 
 Template.registerHelper('getStageData', () => {
-  var selectors = [
-    [ 'all', {} ],
-    [ 'active', { started: true, ended: { $ne: true }} ],
-    [ 'completed', { status: SUCCEEDED } ],
-    [ 'failed', { status: FAILED } ],
-    [ 'pending', { $or: [ { started: { $exists: false } }, { started: false } ] } ],
-    [ 'skipped', { skipped: true } ]
-  ];
-
-  var stagesTables = {};
-  var opts = Cookie.get("stages-table-opts") || {};
-  selectors.forEach((arr) => {
-    var name = arr[0];
-    var selector = arr[1];
-    var stages = StageAttempts.find(selector, opts).fetch();
-    stagesTables[name] = { stages: stages, num: stages.length };
-  });
-
-  return stagesTables;
+  return StageCounts.findOne();
 });
 
 Template.stagesTables.helpers({
@@ -78,21 +60,29 @@ function setShowAll() {
 }
 
 Template.stagesTables.events({
-  'click #active-link, click #completed-link, click #failed-link, click #pending-link, click #skipped-link': unsetShowAll,
+  'click #active-link, click #succeeded-link, click #failed-link, click #pending-link, click #skipped-link': unsetShowAll,
   'click #all-link': setShowAll
 });
 
-Template.registerHelper("tableData", function(objType, title, objs, titleId, columns, alwaysShow) {
+Template.registerHelper("tableData", function(appId, objType, title, total, collection, titleId, columns, alwaysShow, extraArg) {
   return {
     title: title,
     titleId: titleId,
-    totalCollection: objType == 'stages' ? 'NumStages' : 'NumJobs',
+    total: total,
     name: objType,
-    data: objs[objType],
-    num: objs.num,
-    show: objs.num || (alwaysShow === true),
+    collection: collection,
+    subscriptionFn: () => {
+      return (opts) => {
+        var findObj = { appId: appId };
+        if (objType === 'stages' && extraArg !== null && extraArg !== undefined) {
+          findObj.jobId = extraArg;
+        }
+        return Meteor.subscribe(titleId + "-" + objType, findObj, opts);
+      };
+    },
+    show: total || (alwaysShow === true),
     columns: columns,
-    keyFn: objType == 'stages' && stageAttemptId
+    keyFn: objType == 'stages' && (() => { return stageAttemptId; })
   };
 });
 

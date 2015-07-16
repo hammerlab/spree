@@ -59,6 +59,11 @@ formatBytes = function(bytes) {
 };
 
 formatDuration = function(start, end, hideIncomplete) {
+  if (start && typeof start === 'object' && 'time' in start) {
+    start = start.time && start.time.start;
+    end = start.time && start.time.end;
+    hideIncomplete = end;
+  }
   if (start && end)
     return formatTime(end - start);
   if (start && !hideIncomplete)
@@ -84,4 +89,10 @@ getHostPort = function(e) {
   }
   return null;
 };
+
+renderers = {
+  bytes: formatBytes,
+  time: formatTime
+};
+defaultRenderer = (x) => { if (!x) return '-'; return x; };
 

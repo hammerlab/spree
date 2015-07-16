@@ -56,6 +56,9 @@ Meteor.publish("apps", function(opts) {
 });
 
 Meteor.publish("app", function(appId) {
+  var apps = (appId == 'latest') ? lastApp() : Applications.find({ id: appId });
+  var app = apps.fetch()[0];
+  var appId = (appId == 'latest' && app) ? app.id : appId;
   return Applications.find({ id: appId });
 });
 
@@ -74,9 +77,7 @@ Meteor.publish("jobs-page", function(appId) {
   appId = (appId == 'latest' && app) ? app.id : appId;
   return [
     apps,
-    Environment.find({ appId: appId }),
-    Jobs.find({appId: appId }),
-    Stages.find({ appId: appId })
+    Environment.find({ appId: appId })
   ];
 });
 
@@ -86,28 +87,10 @@ Meteor.publish("job-page", function(appId, jobId) {
   var apps = (appId == 'latest') ? lastApp() : Applications.find({ id: appId });
   var appId = (appId == 'latest') ? apps.fetch()[0].id : appId;
 
-  var stages = Stages.find({ appId: appId, jobId: jobId }, { sort: { id: -1 }});
-  var stageIDs = stages.map(function(stage) { return stage.id; });
-
   return [
     apps,
-    Jobs.find({appId: appId, id: jobId}),
-    stages,
-    StageAttempts.find({ appId: appId, stageId: { $in: stageIDs }})
+    Jobs.find({appId: appId, id: jobId})
   ];
-});
-
-
-// Stages page
-Meteor.publish("stages-page", function(appId) {
-  var apps = (appId == 'latest') ? lastApp() : Applications.find({ id: appId });
-  var app = apps.fetch()[0];
-  var appId = (appId == 'latest' && app) ? app.id : appId;
-  return [
-    apps,
-    Stages.find({ appId: appId }),
-    StageAttempts.find({ appId: appId })
-  ]
 });
 
 
@@ -137,9 +120,125 @@ Meteor.publish("stage-page", function(appId, stageId, attemptId) {
 
   return [
     apps,
-    Stages.find({ appId: appId, id: stageId }),
     StageAttempts.find({ appId: appId, stageId: stageId, id: attemptId })
   ];
+});
+
+function publishCountsByStatus(collection, objType) {
+  var name = objType + "-counts";
+  Meteor.publish(name, function(findObj) {
+    var self = this;
+    var initializing = true;
+    var id = new Mongo.ObjectID();
+    var stages = {};
+    var counts = {};
+    var handle = collection.find(findObj, { fields: { status: 1 }}).observeChanges({
+      added: function(_id, stage) {
+        var status = stage.status;
+        var statusStr = lstatuses[status];
+        stages[_id] = statusStr;
+
+        if (!(statusStr in counts)) {
+          counts[statusStr] = 0;
+        }
+        counts[statusStr]++;
+
+        if (!('all' in counts)) {
+          counts.all = 0;
+        }
+        counts.all++;
+
+        if (!initializing) {
+          var changedObj = { all: counts.all };
+          changedObj[statusStr] = counts[statusStr];
+          self.changed(name, id, changedObj);
+        }
+      },
+      changed: function(_id, fields) {
+        var prevStatusStr = stages[_id];
+        var newStatus = fields.status;
+        var statusStr = lstatuses[newStatus];
+        stages[_id] = statusStr;
+        var changedObj = {};
+        counts[prevStatusStr]--;
+        if (!(statusStr in counts)) {
+          counts[statusStr] = 0;
+        }
+        counts[statusStr]++;
+        changedObj[prevStatusStr] = counts[prevStatusStr];
+        changedObj[statusStr] = counts[statusStr];
+        self.changed(name, id, changedObj);
+      }
+    });
+
+    initializing = false;
+    this.added(name, id, counts);
+    this.ready();
+
+    this.onStop(function() {
+      handle.stop();
+    });
+  });
+}
+
+publishCountsByStatus(StageAttempts, "stage");
+publishCountsByStatus(Jobs, "job");
+
+function publishObjsByStatus(collection, objType, selectors) {
+  selectors.forEach(function(arr) {
+    var name = arr[0] + "-" + objType;
+    var statusObj = arr[1];
+    Meteor.publish(name, function(additionalFindObj, opts) {
+      var findObj = extend(statusObj,additionalFindObj);
+      console.log("publish %s:", name, JSON.stringify(findObj));
+      var self = this;
+      var handle = collection.find(findObj, opts).observeChanges({
+        added: function(_id, stage) {
+          self.added(name, _id, stage);
+        },
+        changed: function(_id, fields) {
+          self.changed(name, _id, fields);
+        },
+        removed: function(_id) {
+          self.removed(name, _id);
+        }
+      });
+
+      this.ready();
+
+      this.onStop(function() {
+        handle.stop();
+      });
+    });
+  });
+}
+
+publishObjsByStatus(
+      StageAttempts,
+      "stages",
+      [
+        [ "all", {} ],
+        [ "succeeded", { status: SUCCEEDED } ],
+        [ "failed", { status: FAILED } ],
+        [ "active", { status: RUNNING } ],
+        [ "pending", { status: { $exists: false } } ],
+        [ "skipped", { status: SKIPPED } ]
+      ]
+);
+
+publishObjsByStatus(
+      Jobs,
+      "jobs",
+      [
+        [ "all", {} ],
+        [ "succeeded", { status: SUCCEEDED } ],
+        [ "failed", { status: FAILED } ],
+        [ "active", { status: RUNNING } ]
+      ]
+);
+
+Meteor.publish("stage-attempts", function(appId, opts) {
+  return StageAttempts.find({ appId: appId }, opts);
 });
 
 Meteor.publish("stage-tasks", function(appId, stageId, attemptId, opts) {
@@ -171,16 +270,22 @@ Meteor.publish("rdds-page", function(appId, opts) {
   ];
 });
 
-Meteor.publish("rdd-page", function(appId, rddId, execOpts, blockOpts) {
+Meteor.publish("rdd-page", function(appId, rddId) {
   apps = (appId == 'latest') ? lastApp() : Applications.find({ id: appId });
   appId = (appId == 'latest') ? apps.fetch()[0].id : appId;
 
   return [
     apps,
-    RDDs.find({ appId: appId, id: rddId }),
-    RDDExecutors.find({ appId: appId, rddId: rddId }, execOpts || {}),
-    RDDBlocks.find({ appId: appId, rddId: rddId }, blockOpts || {})
+    RDDs.find({ appId: appId, id: rddId })
   ];
+});
+
+Meteor.publish("rdd-executors", function(appId, rddId, opts) {
+  return RDDExecutors.find({ appId: appId, rddId: rddId }, opts);
+});
+
+Meteor.publish("rdd-blocks", function(appId, rddId, opts) {
+  return RDDBlocks.find({ appId: appId, rddId: rddId }, opts);
 });
 
 // Environment Page
@@ -193,18 +298,25 @@ Meteor.publish("environment-page", function(appId) {
   ];
 });
 
-// Executors Page
-Meteor.publish('executors-page', function(appId, opts) {
-  apps = (appId == 'latest') ? lastApp() : Applications.find({ id: appId });
-  appId = (appId == 'latest') ? apps.fetch()[0].id : appId;
-  opts = opts || {};
-  if (opts.limit === undefined) {
-    opts.limit = 100;
-  }
-  return [
-    apps,
-    Executors.find({ appId: appId }, opts)
-  ];
+Meteor.publish("executors", function(appId, opts) {
+  return Executors.find({ appId: appId }, opts);
+});
+
+Meteor.publish("rdds", function(appId, opts) {
+  return RDDs.find(
+        {
+          appId: appId,
+          $or: [
+            { "StorageLevel.UseDisk": true },
+            { "StorageLevel.UseMemory": true },
+            { "StorageLevel.UseExternalBlockStore": true },
+            { "StorageLevel.Deserialized": true },
+            { "StorageLevel.Replication": { $ne: 1} }
+          ],
+          unpersisted: { $ne: true }
+        },
+        opts
+  );
 });
 
 function publishNum(collectionName, collection, findFields) {
@@ -274,14 +386,6 @@ function publishNum(collectionName, collection, findFields) {
         { "StorageLevel.Replication": { $ne: 1} }
       ],
       unpersisted: { $ne: true }
-    }
-  ],
-  [ 'num-jobs', Jobs ],
-  [
-    'num-stage-attempts',
-    StageAttempts,
-    function(jobId) {
-      return (jobId !== undefined) ? { jobId: jobId } : {};
     }
   ],
   [

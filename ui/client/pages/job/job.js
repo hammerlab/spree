@@ -6,7 +6,7 @@ Router.route("/a/:_appId/job/:_jobId", {
     var jobId = parseInt(this.params._jobId);
     return [
       Meteor.subscribe('job-page', appId, jobId),
-      Meteor.subscribe('num-stage-attempts', appId, jobId)
+      Meteor.subscribe("stage-counts", { appId: appId, jobId: jobId })
     ];
   },
   action: function() {

@@ -4,7 +4,7 @@ Router.route("/a/:_appId", {
   waitOn: function() {
     return [
       Meteor.subscribe("jobs-page", this.params._appId),
-      Meteor.subscribe("num-jobs", this.params._appId)
+      Meteor.subscribe("job-counts", { appId: this.params._appId })
     ];
   },
   action: function() {
@@ -18,6 +18,49 @@ Router.route("/a/:_appId", {
     });
   }
 });
+
+var jobIdColumn = new Column(
+      'id',
+      'Job ID',
+      'id',
+      {
+        render: function (job) {
+          return <a href={[ "", "a", job.appId, "job", job.id ].join('/')}>{job.id}</a>;
+        },
+        renderKey: '',
+        truthyZero: true
+      }
+);
+var stageIDsColumn = new Column(
+      'stageIDs',
+      'Stage IDs',
+      'stageIDs',
+      {
+        render: function(job) {
+          return job.stageIDs.sort(function(a,b) { return a - b; }).map((stageID, idx) => {
+            return <span key={stageID}>
+              {idx ? ", " : ""}
+              <a href={[ '', 'a', job.appId, 'stage', stageID ].join('/')}>{stageID}</a>
+            </span>;
+          });
+        },
+        renderKey: '',
+        showByDefault: false
+      }
+);
+var jobNameColumn = new Column(
+      'name',
+      'Description',
+      'name',
+      {
+        render: function (job) {
+          return <a href={[ "", "a", job.appId, "job", job.id ].join('/')}>
+            {job.stageNames ? job.stageNames[job.stageNames.length-1] : "???"}
+          </a>;
+        },
+        renderKey: ''
+      }
+);
 
 Template.jobsPage.helpers({
 
@@ -36,25 +79,11 @@ Template.jobsPage.helpers({
     return "Unknown";
   },
 
-  totalDuration: function() {
-    // TODO(ryan): denormalize on to app?
-    return this.all.jobs.reduce(
-          function(sum, job) {
-            return sum + duration(job)
-          },
-          0
-    );
-  },
-
-  uptime: function() {
-    return moment().unix()*1000 - this.app.time.start;
-  },
-
   columns: function() {
     return [
       jobIdColumn,
-      stageIDsColumn,
       jobNameColumn,
+      stageIDsColumn,
       startColumn,
       durationColumn,
       stageIdxsColumn,
@@ -64,28 +93,8 @@ Template.jobsPage.helpers({
     ].concat(ioColumns);
   },
 
-  jobs() {
-    var selectors = [
-      [ 'all', {} ],
-      [ 'active', { started: true, ended: { $ne: true }} ],
-      [ 'completed', { succeeded: true } ],
-      [ 'failed', { succeeded: false } ]
-    ];
-
-    var jobsTables = { app: this.app };
-    var opts = Cookie.get("jobs-table-opts") || {};
-    selectors.forEach((arr) => {
-      var name = arr[0];
-      var selector = arr[1];
-      var jobs = Jobs.find(selector, opts).fetch().map((job) => {
-        var lastStage = Stages.findOne({ jobId: job.id }, { sort: { id: -1 } });
-        job.name = lastStage && lastStage.name || "";
-        return job;
-      });
-      jobsTables[name] = { jobs: jobs, num: jobs.length };
-    });
-
-    return jobsTables;
+  jobCounts() {
+    return JobCounts.findOne();
   }
 
 });
@@ -102,34 +111,4 @@ Template.jobsPage.events({
   'click #active-link, click #completed-link, click #failed-link': unsetShowAll,
   'click #all-link': setShowAll
 });
-
-var jobIdColumn = new Column('id', 'Job ID', 'id', { truthyZero: true });
-var stageIDsColumn = new Column(
-      'stageIDs',
-      'Stage IDs',
-      'stageIDs',
-      {
-        render: function(job) {
-          return job.stageIDs.map((stageID, idx) => {
-            return <span key={stageID}>
-              {idx ? ", " : ""}
-              <a href={[ '', 'a', job.appId, 'stage', stageID ].join('/')}>{stageID}</a>
-            </span>;
-          });
-        },
-        renderKey: '',
-        showByDefault: false
-      }
-);
-var jobNameColumn = new Column(
-      'name',
-      'Description',
-      'name',
-      {
-        render: function (job) {
-          return <a href={[ "", "a", job.appId, "job", job.id ].join('/')}>{job.name}</a>;
-        },
-        renderKey: ''
-      }
-);
 

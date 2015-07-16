@@ -19,10 +19,22 @@
       </ul>
     </div>
 
-    <div class="row">
-      <div class="span12">
-        {{>React component=Table name="executors" title="Executors" columns=columns collection="Executors" totalCollection="NumExecutors" sortId="id"}}
+    {{#with subscriptionFn appId}}
+      <div class="row">
+        <div class="span12">
+          {{>React
+              component=Table
+              name="executors"
+              title="Executors"
+              columns=columns
+              collection="Executors"
+              subscriptionFn=this
+              totalCollection="NumExecutors"
+              sortId="id"
+              columnOracle=../app
+          }}
+        </div>
       </div>
-    </div>
+    {{/with}}
   </div>
 </template>

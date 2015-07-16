@@ -37,10 +37,10 @@ Column = function(id, label, sortKeys, opts) {
 };
 
 taskColumns = [
-  new Column('activeTasks', 'Active Tasks', 'taskCounts.running', { defaultSort: -1 }),
-  new Column('failedTasks', 'Failed Tasks', 'taskCounts.failed', { defaultSort: -1 }),
-  new Column('completeTasks', 'Complete Tasks', 'taskCounts.succeeded', { defaultSort: -1 }),
-  new Column('totalTasks', 'Total Tasks', 'taskCounts.num', { defaultSort: -1 })
+  new Column('activeTasks', 'Active Tasks', 'taskCounts.running', { defaultSort: -1, render: defaultRenderer }),
+  new Column('failedTasks', 'Failed Tasks', 'taskCounts.failed', { defaultSort: -1, render: defaultRenderer }),
+  new Column('completeTasks', 'Complete Tasks', 'taskCounts.succeeded', { defaultSort: -1, render: defaultRenderer }),
+  new Column('totalTasks', 'Total Tasks', 'taskCounts.num', { defaultSort: -1, render: defaultRenderer })
 ];
 
 inputBytesColumn = new Column('input', 'Input', 'metrics.InputMetrics.BytesRead', { showInEmptyTable: false, render: formatBytes, defaultSort: -1, requireOracle: true });
@@ -123,9 +123,9 @@ stageIdxsColumn = new Column(
 
 gcColumn = new Column('gcTime', 'GC Time', 'metrics.JVMGCTime', { showInEmptyTable: false, render: formatTime, defaultSort: -1, requireOracle: true });
 maxMemColumn = new Column('maxMemSize', 'Max. Memory', 'maxMem', { defaultSort: -1, render: formatBytes });
-memColumn = new Column('memSize', 'Size in Memory', 'MemorySize', { defaultSort: -1, render: formatBytes });
-offHeapColumn = new Column('offHeapSize', 'Size in Tachyon', 'ExternalBlockStoreSize', { defaultSort: -1, render: formatBytes });
-diskColumn = new Column('diskSize', 'Size on Disk', 'DiskSize', { defaultSort: -1, render: formatBytes });
+memColumn = new Column('memSize', 'Size in Memory', 'MemorySize', { defaultSort: -1, render: formatBytes, requireOracle: true });
+offHeapColumn = new Column('offHeapSize', 'Size in Tachyon', 'ExternalBlockStoreSize', { defaultSort: -1, render: formatBytes, requireOracle: true });
+diskColumn = new Column('diskSize', 'Size on Disk', 'DiskSize', { defaultSort: -1, render: formatBytes, requireOracle: true });
 
 spaceColumns = [ memColumn, offHeapColumn, diskColumn ];
 

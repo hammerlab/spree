@@ -13,4 +13,12 @@ statuses = {
   4: "SKIPPED"
 };
 
+lstatuses = {
+  undefined: "pending",
+  1: "running",
+  2: "succeeded",
+  3: "failed",
+  4: "skipped"
+};
+
 

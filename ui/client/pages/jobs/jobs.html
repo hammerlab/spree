@@ -4,32 +4,35 @@
   {{setTitle "Jobs - Spark"}}
   {{log this}}
   <div class="container-fluid">
-    {{#with jobs}}
-      <h3>Spark Jobs</h3>
+    <h3>Spark Jobs</h3>
+    <div>
+      <ul class="unstyled">
+        <li><strong>Total Job Duration:</strong> {{formatTime app.totalJobDuration}}</li>
+        <li><strong>Total Task Duration:</strong> {{formatTime app.totalTaskDuration}}</li>
+        <li><strong>Total Uptime:</strong> {{formatDuration app}}</li>
+        <li><strong>Scheduling Mode:</strong> {{schedulingMode env}}</li>
+      </ul>
+    </div>
+    {{#with jobCounts}}
       <div>
-        <strong>Total Duration:</strong> {{formatTime totalDuration}},
-        <strong>Total Uptime:</strong> {{formatTime uptime}}
+        {{#if active}}<span id="active-link"><a href="#active"><strong>Active Jobs:</strong></a> {{active}}</span>{{/if}}
+        {{#if succeeded}}<span id="completed-link"><a href="#completed"><strong>Completed Jobs:</strong></a> {{succeeded}}</span>{{/if}}
+        {{#if failed}}<span id="failed-link"><a href="#failed"><strong>Failed Jobs:</strong></a> {{failed}}</span>{{/if}}
       </div>
-      <div><strong>Scheduling Mode:</strong> {{schedulingMode env}}</div>
-      <div>
-        {{#if active.num}}<span id="active-link"><a href="#active"><strong>Active Jobs:</strong></a> {{active.num}}</span>{{/if}}
-        {{#if completed.num}}<span id="completed-link"><a href="#completed"><strong>Completed Jobs:</strong></a> {{completed.num}}</span>{{/if}}
-        {{#if failed.num}}<span id="failed-link"><a href="#failed"><strong>Failed Jobs:</strong></a> {{failed.num}}</span>{{/if}}
-      </div>
-      <div id="all-link"><a href="#all"><strong>All Jobs:</strong></a> {{all.num}}</div>
+      <div id="all-link"><a href="#all"><strong>All Jobs:</strong></a> {{all}}</div>
 
       {{#if showAll}}
-        {{#with tableData "jobs" "All Jobs" all "all" columns true}}
+        {{#with tableData ../appId "jobs" "All Jobs" all "AllJobs" "all" columns true}}
           {{>objsTable this}}
         {{/with}}
       {{else}}
-        {{#with tableData "jobs" "Active Jobs" active "active" columns}}
+        {{#with tableData ../appId "jobs" "Active Jobs" active "ActiveJobs" "active" columns}}
           {{>objsTable this}}
         {{/with}}
-        {{#with tableData "jobs" "Completed Jobs" completed "completed" columns}}
+        {{#with tableData ../appId "jobs" "Completed Jobs" succeeded "CompletedJobs" "succeeded" columns}}
           {{>objsTable this}}
         {{/with}}
-        {{#with tableData "jobs" "Failed Jobs" failed "failed" columns}}
+        {{#with tableData ../appId "jobs" "Failed Jobs" failed "FailedJobs" "failed" columns}}
           {{>objsTable this}}
         {{/with}}
       {{/if}}

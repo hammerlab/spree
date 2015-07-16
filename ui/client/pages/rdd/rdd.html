@@ -41,16 +41,39 @@
 
 <template name="rddExecutorsTable">
   <div class="row-fluid">
-    <div class="span12">
-      {{>React component=Table name="rddExecutors" title="Executors" collection="RDDExecutors" totalCollection="NumRDDExecutors" columns=columns}}
-    </div>
+    {{#with subscriptionFn appId rdd.id}}
+      <div class="span12">
+        {{>React
+            component=Table
+            name="rddExecutors"
+            title="Executors"
+            collection="RDDExecutors"
+            subscriptionFn=this
+            totalCollection="NumRDDExecutors"
+            columns=columns
+            keyFn="execId"
+            columnOracle=../rdd
+        }}
+      </div>
+    {{/with}}
   </div>
 </template>
 
 <template name="rddPartitionsTable">
   <div class="row-fluid">
-    <div class="span12">
-      {{>React component=Table name="rddBlocks" title="Partitions" collection="RDDBlocks" totalCollection="NumRDDBlocks" columns=columns}}
-    </div>
+    {{#with subscriptionFn appId rdd.id}}
+      <div class="span12">
+        {{>React
+            component=Table
+            name="rddBlocks"
+            title="Partitions"
+            collection="RDDBlocks"
+            subscriptionFn=this
+            totalCollection="NumRDDBlocks"
+            columns=columns
+            columnOracle=../rdd
+        }}
+      </div>
+    {{/with}}
   </div>
 </template>

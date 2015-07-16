@@ -5,19 +5,7 @@ Router.route("/a/:_appId/rdd/:_rddId", {
     var appId = this.params._appId;
     var rddId = parseInt(this.params._rddId);
     return [
-      Meteor.subscribe(
-            'rdd-page',
-            appId,
-            rddId,
-            jQuery.extend(
-                  { limit: 100, sort: { id: 1 } },
-                  Cookie.get("rddExecutors-table-opts")
-            ),
-            jQuery.extend(
-                  { limit: 100, sort: { id: 1 } },
-                  Cookie.get("rddBlocks-table-opts")
-            )
-      ),
+      Meteor.subscribe('rdd-page', appId, rddId),
       Meteor.subscribe('num-rdd-executors', appId, rddId),
       Meteor.subscribe('num-rdd-blocks', appId, rddId)
     ];
@@ -55,6 +43,11 @@ Template.rddExecutorsTable.helpers({
       offHeapColumn,
       diskColumn
     ];
+  },
+  subscriptionFn: (appId, rddId) => {
+    return (opts) => {
+      return Meteor.subscribe("rdd-executors", appId, rddId, opts);
+    };
   }
 });
 
@@ -71,5 +64,10 @@ var blockColumns = [
 Template.rddPartitionsTable.helpers({
   columns: function() {
     return blockColumns;
+  },
+  subscriptionFn: (appId, rddId) => {
+    return (opts) => {
+      return Meteor.subscribe("rdd-blocks", appId, rddId, opts);
+    };
   }
 });

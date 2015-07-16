@@ -3,8 +3,8 @@
 Router.route("/a/:_appId/stages", {
   waitOn: function() {
     return [
-      Meteor.subscribe('stages-page', this.params._appId),
-      Meteor.subscribe("num-stage-attempts", this.params._appId)
+      Meteor.subscribe('app', this.params._appId),
+      Meteor.subscribe("stage-counts", { appId: this.params._appId })
     ];
   },
   action: function() {
