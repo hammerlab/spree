@@ -183,6 +183,7 @@ function publishCountsByStatus(collection, objType) {
 
 publishCountsByStatus(StageAttempts, "stage");
 publishCountsByStatus(Jobs, "job");
+publishCountsByStatus(Executors, "executor");
 
 function publishObjsByStatus(collection, objType, selectors) {
   selectors.forEach(function(arr) {
@@ -234,6 +235,16 @@ publishObjsByStatus(
         [ "succeeded", { status: SUCCEEDED } ],
         [ "failed", { status: FAILED } ],
         [ "active", { status: RUNNING } ]
+      ]
+);
+
+publishObjsByStatus(
+      Executors,
+      "executors",
+      [
+        [ "all", {} ],
+        [ "active", { status: RUNNING } ],
+        [ "removed", { status: REMOVED } ]
       ]
 );
 

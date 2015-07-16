@@ -6,8 +6,8 @@ sigFigs = function(m, n) {
 };
 
 formatTime = function(ms) {
-  if (typeof ms != 'number') return ms;
   if (!ms) return '-';
+  if (typeof ms != 'number') return ms;
   var S = 1000;
   var M = 60*S;
   var H = 60*M;
@@ -58,17 +58,17 @@ formatBytes = function(bytes) {
   }
 };
 
-formatDuration = function(start, end, hideIncomplete) {
-  if (start && typeof start === 'object' && 'time' in start) {
-    start = start.time && start.time.start;
-    end = start.time && start.time.end;
-    hideIncomplete = end;
+formatDuration = function(o) {
+  if (o.time && o.time.start && !o.time.end) {
+    return formatTime(TimeSync.serverTime(null, 1000) - o.time.start) + "…";
   }
-  if (start && end)
-    return formatTime(end - start);
-  if (start && !hideIncomplete)
-    return formatTime(moment().unix()*1000 - start) + '...';
-  return "-";
+  if (o.duration) {
+    return formatTime(o.duration);
+  }
+  if (o.time && o.time.start && o.time.end) {
+    return formatTime(o.time.end - o.time.start);
+  }
+  return '-';
 };
 
 getStorageLevel = function(sl) {

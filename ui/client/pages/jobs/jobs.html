@@ -19,9 +19,9 @@
         {{#if succeeded}}<span id="completed-link"><a href="#completed"><strong>Completed Jobs:</strong></a> {{succeeded}}</span>{{/if}}
         {{#if failed}}<span id="failed-link"><a href="#failed"><strong>Failed Jobs:</strong></a> {{failed}}</span>{{/if}}
       </div>
-      <div id="all-link"><a href="#all"><strong>All Jobs:</strong></a> {{all}}</div>
+      <div id="all-link"><a href="#all"><strong>All Jobs:</strong></a> {{orZero all}}</div>
 
-      {{#if showAll}}
+      {{#if showAll all}}
         {{#with tableData ../appId "jobs" "All Jobs" all "AllJobs" "all" columns true}}
           {{>objsTable this}}
         {{/with}}

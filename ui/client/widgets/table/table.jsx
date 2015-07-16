@@ -4,7 +4,10 @@ function emptyColumnCheck(col, rows, columnOracle) {
     return col.showInEmptyTable != false;
   }
   if (!col.requireOracle) return true;
-  var val = col.sortBys[0](columnOracle);
+  var val =
+        typeof col.requireOracle === 'function' ?
+              col.requireOracle(columnOracle) :
+              col.sortBys[0](columnOracle);
   return val || (val == 0 && col.truthyZero)
 }
 

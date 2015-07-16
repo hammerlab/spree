@@ -72,8 +72,26 @@ ioColumns = [
 
 nameColumn = new Column('name', 'Name', 'name', {  });
 startColumn = new Column('start', 'Started', 'time.start', { render: formatDateTime, defaultSort: -1 });
-endColumn = new Column('end', 'Ended', 'time.end', { render: formatDateTime, defaultSort: -1 });
-durationColumn = new Column('duration', 'Duration', 'duration', { render: formatTime, defaultSort: -1 });
+endColumn = new Column(
+      'end',
+      'Ended',
+      'time.end',
+      {
+        render: formatDateTime,
+        defaultSort: -1,
+        requireOracle: (app) => { return app.executorCounts && app.executorCounts.removed; }
+      }
+);
+durationColumn = new Column(
+      'duration',
+      'Duration',
+      'duration',
+      {
+        render: formatDuration,
+        renderKey: '',
+        defaultSort: -1
+      }
+);
 
 function progressBar(counts) {
   return <ProgressBar counts={counts} />;
@@ -127,6 +145,15 @@ memColumn = new Column('memSize', 'Size in Memory', 'MemorySize', { defaultSort:
 offHeapColumn = new Column('offHeapSize', 'Size in Tachyon', 'ExternalBlockStoreSize', { defaultSort: -1, render: formatBytes, requireOracle: true });
 diskColumn = new Column('diskSize', 'Size on Disk', 'DiskSize', { defaultSort: -1, render: formatBytes, requireOracle: true });
 
+reasonColumn = new Column(
+      'reason',
+      'Removed Reason',
+      'reason',
+      {
+        showInEmptyTable: false,
+        requireOracle: (app) => { return app.executorCounts && app.executorCounts.removed; }
+      }
+);
 spaceColumns = [ memColumn, offHeapColumn, diskColumn ];
 
 blockIdColumn = new Column('id', 'Block ID', 'id', { truthyZero: true });

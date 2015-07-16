@@ -23,3 +23,8 @@ AllJobs = new Mongo.Collection("all-jobs");
 CompletedJobs = new Mongo.Collection("succeeded-jobs");
 ActiveJobs = new Mongo.Collection("active-jobs");
 FailedJobs = new Mongo.Collection("failed-jobs");
+
+ExecutorCounts = new Mongo.Collection("executor-counts");
+AllExecutors = new Mongo.Collection("all-executors");
+RemovedExecutors = new Mongo.Collection("removed-executors");
+ActiveExecutors = new Mongo.Collection("active-executors");

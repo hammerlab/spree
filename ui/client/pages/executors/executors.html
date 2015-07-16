@@ -6,35 +6,47 @@
   <div class="container-fluid">
     <div class="row-fluid">
       <ul class="unstyled">
-        <li>
-          <strong>Total Memory:</strong>
-          {{formatBytes app.MemorySize}} ({{formatBytes app.maxMem}} total)
-        </li>
+        {{#if app.MemorySize}}
+          <li>
+            <strong>Total Memory:</strong>
+            {{formatBytes app.MemorySize}} ({{formatBytes app.maxMem}} total)
+          </li>
+        {{/if}}
         {{#if app.DiskSize}}
           <li>
             <strong>Total Disk:</strong>
             {{formatBytes app.DiskSize}}
           </li>
         {{/if}}
+        {{#if app.ExternalBlockStoreSize}}
+          <li>
+            <strong>Total Off-Heap:</strong>
+            {{formatBytes app.ExternalBlockStoreSize}}
+          </li>
+        {{/if}}
+        {{#with counts}}
+          <li><a id="all-link" href="#all"><strong>Executors:</strong></a> {{all}}</li>
+          {{#if running}}
+            <li><a id="active-link" href="#active"><strong>Active Executors:</strong></a> {{running}}</li>
+          {{/if}}
+          {{#if removed}}
+            <li><a id="removed-link" href="#removed"><strong>Removed Executors:</strong></a> {{removed}}</li>
+          {{/if}}
+        {{/with}}
       </ul>
     </div>
 
-    {{#with subscriptionFn appId}}
-      <div class="row">
-        <div class="span12">
-          {{>React
-              component=Table
-              name="executors"
-              title="Executors"
-              columns=columns
-              collection="Executors"
-              subscriptionFn=this
-              totalCollection="NumExecutors"
-              sortId="id"
-              columnOracle=../app
-          }}
-        </div>
-      </div>
-    {{/with}}
+    {{#if showAll counts.all}}
+      {{#with tableData app.id "executors" "All Executors" counts.all "AllExecutors" "all" columns true null app}}
+        {{>objsTable this}}
+      {{/with}}
+    {{else}}
+      {{#with tableData app.id "executors" "Active Executors" counts.running "ActiveExecutors" "active" columns false null app}}
+        {{>objsTable this}}
+      {{/with}}
+      {{#with tableData app.id "executors" "Removed Executors" counts.removed "RemovedExecutors" "removed" columns false null app}}
+        {{>objsTable this}}
+      {{/with}}
+    {{/if}}
   </div>
 </template>

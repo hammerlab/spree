@@ -64,8 +64,8 @@ var jobNameColumn = new Column(
 
 Template.jobsPage.helpers({
 
-  showAll: function() {
-    return !(Cookie.get("jobs-showAll") == false);
+  showAll: function(total) {
+    return !total || Cookie.get("jobs-showAll") !== false;
   },
 
   schedulingMode: function(env) {
@@ -99,16 +99,8 @@ Template.jobsPage.helpers({
 
 });
 
-function unsetShowAll() {
-  Cookie.set("jobs-showAll", false);
-}
-
-function setShowAll() {
-  Cookie.set("jobs-showAll", true);
-}
-
 Template.jobsPage.events({
-  'click #active-link, click #completed-link, click #failed-link': unsetShowAll,
-  'click #all-link': setShowAll
+  'click #active-link, click #completed-link, click #failed-link': unsetShowAll("jobs"),
+  'click #all-link': setShowAll("jobs")
 });
 

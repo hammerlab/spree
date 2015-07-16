@@ -6,9 +6,9 @@
     {{#if succeeded}}<span id="succeeded-link"><a href="#succeeded"><strong>Completed Stages:</strong></a> {{succeeded}}</span>{{/if}}
     {{#if skipped}}<span id="skipped-link"><a href="#skipped"><strong>Skipped Stages:</strong></a> {{skipped}}</span>{{/if}}
     {{#if failed}}<span id="failed-link"><a href="#failed"><strong>Failed Stages:</strong></a> {{failed}}</span>{{/if}}
-    <div id="all-link"><a href="#all"><strong>All Stages:</strong></a> {{all}}</div>
+    <div id="all-link"><a href="#all"><strong>All Stages:</strong></a> {{orZero all}}</div>
 
-    {{#if showAll}}
+    {{#if showAll all}}
       {{#with tableData ../appId "stages" "All Stages" all "AllStages" "all" columns true ../jobId}}
         {{>objsTable this}}
       {{/with}}
@@ -35,7 +35,7 @@
 <template name="objsTable">
   {{#if show}}
     <div>
-      {{>React component=Table name=name subscriptionFn=subscriptionFn collection=collection title=title titleId=titleId columns=columns total=total keyFn=keyFn}}
+      {{>React this}}
     </div>
   {{/if}}
 </template>

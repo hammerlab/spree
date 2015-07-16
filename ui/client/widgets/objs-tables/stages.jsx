@@ -36,8 +36,8 @@ Template.registerHelper('getStageData', () => {
 });
 
 Template.stagesTables.helpers({
-  showAll: function() {
-    return Cookie.get('stages-showAll') != false;
+  showAll: function(total) {
+    return !total || Cookie.get('stages-showAll') !== false;
   },
   columns: function() {
     return [
@@ -51,38 +51,30 @@ Template.stagesTables.helpers({
   }
 });
 
-function unsetShowAll() {
-  Cookie.set("stages-showAll", false);
-}
-
-function setShowAll() {
-  Cookie.set("stages-showAll", true);
-}
-
 Template.stagesTables.events({
-  'click #active-link, click #succeeded-link, click #failed-link, click #pending-link, click #skipped-link': unsetShowAll,
-  'click #all-link': setShowAll
+  'click #active-link, click #succeeded-link, click #failed-link, click #pending-link, click #skipped-link': unsetShowAll("stages"),
+  'click #all-link': setShowAll("stages")
 });
 
-Template.registerHelper("tableData", function(appId, objType, title, total, collection, titleId, columns, alwaysShow, extraArg) {
+Template.registerHelper("tableData", function(appId, objType, title, total, collection, titleId, columns, showIfEmpty, extraArg, oracle) {
   return {
     title: title,
     titleId: titleId,
     total: total,
     name: objType,
     collection: collection,
-    subscriptionFn: () => {
-      return (opts) => {
-        var findObj = { appId: appId };
-        if (objType === 'stages' && extraArg !== null && extraArg !== undefined) {
-          findObj.jobId = extraArg;
-        }
-        return Meteor.subscribe(titleId + "-" + objType, findObj, opts);
-      };
+    subscriptionFn: (opts) => {
+      var findObj = { appId: appId };
+      if (objType === 'stages' && extraArg !== null && extraArg !== undefined) {
+        findObj.jobId = extraArg;
+      }
+      return Meteor.subscribe(titleId + "-" + objType, findObj, opts);
     },
-    show: total || (alwaysShow === true),
+    show: total || (showIfEmpty === true),
     columns: columns,
-    keyFn: objType == 'stages' && (() => { return stageAttemptId; })
+    keyFn: objType == 'stages' && (() => { return stageAttemptId; }),
+    component: Table,
+    columnOracle: oracle
   };
 });
 
