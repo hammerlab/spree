@@ -64,7 +64,7 @@ var accumulatorColumns = [
   new Column('value', 'Value', 'Value')
 ];
 
-var errorColumn =
+var taskErrorColumn =
       new Column(
             'errors',
             'Errors',
@@ -93,11 +93,7 @@ var taskTableColumns = [
   gcColumn
 ]
       .concat(ioColumns)
-      .concat([
-        errorColumn,
-        new Column('spillMem', 'Memory Spilled', 'metrics.MemoryBytesSpilled', { render: formatBytes, requireOracle: true }),
-        new Column('spillDisk', 'Disk Spilled', 'metrics.DiskBytesSpilled', { render: formatBytes, requireOracle: true })
-      ]);
+      .concat([ taskErrorColumn ]);
 
 function getSubscriptionFn(name, stage) {
   return (opts) => {

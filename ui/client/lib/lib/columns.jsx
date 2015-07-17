@@ -52,12 +52,8 @@ shuffleReadRecordsColumn = new Column('shuffleReadRecords', 'Records', 'metrics.
 shuffleWriteBytesColumn = new Column('shuffleWrite', 'Shuffle Write', 'metrics.ShuffleWriteMetrics.ShuffleBytesWritten', { showInEmptyTable: false, render: formatBytes, defaultSort: -1, requireOracle: true });
 shuffleWriteRecordsColumn = new Column('shuffleWriteRecords', 'Records', 'metrics.ShuffleWriteMetrics.ShuffleRecordsWritten', { showInEmptyTable: false, render: defaultRenderer, defaultSort: -1, requireOracle: true });
 
-ioBytesColumns = [
-  inputBytesColumn,
-  outputBytesColumn,
-  shuffleReadBytesColumn,
-  shuffleWriteBytesColumn
-];
+var memorySpillColumn = new Column('spillMem', 'Memory Spilled', 'metrics.MemoryBytesSpilled', { render: formatBytes, requireOracle: true });
+var diskSpillColumn = new Column('spillDisk', 'Disk Spilled', 'metrics.DiskBytesSpilled', { render: formatBytes, requireOracle: true });
 
 ioColumns = [
   inputBytesColumn,
@@ -67,7 +63,9 @@ ioColumns = [
   shuffleReadBytesColumn,
   shuffleReadRecordsColumn,
   shuffleWriteBytesColumn,
-  shuffleWriteRecordsColumn
+  shuffleWriteRecordsColumn,
+  memorySpillColumn,
+  diskSpillColumn
 ];
 
 nameColumn = new Column('name', 'Name', 'name', {  });
