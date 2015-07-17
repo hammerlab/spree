@@ -13,7 +13,7 @@
         {{>objsTable this}}
       {{/with}}
     {{else}}
-      {{#with tableData ../app "stages" "Active Stages" active "ActiveStages" "active" columns false ../job}}
+      {{#with tableData ../app "stages" "Active Stages" running "ActiveStages" "active" columns false ../job}}
         {{>objsTable this}}
       {{/with}}
       {{#with tableData ../app "stages" "Pending Stages" pending "PendingStages" "pending" columns false ../job}}

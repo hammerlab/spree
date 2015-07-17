@@ -26,7 +26,7 @@
           {{>objsTable this}}
         {{/with}}
       {{else}}
-        {{#with tableData ../app "jobs" "Active Jobs" active "ActiveJobs" "active" columns}}
+        {{#with tableData ../app "jobs" "Active Jobs" running "ActiveJobs" "active" columns}}
           {{>objsTable this}}
         {{/with}}
         {{#with tableData ../app "jobs" "Completed Jobs" succeeded "CompletedJobs" "succeeded" columns}}
