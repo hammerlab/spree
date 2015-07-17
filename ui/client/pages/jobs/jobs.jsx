@@ -62,6 +62,18 @@ var jobNameColumn = new Column(
       }
 );
 
+var jobColumns = [
+  jobIdColumn,
+  jobNameColumn,
+  stageIDsColumn,
+  startColumn,
+  durationColumn,
+  stageIdxsColumn,
+  stagesColumn,
+  taskIdxsColumn,
+  tasksColumn
+].concat(ioColumns);
+
 Template.jobsPage.helpers({
 
   showAll: function(total) {
@@ -79,19 +91,7 @@ Template.jobsPage.helpers({
     return "Unknown";
   },
 
-  columns: function() {
-    return [
-      jobIdColumn,
-      jobNameColumn,
-      stageIDsColumn,
-      startColumn,
-      durationColumn,
-      stageIdxsColumn,
-      stagesColumn,
-      taskIdxsColumn,
-      tasksColumn
-    ].concat(ioColumns);
-  },
+  columns: () => { return jobColumns; },
 
   jobCounts() {
     return JobCounts.findOne();

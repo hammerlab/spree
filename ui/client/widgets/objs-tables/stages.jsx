@@ -35,20 +35,20 @@ Template.registerHelper('getStageData', () => {
   return StageCounts.findOne();
 });
 
+var stageColumns = [
+  stageIDColumn,
+  stageNameColumn,
+  startColumn,
+  durationColumn,
+  taskIdxsColumn,
+  tasksColumn
+].concat(ioColumns);
+
 Template.stagesTables.helpers({
   showAll: function(total) {
     return !total || Cookie.get('stages-showAll') !== false;
   },
-  columns: function() {
-    return [
-      stageIDColumn,
-      stageNameColumn,
-      startColumn,
-      durationColumn,
-      taskIdxsColumn,
-      tasksColumn
-    ].concat(ioColumns);
-  }
+  columns: () => { return stageColumns; }
 });
 
 Template.stagesTables.events({
