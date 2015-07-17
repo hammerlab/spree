@@ -16,20 +16,20 @@ Many UI-scaling issues are solved, since all data about all applications is pers
 In particular, all tables are paginated (and sort-able by any column) on the server, for graceful handling of arbitrarily large stages, RDDs, etc.
 
 ### Persistence
-Spree combines functionality found in the Spark web UI, textual "event log" files, and the "history server" that consumes the latter, and improves on them in several ways, including:
+Spree offers a unified interface to past- and currently-running Spark applications, combining functionality that is currently spread across Spark's web UI and "history server".
 
-* Executors are not forgotten about when they are removed.
-* Several history-server issues are obviated:
-  * clumsiness loading many/large event-log files into memory:
-    * long start-up time,
-    * caching thorniness,
-  * clumsiness reading in-progress event-log files,
-  * capped number of event-log files that can be processed.
+It also persists all information about Spark applications to MongoDB, allowing for archival storage that is easily query-able and avoids various issues that the Spark history server currently suffers from (due to the latter's use of plain-text JSON files as an ad-hoc database), e.g. slow load-times, caching problems, etc.
 
 ### Usability
-All tables allow easy customization of displayed columns; the tables themselves can also be collapsed/uncollapsed for easy access to content that would otherwise be "below the fold".
+All tables allow easy customization of displayed columns:
 
-Additionally, all table state is stored in cookies for persistence across refreshes / sessions, including:
+![](https://camo.githubusercontent.com/f8f3250e144bd8f15a23e40fc02619664a5023e1/687474703a2f2f662e636c2e6c792f6974656d732f3034303033693035316432363278334f324f32452f53637265656e2532305265636f7264696e67253230323031352d30372d3036253230617425323030322e3332253230504d2e676966)
+
+Additionally, whole tables can be collapsed/uncollapsed for easy access to content that would otherwise be "below the fold":
+
+![](http://f.cl.ly/items/0t3J3n2w3a07181F0u36/Screen%20Recording%202015-07-17%20at%2004.55%20PM.gif)
+
+Finally, all table state is stored in cookies for persistence across refreshes / sessions, including:
 * sorted column and direction, 
 * table collapsed/uncollapsed status, 
 * table columns shown/hidden.
@@ -42,9 +42,7 @@ It also includes two useful modules for exporting/persisting data from Spark app
 * The [`json-relay`][] module broadcasts all Spark events over a network socket.
 * The [`slim`][] module aggregates stats about running Spark jobs and persists them to indexed Mongo collections.
 
-These offer favorable alternatives to Spark's [`EventLoggingListener`][] and event-log files, respectively, as the tools for exporting and persisting historical data about past and current Spark applications.
-
-Finally, Spree's data models clearly and consistently distinguish between [tasks vs. task-attempts] and [stages vs. stage attempts], which should allow for clearer and more informative presentations of {job, stage, task}s' progress.
+These offer favorable alternatives to Spark's [`EventLoggingListener`][] and event-log files, respectively (Spark's extant tools for exporting and persisting historical data about past and current Spark applications).
 
 ## Usage
 Spree has three components:
@@ -170,3 +168,4 @@ Now your Spark jobs will write events to the Mongo instance of your choosing, an
 [`json-relay`]: https://github.com/hammerlab/spark-json-relay
 [`spark-json-relay`]: https://github.com/hammerlab/spark-json-relay
 [`SparkListener`]: https://github.com/apache/spark/blob/658814c898bec04c31a8e57f8da0103497aac6ec/core/src/main/scala/org/apache/spark/scheduler/SparkListener.scala#L137
+[`EventLoggingListener`]: https://github.com/apache/spark/blob/658814c898bec04c31a8e57f8da0103497aac6ec/core/src/main/scala/org/apache/spark/scheduler/EventLoggingListener.scala
