@@ -5,7 +5,7 @@ sigFigs = function(m, n) {
   return m.toFixed(Math.max(0, n - leftOfDecimal));
 };
 
-formatTime = function(ms) {
+formatTime = function(ms, roundToSecond) {
   if (!ms) return '-';
   if (typeof ms != 'number') return ms;
   var S = 1000;
@@ -15,7 +15,13 @@ formatTime = function(ms) {
 
   if (ms < M) {
     if (ms < S) {
+      if (roundToSecond) {
+        return '<1 s';
+      }
       return ms + ' ms';
+    }
+    if (roundToSecond) {
+      return parseInt(ms / 1000) + ' s';
     }
     return sigFigs(ms/1000) + ' s';
   }

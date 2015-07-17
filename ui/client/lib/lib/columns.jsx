@@ -171,7 +171,8 @@ lastUpdatedColumn = new Column(
       'l',
       {
         render: (t) => {
-          return formatTime(TimeSync.serverTime(null, 10000) - t) + " ago";
+          var ms = TimeSync.serverTime(null, 10000) - t;
+          return formatTime(ms, true) + " ago";
         }
       }
 );
