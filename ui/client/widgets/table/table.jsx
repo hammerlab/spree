@@ -4,10 +4,15 @@ function emptyColumnCheck(col, rows, columnOracle) {
     return col.showInEmptyTable != false;
   }
   if (!col.requireOracle) return true;
-  var val =
-        typeof col.requireOracle === 'function' ?
-              col.requireOracle(columnOracle) :
-              col.sortBys[0](columnOracle);
+  var val = null;
+  if (typeof col.requireOracle === 'function') {
+    val = col.requireOracle(columnOracle)
+  } else if (typeof col.requireOracle === 'string') {
+    val = acc(col.requireOracle)(columnOracle);
+  } else {
+    val = col.sortBys[0](columnOracle);
+  }
+
   return val || (val == 0 && col.truthyZero)
 }
 

@@ -70,7 +70,7 @@ var taskErrorColumn =
             'Errors',
             'end.reason',
             {
-              requireOracle: (stageAttempt) => { return stageAttempt.taskCounts && stageAttempt.taskCounts.failed; },
+              requireOracle: 'taskCounts.failed',
               renderKey: 'end',
               render: (end) => {
                 return <TaskEnd {...end} />;

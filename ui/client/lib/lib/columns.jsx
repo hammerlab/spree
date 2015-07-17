@@ -77,7 +77,7 @@ endColumn = new Column(
       {
         render: formatDateTime,
         defaultSort: -1,
-        requireOracle: (app) => { return app.executorCounts && app.executorCounts.removed; }
+        requireOracle: 'executorCounts.removed'
       }
 );
 durationColumn = new Column(
@@ -149,7 +149,7 @@ reasonColumn = new Column(
       'reason',
       {
         showInEmptyTable: false,
-        requireOracle: (app) => { return app.executorCounts && app.executorCounts.removed; }
+        requireOracle: 'executorCounts.removed'
       }
 );
 spaceColumns = [ memColumn, offHeapColumn, diskColumn ];
