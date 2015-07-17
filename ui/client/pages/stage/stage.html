@@ -45,54 +45,18 @@
         {{/with}}
       {{/with}}
 
-      {{#with getSubscriptionFn "stage-summary-metrics" this}}
-        <div>
-          {{>React
-              component=Table
-              name="summaryMetrics"
-              title="Summary Metrics"
-              columns=statsColumns
-              subscriptionFn=this
-              collection="SummaryMetrics"
-              allowEmptyColumns=true
-              hideEmptyRows=true
-              hideRowCount=true
-              paginate=false
-              disableSort=true
-              selectRows=true
-              class="stats"
-          }}
-        </div>
-      {{/with}}
-      {{#with getSubscriptionFn "stage-executors" this}}
-        <div>
-          {{>React
-              component=Table
-              columns=executorColumns
-              subscriptionFn=this
-              collection="StageExecutors"
-              name="stageExecutors"
-              title="Executors"
-              totalCollection="NumStageExecutors"
-              columnOracle=..
-              keyFn="execId"
-          }}
-        </div>
-      {{/with}}
-      {{#with getSubscriptionFn "stage-tasks" this}}
-        <div>
-          {{>React
-              component=Table
-              columns=taskColumns
-              subscriptionFn=this
-              collection="TaskAttempts"
-              name="tasks"
-              title="Tasks"
-              total=../taskCounts.num
-              columnOracle=..
-          }}
-        </div>
-      {{/with}}
+      <div>
+        {{>React getSummaryMetricsTableData this}}
+      </div>
+      <div>
+        {{>React getExecutorTableData this}}
+      </div>
+      <div>
+        {{>React getAccumulatorsTableData this}}
+      </div>
+      <div>
+        {{>React getTasksTableData this}}
+      </div>
     {{/with}}
   </div>
 </template>

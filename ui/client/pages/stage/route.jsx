@@ -58,8 +58,14 @@ var executorColumns = [
       .concat(taskColumns)
       .concat(ioColumns);
 
+var accumulatorColumns = [
+  new Column('id', 'ID', 'ID', { showByDefault: false }),
+  new Column('name', 'Name', 'Name'),
+  new Column('value', 'Value', 'Value')
+];
+
 // Per-task table
-var columns = [
+var taskTableColumns = [
   new Column('index', 'Index', 'index', { truthyZero: true }),
   new Column('id', 'ID', 'id'),
   new Column('attempt', 'Attempt', 'attempt'),
@@ -77,18 +83,85 @@ var columns = [
         new Column('errors', 'Errors', 'errors')
       ]);
 
+function getSubscriptionFn(name, stage) {
+  return (opts) => {
+    return Meteor.subscribe(name, stage.appId, stage.stageId, stage.id, opts);
+  };
+}
 
 Template.stagePage.helpers({
   setTitle: function(data) {
-    document.title = "Stage " + data.stageId + " (" + data.attemptId + ")";
+    document.title = "Stage " + data.stageId + " (" + data.id + ")";
     return null;
   },
-  statsColumns: () => { return statsColumns; },
-  executorColumns: () => { return executorColumns; },
-  taskColumns: () => { return columns; },
-  getSubscriptionFn: (name, stage) => {
-    return (opts) => {
-      return Meteor.subscribe(name, stage.appId, stage.stageId, stage.id, opts);
+  getSummaryMetricsTableData: (stageAttempt) => {
+    return {
+      component: Table,
+      name: "summaryMetrics",
+      title: "Summary Metrics",
+      columns: statsColumns,
+      subscriptionFn: getSubscriptionFn("stage-summary-metrics", stageAttempt),
+      collection: "SummaryMetrics",
+      allowEmptyColumns: true,
+      hideEmptyRows: true,
+      hideRowCount: true,
+      paginate: false,
+      disableSort: true,
+      selectRows: true,
+      class: "stats"
+    };
+  },
+  getExecutorTableData: (stageAttempt) => {
+    return {
+      component: Table,
+      columns: executorColumns,
+      subscriptionFn: getSubscriptionFn("stage-executors", stageAttempt),
+      collection: "StageExecutors",
+      name: "stageExecutors",
+      title: "Executors",
+      totalCollection: "NumStageExecutors",
+      columnOracle: stageAttempt,
+      keyFn: "execId"
+    };
+  },
+  getAccumulatorsTableData: (stageAttempt) => {
+    var accumulables = [];
+    for (var k in stageAttempt.accumulables) {
+      accumulables.push(stageAttempt.accumulables[k]);
+    }
+    return {
+      component: Table,
+      data: accumulables,
+      total: accumulables.length,
+      title: "Accumulables",
+      paginate: false,
+      columns: accumulatorColumns,
+      keyFn: "ID",
+      class: "env",
+      clientSort: true
+    }
+  },
+  getTasksTableData: (stageAttempt) => {
+    var accumColumns = [];
+    var n = 0;
+    for (var k in stageAttempt.accumulables) {
+      var a = stageAttempt.accumulables[k];
+      var opts = {};
+      if (n >= 5) {
+        opts.showByDefault = false;
+      }
+      accumColumns.push(new Column('accum-' + a.ID, a.Name, ['accumulables', a.ID, 'Update'].join('.'), opts));
+      n++;
+    }
+    return {
+      component: Table,
+      columns: taskTableColumns.concat(accumColumns),
+      subscriptionFn: getSubscriptionFn("stage-tasks", stageAttempt),
+      collection: "TaskAttempts",
+      name: "tasks",
+      title: "Tasks",
+      total: stageAttempt.taskCounts.num,
+      columnOracle: stageAttempt
     };
   }
 });
