@@ -44,13 +44,13 @@ taskColumns = [
 ];
 
 inputBytesColumn = new Column('input', 'Input', 'metrics.InputMetrics.BytesRead', { showInEmptyTable: false, render: formatBytes, defaultSort: -1, requireOracle: true });
-inputRecordsColumn = new Column('inputRecords', 'Records', 'metrics.InputMetrics.RecordsRead', { showInEmptyTable: false, defaultSort: -1, requireOracle: true });
+inputRecordsColumn = new Column('inputRecords', 'Records', 'metrics.InputMetrics.RecordsRead', { showInEmptyTable: false, render: defaultRenderer, defaultSort: -1, requireOracle: true });
 outputBytesColumn = new Column('output', 'Output', 'metrics.OutputMetrics.BytesWritten', { showInEmptyTable: false, render: formatBytes, defaultSort: -1, requireOracle: true });
-outputRecordsColumn = new Column('outputRecords', 'Records', 'metrics.OutputMetrics.RecordsWritten', { showInEmptyTable: false, defaultSort: -1, requireOracle: true });
+outputRecordsColumn = new Column('outputRecords', 'Records', 'metrics.OutputMetrics.RecordsWritten', { showInEmptyTable: false, render: defaultRenderer, defaultSort: -1, requireOracle: true });
 shuffleReadBytesColumn = new Column('shuffleRead', 'Shuffle Read', 'metrics.ShuffleReadMetrics.TotalBytesRead', { showInEmptyTable: false, render: formatBytes, defaultSort: -1, requireOracle: true });
-shuffleReadRecordsColumn = new Column('shuffleReadRecords', 'Records', 'metrics.ShuffleReadMetrics.TotalRecordsRead', { showInEmptyTable: false, defaultSort: -1, requireOracle: true });
+shuffleReadRecordsColumn = new Column('shuffleReadRecords', 'Records', 'metrics.ShuffleReadMetrics.TotalRecordsRead', { showInEmptyTable: false, render: defaultRenderer, defaultSort: -1, requireOracle: true });
 shuffleWriteBytesColumn = new Column('shuffleWrite', 'Shuffle Write', 'metrics.ShuffleWriteMetrics.ShuffleBytesWritten', { showInEmptyTable: false, render: formatBytes, defaultSort: -1, requireOracle: true });
-shuffleWriteRecordsColumn = new Column('shuffleWriteRecords', 'Records', 'metrics.ShuffleWriteMetrics.ShuffleRecordsWritten', { showInEmptyTable: false, defaultSort: -1, requireOracle: true });
+shuffleWriteRecordsColumn = new Column('shuffleWriteRecords', 'Records', 'metrics.ShuffleWriteMetrics.ShuffleRecordsWritten', { showInEmptyTable: false, render: defaultRenderer, defaultSort: -1, requireOracle: true });
 
 ioBytesColumns = [
   inputBytesColumn,
