@@ -80,7 +80,18 @@ var taskTableColumns = [
 ]
       .concat(ioColumns)
       .concat([
-        new Column('errors', 'Errors', 'errors')
+        new Column(
+              'errors',
+              'Errors',
+              'end.reason',
+              {
+                requireOracle: (stageAttempt) => { return stageAttempt.taskCounts && stageAttempt.taskCounts.failed; },
+                renderKey: 'end',
+                render: (end) => {
+                  return <TaskEnd {...end} />;
+                }
+              }
+        )
       ]);
 
 function getSubscriptionFn(name, stage) {
