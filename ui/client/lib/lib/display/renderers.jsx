@@ -66,7 +66,7 @@ formatBytes = function(bytes) {
 
 formatDuration = function(o) {
   if (o.time && o.time.start && !o.time.end) {
-    return formatTime(TimeSync.serverTime(null, 1000) - o.time.start) + "…";
+    return formatTime(TimeSync.serverTime(null, 10000) - o.time.start) + "…";
   }
   if (o.duration) {
     return formatTime(o.duration);
