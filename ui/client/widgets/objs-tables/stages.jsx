@@ -56,7 +56,7 @@ Template.stagesTables.events({
   'click #all-link': setShowAll("stages")
 });
 
-Template.registerHelper("tableData", function(appId, objType, title, total, collection, titleId, columns, showIfEmpty, extraArg, oracle) {
+Template.registerHelper("tableData", function(app, objType, title, total, collection, titleId, columns, showIfEmpty, oracle) {
   return {
     title: title,
     titleId: titleId,
@@ -64,9 +64,9 @@ Template.registerHelper("tableData", function(appId, objType, title, total, coll
     name: objType,
     collection: collection,
     subscriptionFn: (opts) => {
-      var findObj = { appId: appId };
-      if (objType === 'stages' && extraArg !== null && extraArg !== undefined) {
-        findObj.jobId = extraArg;
+      var findObj = { appId: app.id };
+      if (objType === 'stages' && oracle !== null && oracle !== undefined) {
+        findObj.jobId = oracle.id;
       }
       return Meteor.subscribe(titleId + "-" + objType, findObj, opts);
     },
@@ -74,7 +74,7 @@ Template.registerHelper("tableData", function(appId, objType, title, total, coll
     columns: columns,
     keyFn: objType == 'stages' && stageAttemptId,
     component: Table,
-    columnOracle: oracle
+    columnOracle: oracle || app
   };
 });
 

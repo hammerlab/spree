@@ -37,14 +37,14 @@
     </div>
 
     {{#if showAll counts.all}}
-      {{#with tableData app.id "executors" "All Executors" counts.all "AllExecutors" "all" columns true null app}}
+      {{#with tableData app "executors" "All Executors" counts.all "AllExecutors" "all" columns true}}
         {{>objsTable this}}
       {{/with}}
     {{else}}
-      {{#with tableData app.id "executors" "Active Executors" counts.running "ActiveExecutors" "active" columns false null app}}
+      {{#with tableData app "executors" "Active Executors" counts.running "ActiveExecutors" "active" columns}}
         {{>objsTable this}}
       {{/with}}
-      {{#with tableData app.id "executors" "Removed Executors" counts.removed "RemovedExecutors" "removed" columns false null app}}
+      {{#with tableData app "executors" "Removed Executors" counts.removed "RemovedExecutors" "removed" columns}}
         {{>objsTable this}}
       {{/with}}
     {{/if}}

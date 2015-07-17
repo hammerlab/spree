@@ -22,17 +22,17 @@
       <div id="all-link"><a href="#all"><strong>All Jobs:</strong></a> {{orZero all}}</div>
 
       {{#if showAll all}}
-        {{#with tableData ../appId "jobs" "All Jobs" all "AllJobs" "all" columns true}}
+        {{#with tableData ../app "jobs" "All Jobs" all "AllJobs" "all" columns true}}
           {{>objsTable this}}
         {{/with}}
       {{else}}
-        {{#with tableData ../appId "jobs" "Active Jobs" active "ActiveJobs" "active" columns}}
+        {{#with tableData ../app "jobs" "Active Jobs" active "ActiveJobs" "active" columns}}
           {{>objsTable this}}
         {{/with}}
-        {{#with tableData ../appId "jobs" "Completed Jobs" succeeded "CompletedJobs" "succeeded" columns}}
+        {{#with tableData ../app "jobs" "Completed Jobs" succeeded "CompletedJobs" "succeeded" columns}}
           {{>objsTable this}}
         {{/with}}
-        {{#with tableData ../appId "jobs" "Failed Jobs" failed "FailedJobs" "failed" columns}}
+        {{#with tableData ../app "jobs" "Failed Jobs" failed "FailedJobs" "failed" columns}}
           {{>objsTable this}}
         {{/with}}
       {{/if}}
