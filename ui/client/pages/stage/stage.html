@@ -51,9 +51,11 @@
       <div>
         {{>React getExecutorTableData this}}
       </div>
-      <div>
-        {{>React getAccumulatorsTableData this}}
-      </div>
+      {{#if accumulables.length}}
+        <div>
+          {{>React getAccumulatorsTableData this}}
+        </div>
+      {{/if}}
       <div>
         {{>React getTasksTableData this}}
       </div>
