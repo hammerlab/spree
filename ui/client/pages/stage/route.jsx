@@ -93,7 +93,9 @@ var taskTableColumns = [
 ]
       .concat(ioColumns)
       .concat([
-        errorColumn
+        errorColumn,
+        new Column('spillMem', 'Memory Spilled', 'metrics.MemoryBytesSpilled', { render: formatBytes, requireOracle: true }),
+        new Column('spillDisk', 'Disk Spilled', 'metrics.DiskBytesSpilled', { render: formatBytes, requireOracle: true })
       ]);
 
 function getSubscriptionFn(name, stage) {
