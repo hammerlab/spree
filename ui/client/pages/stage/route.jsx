@@ -64,6 +64,19 @@ var accumulatorColumns = [
   new Column('value', 'Value', 'Value')
 ];
 
+var errorColumn =
+      new Column(
+            'errors',
+            'Errors',
+            'end.reason',
+            {
+              requireOracle: (stageAttempt) => { return stageAttempt.taskCounts && stageAttempt.taskCounts.failed; },
+              renderKey: 'end',
+              render: (end) => {
+                return <TaskEnd {...end} />;
+              }
+            }
+      );
 // Per-task table
 var taskTableColumns = [
   new Column('index', 'Index', 'index', { truthyZero: true }),
@@ -80,18 +93,7 @@ var taskTableColumns = [
 ]
       .concat(ioColumns)
       .concat([
-        new Column(
-              'errors',
-              'Errors',
-              'end.reason',
-              {
-                requireOracle: (stageAttempt) => { return stageAttempt.taskCounts && stageAttempt.taskCounts.failed; },
-                renderKey: 'end',
-                render: (end) => {
-                  return <TaskEnd {...end} />;
-                }
-              }
-        )
+        errorColumn
       ]);
 
 function getSubscriptionFn(name, stage) {
