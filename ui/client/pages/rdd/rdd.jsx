@@ -38,11 +38,8 @@ Template.rddExecutorsTable.helpers({
       executorIdColumn,
       hostColumn,
       portColumn,
-      numBlocksColumn,
-      memColumn,
-      offHeapColumn,
-      diskColumn
-    ];
+      numBlocksColumn
+    ].concat(spaceColumns);
   },
   subscriptionFn: (appId, rddId) => {
     return (opts) => {

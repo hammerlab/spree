@@ -34,6 +34,10 @@ Column = function(id, label, sortKeys, opts) {
   if (this.renderKey !== undefined) {
     this.renderValueFn = acc(this.renderKey);
   }
+
+  this.copy = function(newOpts) {
+    return new Column(this.id, this.label, this.sortKeys, jQuery.extend({}, opts, newOpts));
+  }
 };
 
 taskColumns = [
@@ -138,7 +142,7 @@ stageIdxsColumn = new Column(
 );
 
 gcColumn = new Column('gcTime', 'GC Time', 'metrics.JVMGCTime', { showInEmptyTable: false, render: formatTime, defaultSort: -1, requireOracle: true });
-maxMemColumn = new Column('maxMemSize', 'Max. Memory', 'maxMem', { defaultSort: -1, render: formatBytes });
+maxMemColumn = new Column('maxMemSize', 'Max. Memory', 'maxMem', { defaultSort: -1, render: formatBytes, showByDefault: false });
 memColumn = new Column('memSize', 'Size in Memory', 'MemorySize', { defaultSort: -1, render: formatBytes, requireOracle: true });
 offHeapColumn = new Column('offHeapSize', 'Size in Tachyon', 'ExternalBlockStoreSize', { defaultSort: -1, render: formatBytes, requireOracle: true });
 diskColumn = new Column('diskSize', 'Size on Disk', 'DiskSize', { defaultSort: -1, render: formatBytes, requireOracle: true });
@@ -154,6 +158,29 @@ reasonColumn = new Column(
 );
 spaceColumns = [ memColumn, offHeapColumn, diskColumn ];
 
+memPercentColumn = new Column(
+      'MemPercent',
+      '% Memory Used',
+      'MemPercent',
+      {
+        render: formatPercent,
+        requireOracle: 'MemorySize',
+        showByDefault: false
+      }
+);
+executorMemUsageProgressBarColumn = new Column(
+      'memProgress',
+      'Memory Used',
+      'MemPercent',
+      {
+        render: (e) => {
+          var label = formatBytesRatio(e.MemorySize, e.maxMem);
+          return <ProgressBar label={label} used={e.MemorySize} total={e.maxMem} />;
+        },
+        renderKey: '',
+        requireOracle: 'MemorySize'
+      }
+);
 blockIdColumn = new Column('id', 'Block ID', 'id', { truthyZero: true });
 executorIdColumn = new Column('eid', 'Executor ID', 'execId', { truthyZero: true });
 hostColumn = new Column('host', 'Host', 'host');

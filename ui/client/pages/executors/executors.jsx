@@ -31,7 +31,7 @@ var columns = [
   maxMemColumn,
   reasonColumn
 ]
-      .concat(spaceColumns)
+      .concat([ memPercentColumn, executorMemUsageProgressBarColumn, memColumn.copy({ showByDefault: false }), diskColumn, offHeapColumn ])
       .concat(taskColumns)
       .concat([ taskTimeColumn ])
       .concat(ioColumns);

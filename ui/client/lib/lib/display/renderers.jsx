@@ -1,7 +1,7 @@
 
 sigFigs = function(m, n) {
   n = n || 3;
-  var leftOfDecimal = Math.ceil(Math.log(m) / Math.log(10));
+  var leftOfDecimal = Math.max(1, Math.ceil(Math.log(m) / Math.log(10)));
   return m.toFixed(Math.max(0, n - leftOfDecimal));
 };
 
@@ -49,6 +49,20 @@ formatDateTime = function(dt) {
   return dt && moment(dt).format("YYYY/MM/DD HH:mm:ss") || "-";
 };
 
+formatBytesRatio = function(used, total) {
+  var base = 1024;
+  var cutoff = 2;
+  var levels = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
+  var idx = 0;
+  while (total > base && idx < levels.length) {
+    used /= base;
+    total /= base;
+    idx++;
+  }
+  var order = levels[idx];
+  return sigFigs(used) + '/' + sigFigs(total) + ' ' + order;
+};
+
 formatBytes = function(bytes) {
   if (!bytes) return "-";
   if (typeof bytes != 'number') return bytes;
@@ -60,8 +74,12 @@ formatBytes = function(bytes) {
     if (bytes < cutoff*base || order == 'PB') {
       return sigFigs(bytes) + ' ' + order;
     }
-    bytes /= 1024;
+    bytes /= base;
   }
+};
+
+formatPercent = (p) => {
+  return (100*p).toString().substr(0, 3) + '%';
 };
 
 formatDuration = function(o) {
