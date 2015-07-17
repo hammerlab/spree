@@ -31,10 +31,6 @@ var stageNameColumn = new Column(
       }
 );
 
-Template.registerHelper('getStageData', () => {
-  return StageCounts.findOne();
-});
-
 var stageColumns = [
   stageIDColumn,
   stageNameColumn,
@@ -49,7 +45,9 @@ Template.stagesTables.helpers({
   showAll: function(total) {
     return !total || Cookie.get('stages-showAll') !== false;
   },
-  columns: () => { return stageColumns; }
+  getTableData(data, label, name) {
+    return getTableData(data.app, "stages", label + " Stages", data.counts[name], label + "Stages", name, stageColumns, name === "all", data.job);
+  }
 });
 
 Template.stagesTables.events({
@@ -57,7 +55,7 @@ Template.stagesTables.events({
   'click #all-link': setShowAll("stages")
 });
 
-Template.registerHelper("tableData", function(app, objType, title, total, collection, titleId, columns, showIfEmpty, oracle) {
+getTableData = function(app, objType, title, total, collection, titleId, columns, showIfEmpty, oracle) {
   return {
     title: title,
     titleId: titleId,
@@ -77,5 +75,5 @@ Template.registerHelper("tableData", function(app, objType, title, total, collec
     component: Table,
     columnOracle: oracle || app
   };
-});
+};
 

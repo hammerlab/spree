@@ -15,6 +15,7 @@ Router.route("/a/:_appId/job/:_jobId", {
         appId: this.params._appId,
         app: Applications.findOne(),
         job: Jobs.findOne(),
+        counts: StageCounts.findOne(),
         jobsTab: 1
       }
     });

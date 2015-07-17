@@ -13,6 +13,7 @@ Router.route("/a/:_appId", {
         appId: this.params._appId,
         app: Applications.findOne(),
         env: Environment.findOne(),
+        counts: JobCounts.findOne(),
         jobsTab: 1
       }
     });
@@ -92,10 +93,8 @@ Template.jobsPage.helpers({
     return "Unknown";
   },
 
-  columns: () => { return jobColumns; },
-
-  jobCounts() {
-    return JobCounts.findOne();
+  getTableData(data, label, name) {
+    return getTableData(data.app, "jobs", label + " Jobs", data.counts[name], label + "Jobs", name, jobColumns, name === "all");
   }
 
 });

@@ -221,7 +221,7 @@ publishObjsByStatus(
         [ "all", {} ],
         [ "succeeded", { status: SUCCEEDED } ],
         [ "failed", { status: FAILED } ],
-        [ "active", { status: RUNNING } ],
+        [ "running", { status: RUNNING } ],
         [ "pending", { status: { $exists: false } } ],
         [ "skipped", { status: SKIPPED } ]
       ]
@@ -234,7 +234,7 @@ publishObjsByStatus(
         [ "all", {} ],
         [ "succeeded", { status: SUCCEEDED } ],
         [ "failed", { status: FAILED } ],
-        [ "active", { status: RUNNING } ]
+        [ "running", { status: RUNNING } ]
       ]
 );
 
@@ -243,7 +243,7 @@ publishObjsByStatus(
       "executors",
       [
         [ "all", {} ],
-        [ "active", { status: RUNNING } ],
+        [ "running", { status: RUNNING } ],
         [ "removed", { status: REMOVED } ]
       ]
 );

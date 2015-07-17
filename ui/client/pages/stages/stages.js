@@ -12,6 +12,7 @@ Router.route("/a/:_appId/stages", {
       data: {
         appId: this.params._appId,
         app: Applications.findOne(),
+        counts: StageCounts.findOne(),
         stagesTab: 1
       }
     });

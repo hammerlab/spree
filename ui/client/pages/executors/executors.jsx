@@ -42,13 +42,10 @@ Template.executorsPage.events({
 });
 
 Template.executorsPage.helpers({
-  showAll: (total) => {
+  showAll(total) {
     return !total || Cookie.get("executorsPage-showAll") !== false;
   },
-  columns: function() { return columns; },
-  subscriptionFn: (appId) => {
-    return (opts) => {
-      return Meteor.subscribe("executors", appId, opts);
-    };
+  getTableData(data, label, name) {
+    return getTableData(data.app, "executors", label + " Executors", data.counts[name], label + "Executors", name, columns, name === "all");
   }
 });

@@ -1,35 +1,23 @@
 
 <template name="stagesTables">
-  {{#with getStageData}}
-    {{#if active}}<span id="active-link"><a href="#active"><strong>Active Stages:</strong></a> {{active}}</span>{{/if}}
+  {{#with counts}}
+    {{#if active}}<span id="active-link"><a href="#running"><strong>Active Stages:</strong></a> {{running}}</span>{{/if}}
     {{#if pending}}<span id="pending-link"><a href="#pending"><strong>Pending Stages:</strong></a> {{pending}}</span>{{/if}}
     {{#if succeeded}}<span id="succeeded-link"><a href="#succeeded"><strong>Completed Stages:</strong></a> {{succeeded}}</span>{{/if}}
     {{#if skipped}}<span id="skipped-link"><a href="#skipped"><strong>Skipped Stages:</strong></a> {{skipped}}</span>{{/if}}
     {{#if failed}}<span id="failed-link"><a href="#failed"><strong>Failed Stages:</strong></a> {{failed}}</span>{{/if}}
     <div id="all-link"><a href="#all"><strong>All Stages:</strong></a> {{orZero all}}</div>
-
-    {{#if showAll all}}
-      {{#with tableData ../app "stages" "All Stages" all "AllStages" "all" columns true ../job}}
-        {{>objsTable this}}
-      {{/with}}
-    {{else}}
-      {{#with tableData ../app "stages" "Active Stages" running "ActiveStages" "active" columns false ../job}}
-        {{>objsTable this}}
-      {{/with}}
-      {{#with tableData ../app "stages" "Pending Stages" pending "PendingStages" "pending" columns false ../job}}
-        {{>objsTable this}}
-      {{/with}}
-      {{#with tableData ../app "stages" "Completed Stages" succeeded "CompletedStages" "succeeded" columns false ../job}}
-        {{>objsTable this}}
-      {{/with}}
-      {{#with tableData ../app "stages" "Failed Stages" failed "FailedStages" "failed" columns false ../job}}
-        {{>objsTable this}}
-      {{/with}}
-      {{#with tableData ../app "stages" "Skipped Stages" skipped "SkippedStages" "skipped" columns false ../job}}
-        {{>objsTable this}}
-      {{/with}}
-    {{/if}}
   {{/with}}
+
+  {{#if showAll counts.all}}
+    {{>objsTable getTableData this "All" "all"}}
+  {{else}}
+    {{>objsTable getTableData this "Active" "running"}}
+    {{>objsTable getTableData this "Pending" "pending"}}
+    {{>objsTable getTableData this "Completed" "succeeded"}}
+    {{>objsTable getTableData this "Failed" "failed"}}
+    {{>objsTable getTableData this "Skipped" "skipped"}}
+  {{/if}}
 </template>
 
 <template name="objsTable">
