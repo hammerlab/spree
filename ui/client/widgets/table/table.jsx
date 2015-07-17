@@ -73,6 +73,10 @@ Table = React.createClass({
 
     var obj = {};
     if (sort) {
+      var firstId = this.props.columns[0].id;
+      if(!(firstId in sort)) {
+        sort[firstId] = 1;
+      }
       obj.sort = sort;
     }
     var rows =
