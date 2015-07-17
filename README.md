@@ -118,11 +118,9 @@ I believe the following are resolved, or rather worked around, by Spree:
 
 #### Missing Functionality
 Functionality known to be present in the existing Spark web UI / history server and missing from Spree:
-* Updating metrics for in-progress tasks ([hammerlab/slim#7](https://github.com/hammerlab/slim/issues/7))
 * Most viz covered by [SPARK-6942](https://issues.apache.org/jira/browse/SPARK-6942), including:
   * RDD DAG viz ([SPARK-6943](https://issues.apache.org/jira/browse/SPARK-6943))
   * Event timeline viz (jobs: [SPARK-3468](https://issues.apache.org/jira/browse/SPARK-3468), stages: [SPARK-7296](https://issues.apache.org/jira/browse/SPARK-7296))
-* Accumulators table
 * Executor thread-dumps
 * Duration confusion ([SPARK-5179](https://issues.apache.org/jira/browse/SPARK-5179))
 * Streaming UI
