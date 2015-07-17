@@ -15,7 +15,7 @@
     </div>
     {{#with counts}}
       <div>
-        {{#if active}}<span id="active-link"><a href="#running"><strong>Active Jobs:</strong></a> {{running}}</span>{{/if}}
+        {{#if running}}<span id="active-link"><a href="#running"><strong>Active Jobs:</strong></a> {{running}}</span>{{/if}}
         {{#if succeeded}}<span id="completed-link"><a href="#succeeded"><strong>Completed Jobs:</strong></a> {{succeeded}}</span>{{/if}}
         {{#if failed}}<span id="failed-link"><a href="#failed"><strong>Failed Jobs:</strong></a> {{failed}}</span>{{/if}}
       </div>

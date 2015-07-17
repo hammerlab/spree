@@ -56,18 +56,19 @@ Template.stagesTables.events({
 });
 
 getTableData = function(app, objType, title, total, collection, titleId, columns, showIfEmpty, oracle) {
+  var id = titleId + "-" + objType;
   return {
     title: title,
     titleId: titleId,
     total: total,
-    name: objType,
+    name: id,
     collection: collection,
     subscriptionFn: (opts) => {
       var findObj = { appId: app.id };
       if (objType === 'stages' && oracle !== null && oracle !== undefined) {
         findObj.jobId = oracle.id;
       }
-      return Meteor.subscribe(titleId + "-" + objType, findObj, opts);
+      return Meteor.subscribe(id, findObj, opts);
     },
     show: total || (showIfEmpty === true),
     columns: columns,

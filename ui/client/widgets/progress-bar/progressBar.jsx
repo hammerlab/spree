@@ -14,11 +14,14 @@ ProgressBar = React.createClass({
       running = counts.running || 0;
       succeeded = counts.succeeded || 0;
       var total = Math.max(running + succeeded, counts.num);
+      var clauses = [];
+      if (counts.running) clauses.push(counts.running + " running");
+      if (counts.failed) clauses.push(counts.failed + " failed");
       label =
             (counts.succeeded || 0) +
             "/" +
             (total || "?") +
-            (counts.running ? (" (" + counts.running + " running)") : "");
+            (clauses.length ? (" (" + clauses.join(", ") + ")") : "");
     }
     return <div className="progress">
       <span className="progress-label">{label}</span>

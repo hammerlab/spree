@@ -1,7 +1,7 @@
 
 <template name="stagesTables">
   {{#with counts}}
-    {{#if active}}<span id="active-link"><a href="#running"><strong>Active Stages:</strong></a> {{running}}</span>{{/if}}
+    {{#if running}}<span id="active-link"><a href="#running"><strong>Active Stages:</strong></a> {{running}}</span>{{/if}}
     {{#if pending}}<span id="pending-link"><a href="#pending"><strong>Pending Stages:</strong></a> {{pending}}</span>{{/if}}
     {{#if succeeded}}<span id="succeeded-link"><a href="#succeeded"><strong>Completed Stages:</strong></a> {{succeeded}}</span>{{/if}}
     {{#if skipped}}<span id="skipped-link"><a href="#skipped"><strong>Skipped Stages:</strong></a> {{skipped}}</span>{{/if}}

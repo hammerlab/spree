@@ -33,7 +33,7 @@ var columns = [
 ]
       .concat([ memPercentColumn, executorMemUsageProgressBarColumn, memColumn.copy({ showByDefault: false }), diskColumn, offHeapColumn ])
       .concat(taskColumns)
-      .concat([ taskTimeColumn ])
+      .concat([ taskTimeColumn, gcColumn ])
       .concat(ioColumns);
 
 Template.executorsPage.events({

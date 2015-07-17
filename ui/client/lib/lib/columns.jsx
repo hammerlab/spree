@@ -174,7 +174,7 @@ executorMemUsageProgressBarColumn = new Column(
       'MemPercent',
       {
         render: (e) => {
-          var label = formatBytesRatio(e.MemorySize, e.maxMem);
+          var label = formatBytesRatio(e.MemorySize || 0, e.maxMem);
           return <ProgressBar label={label} used={e.MemorySize} total={e.maxMem} />;
         },
         renderKey: '',

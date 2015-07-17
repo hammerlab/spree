@@ -292,7 +292,7 @@ Meteor.publish("rdd-page", function(appId, rddId) {
 });
 
 Meteor.publish("rdd-executors", function(appId, rddId, opts) {
-  return RDDExecutors.find({ appId: appId, rddId: rddId }, opts);
+  return RDDExecutors.find({ appId: appId, rddId: rddId, status: { $ne: REMOVED } }, opts);
 });
 
 Meteor.publish("rdd-blocks", function(appId, rddId, opts) {
@@ -410,7 +410,7 @@ function publishNum(collectionName, collection, findFields) {
     'num-rdd-executors',
     RDDExecutors,
     function(rddId) {
-      return (rddId !== undefined) ? { rddId: rddId } : {};
+      return (rddId !== undefined) ? { rddId: rddId, status: { $ne: REMOVED } } : {};
     }
   ],
   [

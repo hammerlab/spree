@@ -1,5 +1,6 @@
 
 sigFigs = function(m, n) {
+  if (!m) return m;
   n = n || 3;
   var leftOfDecimal = Math.max(1, Math.ceil(Math.log(m) / Math.log(10)));
   return m.toFixed(Math.max(0, n - leftOfDecimal));
