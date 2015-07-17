@@ -72,7 +72,7 @@ Template.registerHelper("tableData", function(appId, objType, title, total, coll
     },
     show: total || (showIfEmpty === true),
     columns: columns,
-    keyFn: objType == 'stages' && (() => { return stageAttemptId; }),
+    keyFn: objType == 'stages' && stageAttemptId,
     component: Table,
     columnOracle: oracle
   };
