@@ -82,6 +82,7 @@ var taskTableColumns = [
   new Column('index', 'Index', 'index', { truthyZero: true }),
   new Column('id', 'ID', 'id'),
   new Column('attempt', 'Attempt', 'attempt'),
+  lastUpdatedColumn,
   new Column('status', 'Status', 'status', { render: statusStr }),
   new Column('localityLevel', 'Locality Level', 'locality'),
   new Column('execId', 'Executor', 'execId'),

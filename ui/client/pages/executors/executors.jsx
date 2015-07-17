@@ -23,6 +23,7 @@ var columns = [
   new Column('id', 'ID', 'id', { truthyZero: 0 }),
   hostColumn,
   portColumn,
+  lastUpdatedColumn,
   startColumn,
   endColumn,
   durationColumn,

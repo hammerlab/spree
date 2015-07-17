@@ -164,3 +164,14 @@ numBlocksColumn = new Column('blocks', 'RDD Blocks', 'numBlocks', { defaultSort:
 
 storageLevelColumn = new Column('storageLevel', 'Storage Level', 'StorageLevel.UseMemory', { render: getStorageLevel, renderKey: 'StorageLevel' });
 taskTimeColumn = new Column('taskTime', 'Task Time', 'metrics.ExecutorRunTime', { render: formatTime, defaultSort: -1 });
+
+lastUpdatedColumn = new Column(
+      'lastUpdated',
+      'Last Updated',
+      'l',
+      {
+        render: (t) => {
+          return formatTime(TimeSync.serverTime(null, 10000) - t) + " ago";
+        }
+      }
+);

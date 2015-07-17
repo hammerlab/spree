@@ -38,6 +38,7 @@ Template.registerHelper('getStageData', () => {
 var stageColumns = [
   stageIDColumn,
   stageNameColumn,
+  lastUpdatedColumn,
   startColumn,
   durationColumn,
   taskIdxsColumn,

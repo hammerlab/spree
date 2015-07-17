@@ -190,7 +190,7 @@ function publishObjsByStatus(collection, objType, selectors) {
     var name = arr[0] + "-" + objType;
     var statusObj = arr[1];
     Meteor.publish(name, function(additionalFindObj, opts) {
-      var findObj = extend(statusObj,additionalFindObj);
+      var findObj = extend(statusObj, additionalFindObj);
       console.log("publish %s:", name, JSON.stringify(findObj));
       var self = this;
       var handle = collection.find(findObj, opts).observeChanges({

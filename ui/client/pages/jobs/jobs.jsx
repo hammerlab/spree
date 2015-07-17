@@ -65,6 +65,7 @@ var jobNameColumn = new Column(
 var jobColumns = [
   jobIdColumn,
   jobNameColumn,
+  lastUpdatedColumn,
   stageIDsColumn,
   startColumn,
   durationColumn,
