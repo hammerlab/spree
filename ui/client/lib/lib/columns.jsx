@@ -180,7 +180,8 @@ executorMemUsageProgressBarColumn = new Column(
           return <ProgressBar label={label} used={e.MemorySize} total={e.maxMem} />;
         },
         renderKey: '',
-        requireOracle: 'MemorySize'
+        requireOracle: 'MemorySize',
+        defaultSort: -1
       }
 );
 blockIdColumn = new Column('id', 'Block ID', 'id', { truthyZero: true });
