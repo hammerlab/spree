@@ -69,10 +69,10 @@ You can now see your (presumably empty) `spree` dashboard at [http://localhost:3
 Next, run a `slim` process:
 
 ```
-$ cd slim && node server.js
+$ cd slim && node slim.js
 ```
 
-[`slim`][] is a Node server that receives events from Spark/`spark-json-relay` and writes them to the Mongo instance that Spree is watching. 
+[`slim`][] is a Node server that receives events from [`spark-json-relay`][] and writes them to the Mongo instance that Spree is watching. 
 
 By default, `slim` listens for events on `localhost:8123` and writes to a Mongo at `localhost:3001`, which is the default Mongo URL for a `spree` started as above.
 
@@ -91,7 +91,7 @@ A shaded JAR can then be found at `json-relay/client/target/json-relay-client-wi
 Finally, we'll tell Spark to send events to `spark-json-relay` by passing arguments like the following to `spark-{shell,submit}`:
 
 ```
-  # Include Spear on the driver's classpath
+  # Include JsonRelay on the driver's classpath
   --driver-class-path /path/to/spree/json-relay/client/target/json-relay-client-with-deps-1.0-SNAPSHOT.jar
   
   # Register your JSON relay as a SparkListener
@@ -108,7 +108,7 @@ Finally, we'll tell Spark to send events to `spark-json-relay` by passing argume
 Below is a journey through Spark JIRAs past, present, and future, comparing the current state of Spree with Spark's web UI.
 
 #### ~Fixed JIRAs
-I believe the following are resolved, or rather worked around, by Spree:
+I believe the following are resolved or worked around by Spree:
 * Live updating: [SPARK-5106](https://issues.apache.org/jira/browse/SPARK-5106).
 * Scalability / Pagination: [SPARK-2015](https://issues.apache.org/jira/browse/SPARK-2015), [SPARK-2016](https://issues.apache.org/jira/browse/SPARK-2016), [SPARK-2017](https://issues.apache.org/jira/browse/SPARK-2017), [SPARK-4598](https://issues.apache.org/jira/browse/SPARK-4598).
 * Customizability / Usability: [SPARK-1301](https://issues.apache.org/jira/browse/SPARK-1301), [SPARK-4024](https://issues.apache.org/jira/browse/SPARK-4024)
@@ -117,11 +117,11 @@ I believe the following are resolved, or rather worked around, by Spree:
 #### Missing Functionality
 Functionality known to be present in the existing Spark web UI / history server and missing from Spree:
 * Most viz covered by [SPARK-6942](https://issues.apache.org/jira/browse/SPARK-6942), including:
-  * RDD DAG viz ([SPARK-6943](https://issues.apache.org/jira/browse/SPARK-6943))
-  * Event timeline viz (jobs: [SPARK-3468](https://issues.apache.org/jira/browse/SPARK-3468), stages: [SPARK-7296](https://issues.apache.org/jira/browse/SPARK-7296))
-* Executor thread-dumps
-* Duration confusion ([SPARK-5179](https://issues.apache.org/jira/browse/SPARK-5179))
-* Streaming UI
+  * RDD DAG viz ([SPARK-6943](https://issues.apache.org/jira/browse/SPARK-6943)).
+  * Event timeline viz (jobs: [SPARK-3468](https://issues.apache.org/jira/browse/SPARK-3468), stages: [SPARK-7296](https://issues.apache.org/jira/browse/SPARK-7296)).
+* Executor thread-dumps, stdout/stderr links ([#30](https://github.com/hammerlab/spree/issues/30)).
+* Duration confusion ([SPARK-5179](https://issues.apache.org/jira/browse/SPARK-5179)).
+* Streaming UI.
 
 #### Future Nice-to-haves
 A motley collection of open Spark-UI JIRAs that might be well-suited for fixing in Spree:
