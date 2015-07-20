@@ -195,7 +195,8 @@ taskRunTimeColumn = new Column('taskTime', 'Task Run-Time', 'metrics.ExecutorRun
 totalTaskTimeColumn = new Column('totalTaskTime', 'Total Task Time', 'totalTaskDuration', { render: formatTime, defaultSort: -1, showByDefault: false });
 resultSerializationTime = new Column('ResultSerializationTime', 'Result Ser. Time', 'metrics.ResultSerializationTime', { render: formatTime, defaultSort: -1, requireOracle: true, showByDefault: false });
 taskDeserializationTime = new Column('ExecutorDeserializeTime', 'Task Deser. Time', 'metrics.ExecutorDeserializeTime', { render: formatTime, defaultSort: -1, requireOracle: true, showByDefault: false });
-gettingResultTime = new Column('GettingResultTime', 'Getting Result Time', 'GettingResultTime', { render: formatTime, defaultSort: -1, requireOracle: true, showByDefault: false });
+gettingResultTime = new Column('GettingResultTime', 'Getting Result Time', 'metrics.GettingResultTime', { render: formatTime, defaultSort: -1, requireOracle: true, showByDefault: false });
+schedulerDelayTime = new Column('SchedulerDelayTime', 'Scheduler Delay Time', 'metrics.SchedulerDelayTime', { render: formatTime, defaultSort: -1, requireOracle: true, showByDefault: false });
 gcColumn = new Column('gcTime', 'GC Time', 'metrics.JVMGCTime', { showInEmptyTable: false, render: formatTime, defaultSort: -1, requireOracle: true });
 
 taskTimeColumns = [
@@ -204,6 +205,7 @@ taskTimeColumns = [
   resultSerializationTime,
   taskDeserializationTime,
   gettingResultTime,
+  schedulerDelayTime,
   gcColumn
 ];
 
@@ -213,6 +215,7 @@ taskTimeRollupColumns = [
   resultSerializationTime,
   taskDeserializationTime,
   gettingResultTime,
+  schedulerDelayTime,
   gcColumn
 ];
 
