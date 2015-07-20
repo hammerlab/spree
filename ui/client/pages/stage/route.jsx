@@ -53,8 +53,8 @@ var executorColumns = [
   new Column('id', 'Executor ID', 'execId', { truthyZero: true }),
   new Column('host', 'Host', 'host'),
   new Column('port', 'Port', 'port', { showByDefault: false }),
-  taskTimeColumn
 ]
+      .concat(taskTimeRollupColumns)
       .concat(taskColumns)
       .concat(ioColumns(true));
 
@@ -88,10 +88,9 @@ var taskTableColumns = [
   new Column('execId', 'Executor', 'execId'),
   hostColumn,
   portColumn,
-  startColumn,
-  durationColumn,
-  gcColumn
+  startColumn
 ]
+      .concat(taskTimeColumns)
       .concat(ioColumns(true))
       .concat([ taskErrorColumn ]);
 

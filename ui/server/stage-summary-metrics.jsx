@@ -124,12 +124,12 @@ function SummaryMetricsTrie(metrics) {
 }
 
 var statRows = [
-  { label: 'Task Deserialization Time', key: 'metrics.ExecutorDeserializeTime', render: 'time' },
   { label: 'Duration', key: 'duration', render: 'time' },
   { label: 'Run Time', key: 'metrics.ExecutorRunTime', render: 'time' },
-  { label: 'GC Time', key: 'metrics.JVMGCTime', render: 'time' },
+  { label: 'Task Deserialization Time', key: 'metrics.ExecutorDeserializeTime', render: 'time' },
   { label: 'Getting Result Time', key: 'GettingResultTime', render: 'time' },
   { label: 'Result Serialization Time', key: 'metrics.ResultSerializationTime', render: 'time' },
+  { label: 'GC Time', key: 'metrics.JVMGCTime', render: 'time' },
   { label: 'Input Bytes', key: 'metrics.InputMetrics.BytesRead', render: 'bytes' },
   { label: 'Input Records', key: 'metrics.InputMetrics.RecordsRead', render: 'num' },
   { label: 'Output Bytes', key: 'metrics.OutputMetrics.BytesWritten', render: 'bytes' },

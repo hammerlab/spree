@@ -72,7 +72,7 @@ ioColumns = (showRecordsColumnsByDefault) => {
     memorySpillColumn,
     diskSpillColumn
   ];
-}
+};
 
 nameColumn = new Column('name', 'Name', 'name', {  });
 startColumn = new Column('start', 'Started', 'time.start', { render: formatDateTime, defaultSort: -1 });
@@ -143,11 +143,11 @@ stageIdxsColumn = new Column(
       }
 );
 
-gcColumn = new Column('gcTime', 'GC Time', 'metrics.JVMGCTime', { showInEmptyTable: false, render: formatTime, defaultSort: -1, requireOracle: true });
 maxMemColumn = new Column('maxMemSize', 'Max. Memory', 'maxMem', { defaultSort: -1, render: formatBytes, showByDefault: false });
 memColumn = new Column('memSize', 'Size in Memory', 'MemorySize', { defaultSort: -1, render: formatBytes, requireOracle: true });
 offHeapColumn = new Column('offHeapSize', 'Size in Tachyon', 'ExternalBlockStoreSize', { defaultSort: -1, render: formatBytes, requireOracle: true });
 diskColumn = new Column('diskSize', 'Size on Disk', 'DiskSize', { defaultSort: -1, render: formatBytes, requireOracle: true });
+spaceColumns = [ memColumn, offHeapColumn, diskColumn ];
 
 reasonColumn = new Column(
       'reason',
@@ -158,7 +158,6 @@ reasonColumn = new Column(
         requireOracle: 'executorCounts.removed'
       }
 );
-spaceColumns = [ memColumn, offHeapColumn, diskColumn ];
 
 memPercentColumn = new Column(
       'MemPercent',
@@ -191,7 +190,45 @@ portColumn = new Column('port', 'Port', 'port', { showByDefault: false });
 numBlocksColumn = new Column('blocks', 'RDD Blocks', 'numBlocks', { defaultSort: -1, requireOracle: true });
 
 storageLevelColumn = new Column('storageLevel', 'Storage Level', 'StorageLevel.UseMemory', { render: getStorageLevel, renderKey: 'StorageLevel' });
-taskTimeColumn = new Column('taskTime', 'Task Time', 'metrics.ExecutorRunTime', { render: formatTime, defaultSort: -1 });
+
+taskRunTimeColumn = new Column('taskTime', 'Task Run-Time', 'metrics.ExecutorRunTime', { render: formatTime, defaultSort: -1, requireOracle: true });
+totalTaskTimeColumn = new Column('totalTaskTime', 'Total Task Time', 'totalTaskDuration', { render: formatTime, defaultSort: -1, showByDefault: false });
+resultSerializationTime = new Column('ResultSerializationTime', 'Result Ser. Time', 'metrics.ResultSerializationTime', { render: formatTime, defaultSort: -1, requireOracle: true, showByDefault: false });
+taskDeserializationTime = new Column('ExecutorDeserializeTime', 'Task Deser. Time', 'metrics.ExecutorDeserializeTime', { render: formatTime, defaultSort: -1, requireOracle: true, showByDefault: false });
+gettingResultTime = new Column('GettingResultTime', 'Getting Result Time', 'GettingResultTime', { render: formatTime, defaultSort: -1, requireOracle: true, showByDefault: false });
+gcColumn = new Column('gcTime', 'GC Time', 'metrics.JVMGCTime', { showInEmptyTable: false, render: formatTime, defaultSort: -1, requireOracle: true });
+
+taskTimeColumns = [
+  durationColumn,
+  taskRunTimeColumn,
+  resultSerializationTime,
+  taskDeserializationTime,
+  gettingResultTime,
+  gcColumn
+];
+
+taskTimeRollupColumns = [
+  totalTaskTimeColumn,
+  taskRunTimeColumn,
+  resultSerializationTime,
+  taskDeserializationTime,
+  gettingResultTime,
+  gcColumn
+];
+
+logUrlsColumn = new Column(
+      'logUrls',
+      'Log URLs',
+      'urls',
+      {
+        render: (urls) => {
+          return <div>
+            {urls.stdout && <div><a href="{urls.stdout}">stdout</a></div>}
+            {urls.stderr && <div><a href="{urls.stderr}">stderr</a></div>}
+          </div>;
+        }
+      }
+);
 
 lastUpdatedColumn = new Column(
       'lastUpdated',

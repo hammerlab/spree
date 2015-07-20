@@ -30,8 +30,9 @@ var baseExecutorColumns = [
 ]
       .concat([ memPercentColumn, executorMemUsageProgressBarColumn, memColumn.copy({ showByDefault: false }), diskColumn, offHeapColumn ])
       .concat(taskColumns)
-      .concat([ taskTimeColumn, gcColumn ])
-      .concat(ioColumns());
+      .concat(taskTimeRollupColumns)
+      .concat(ioColumns())
+      .concat([logUrlsColumn]);
 
 var executorEndedColumns = [
   reasonColumn,

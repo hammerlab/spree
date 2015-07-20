@@ -16,12 +16,12 @@ formatTime = function(ms, roundToSecond) {
 
   if (ms < M) {
     if (ms < S) {
-      if (roundToSecond) {
+      if (roundToSecond === true) {
         return '<1 s';
       }
       return ms + ' ms';
     }
-    if (roundToSecond) {
+    if (roundToSecond === true) {
       return parseInt(ms / 1000) + ' s';
     }
     return sigFigs(ms/1000) + ' s';
