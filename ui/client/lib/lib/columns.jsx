@@ -223,8 +223,8 @@ logUrlsColumn = new Column(
       {
         render: (urls) => {
           return <div>
-            {urls.stdout && <div><a href="{urls.stdout}">stdout</a></div>}
-            {urls.stderr && <div><a href="{urls.stderr}">stderr</a></div>}
+            {urls && urls.stdout && <div><a href={urls.stdout}>stdout</a></div>}
+            {urls && urls.stderr && <div><a href={urls.stderr}>stderr</a></div>}
           </div>;
         }
       }
