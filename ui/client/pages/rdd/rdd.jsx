@@ -38,7 +38,7 @@ Template.rddExecutorsTable.helpers({
       executorIdColumn,
       hostColumn,
       portColumn,
-      numBlocksColumn
+      numBlocksColumn.copy({ requireOracle: 'numCachedPartitions' })
     ].concat(spaceColumns);
   },
   subscriptionFn: (appId, rddId) => {

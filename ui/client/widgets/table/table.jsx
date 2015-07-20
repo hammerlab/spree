@@ -59,37 +59,33 @@ Table = React.createClass({
     if (opts.limit === undefined) {
       opts.limit = 100;
     }
-    if (opts.sort === undefined) {
-      opts.sort = { id: 1 };
-    }
-
-    var handle = this.props.subscriptionFn && this.props.subscriptionFn(opts);
 
     var sort = opts.sort;
     if (!sort) {
+      sort = opts.sort = {};
       if (this.props.sortId) {
         var sortCol = this.state.colsById[this.props.sortId];
         sort = {};
         sortCol.sortKeys.forEach((k) => {
-          sort[k] = sortCol.defaultSort || 1;
+          sort[k] = this.props.sortDir || sortCol.defaultSort || 1;
         });
       }
-    }
-
-    var obj = {};
-    if (sort) {
+      // Add the first column of the table as a (possibly secondary) sort key, if it's not already
+      // present in the sort object.
       var firstId = this.props.columns[0].id;
       if(!(firstId in sort)) {
         sort[firstId] = 1;
       }
-      obj.sort = sort;
     }
+
+    var handle = this.props.subscriptionFn && this.props.subscriptionFn(opts);
+
     var rows =
           this.maybeSortData(this.props.data) ||
           ((typeof this.props.collection === 'string') ?
                 window[this.props.collection] :
                 this.props.collection
-          ).find(this.props.selector || {}, obj).fetch();
+          ).find(this.props.selector || {}, { sort: sort }).fetch();
 
     if (this.props.selectRows) {
       rows.forEach((row) => {

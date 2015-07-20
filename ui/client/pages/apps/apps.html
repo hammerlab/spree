@@ -5,7 +5,15 @@
   {{log this}}
   <div class="container-fluid">
     <div>
-      {{>React component=Table title="Spark Applications" collection="Applications" columns=columns totalCollection="NumApplications" sortId='id' sortDir=-1 }}
+      {{>React
+          component=Table
+          title="Spark Applications"
+          collection="Applications"
+          columns=columns
+          totalCollection="NumApplications"
+          sortId='id'
+          sortDir=-1
+      }}
     </div>
   </div>
 </template>

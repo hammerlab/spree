@@ -14,7 +14,7 @@
             <strong>Storage Level:</strong> {{getStorageLevel rdd.StorageLevel}}
           </li>
           <li>
-            <strong>Cached Partitions</strong> {{rdd.numCachedPartitions}}
+            <strong>Cached Partitions</strong> {{rdd.numCachedPartitions}} / {{rdd.numPartitions}}
           </li>
           {{#if rdd.MemorySize}}
             <li>

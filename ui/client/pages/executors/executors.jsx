@@ -19,22 +19,27 @@ Router.route("/a/:_appId/executors", {
   }
 });
 
-var columns = [
+var baseExecutorColumns = [
   new Column('id', 'ID', 'id', { truthyZero: 0 }),
   hostColumn,
   portColumn,
   lastUpdatedColumn,
   startColumn,
-  endColumn,
-  durationColumn,
   numBlocksColumn,
-  maxMemColumn,
-  reasonColumn
+  maxMemColumn
 ]
       .concat([ memPercentColumn, executorMemUsageProgressBarColumn, memColumn.copy({ showByDefault: false }), diskColumn, offHeapColumn ])
       .concat(taskColumns)
       .concat([ taskTimeColumn, gcColumn ])
       .concat(ioColumns());
+
+var executorEndedColumns = [
+  reasonColumn,
+  endColumn.copy({ showByDefault: false }),
+  durationColumn.copy({ showByDefault: false })
+];
+
+var allExecutorColumns = baseExecutorColumns.concat(executorEndedColumns);
 
 Template.executorsPage.events({
   'click #active-link, click #removed-link': unsetShowAll("executorsPage"),
@@ -46,6 +51,15 @@ Template.executorsPage.helpers({
     return !total || Cookie.get("executorsPage-showAll") !== false;
   },
   getTableData(data, label, name) {
-    return getTableData(data.app, "executors", label + " Executors", data.counts[name], label + "Executors", name, columns, name === "all");
+    return getTableData(
+          data.app,
+          "executors",
+          label + " Executors",
+          data.counts[name],
+          label + "Executors",
+          name,
+          name === 'running' ? baseExecutorColumns : allExecutorColumns,
+          name === "all"
+    );
   }
 });
