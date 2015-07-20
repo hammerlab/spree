@@ -74,7 +74,9 @@ getTableData = function(app, objType, title, total, collection, titleId, columns
     columns: columns,
     keyFn: objType == 'stages' && stageAttemptId,
     component: Table,
-    columnOracle: oracle || app
+    columnOracle: oracle || app,
+    sortId: 'id',
+    sortDir: -1
   };
 };
 
