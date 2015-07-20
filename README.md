@@ -127,8 +127,7 @@ Functionality known to be present in the existing Spark web UI / history server 
 * Most viz covered by [SPARK-6942](https://issues.apache.org/jira/browse/SPARK-6942), including:
   * RDD DAG viz ([SPARK-6943](https://issues.apache.org/jira/browse/SPARK-6943)).
   * Event timeline viz (jobs: [SPARK-3468](https://issues.apache.org/jira/browse/SPARK-3468), stages: [SPARK-7296](https://issues.apache.org/jira/browse/SPARK-7296)).
-* Executor thread-dumps, stdout/stderr links ([#30](https://github.com/hammerlab/spree/issues/30)).
-* Duration confusion ([SPARK-5179](https://issues.apache.org/jira/browse/SPARK-5179)).
+* Executor thread-dumps.
 * Streaming UI.
 
 #### Future Nice-to-haves
