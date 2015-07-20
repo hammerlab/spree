@@ -148,7 +148,6 @@ Template.stagePage.helpers({
       paginate: false,
       columns: accumulatorColumns,
       keyFn: "ID",
-      class: "env",
       clientSort: true
     }
   },

@@ -51,7 +51,7 @@
       <div>
         {{>React getExecutorTableData this}}
       </div>
-      {{#if accumulables.length}}
+      {{#if nonEmptyObject accumulables}}
         <div>
           {{>React getAccumulatorsTableData this}}
         </div>

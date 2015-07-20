@@ -20,3 +20,4 @@ Template.registerHelper("orEmpty", function(n) { return n || {}; });
 Template.registerHelper('first', function(data) { return data[0]; });
 Template.registerHelper('second', function(data) { return data[1]; });
 
+Template.registerHelper('nonEmptyObject', (o) => { return !jQuery.isEmptyObject(o); });
