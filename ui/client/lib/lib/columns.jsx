@@ -59,18 +59,20 @@ shuffleWriteRecordsColumn = new Column('shuffleWriteRecords', 'Records', 'metric
 var memorySpillColumn = new Column('spillMem', 'Memory Spilled', 'metrics.MemoryBytesSpilled', { render: formatBytes, requireOracle: true });
 var diskSpillColumn = new Column('spillDisk', 'Disk Spilled', 'metrics.DiskBytesSpilled', { render: formatBytes, requireOracle: true });
 
-ioColumns = [
-  inputBytesColumn,
-  inputRecordsColumn,
-  outputBytesColumn,
-  outputRecordsColumn,
-  shuffleReadBytesColumn,
-  shuffleReadRecordsColumn,
-  shuffleWriteBytesColumn,
-  shuffleWriteRecordsColumn,
-  memorySpillColumn,
-  diskSpillColumn
-];
+ioColumns = (showRecordsColumnsByDefault) => {
+  return [
+    inputBytesColumn,
+    inputRecordsColumn.copy({ showByDefault: !!showRecordsColumnsByDefault }),
+    outputBytesColumn,
+    outputRecordsColumn.copy({ showByDefault: !!showRecordsColumnsByDefault }),
+    shuffleReadBytesColumn,
+    shuffleReadRecordsColumn.copy({ showByDefault: !!showRecordsColumnsByDefault }),
+    shuffleWriteBytesColumn,
+    shuffleWriteRecordsColumn.copy({ showByDefault: !!showRecordsColumnsByDefault }),
+    memorySpillColumn,
+    diskSpillColumn
+  ];
+}
 
 nameColumn = new Column('name', 'Name', 'name', {  });
 startColumn = new Column('start', 'Started', 'time.start', { render: formatDateTime, defaultSort: -1 });

@@ -39,7 +39,7 @@ var stageColumns = [
   durationColumn,
   taskIdxsColumn,
   tasksColumn
-].concat(ioColumns);
+].concat(ioColumns());
 
 Template.stagesTables.helpers({
   showAll: function(total) {

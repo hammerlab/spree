@@ -56,7 +56,7 @@ var executorColumns = [
   taskTimeColumn
 ]
       .concat(taskColumns)
-      .concat(ioColumns);
+      .concat(ioColumns(true));
 
 var accumulatorColumns = [
   new Column('id', 'ID', 'ID', { showByDefault: false }),
@@ -92,7 +92,7 @@ var taskTableColumns = [
   durationColumn,
   gcColumn
 ]
-      .concat(ioColumns)
+      .concat(ioColumns(true))
       .concat([ taskErrorColumn ]);
 
 function getSubscriptionFn(name, stage) {

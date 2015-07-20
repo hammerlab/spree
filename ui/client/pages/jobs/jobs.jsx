@@ -74,7 +74,7 @@ var jobColumns = [
   stagesColumn,
   taskIdxsColumn,
   tasksColumn
-].concat(ioColumns);
+].concat(ioColumns());
 
 Template.jobsPage.helpers({
 

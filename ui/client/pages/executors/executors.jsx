@@ -34,7 +34,7 @@ var columns = [
       .concat([ memPercentColumn, executorMemUsageProgressBarColumn, memColumn.copy({ showByDefault: false }), diskColumn, offHeapColumn ])
       .concat(taskColumns)
       .concat([ taskTimeColumn, gcColumn ])
-      .concat(ioColumns);
+      .concat(ioColumns());
 
 Template.executorsPage.events({
   'click #active-link, click #removed-link': unsetShowAll("executorsPage"),
