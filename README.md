@@ -33,7 +33,7 @@ Additionally, whole tables can be collapsed/uncollapsed for easy access to conte
 ![](http://f.cl.ly/items/0t3J3n2w3a07181F0u36/Screen%20Recording%202015-07-17%20at%2004.55%20PM.gif)
 
 #### Persistent Preferences/State
-Finally, all table state is stored in cookies for persistence across refreshes / sessions, including:
+Finally, all client-side state is stored in cookies for persistence across refreshes / sessions, including:
 * sort-column and direction, 
 * table collapsed/uncollapsed status, 
 * table columns' shown/hidden status,
@@ -64,47 +64,45 @@ Following are instructions for configuring/running them:
 First, run a Spree app using [Meteor][]:
 
 ```
-$ cd ui   # directory that the Spree Meteor app lives in
-$ meteor
+git clone --recursive git@github.com:hammerlab/spree.git
+cd spree/ui   # the Spree Meteor app lives in ui/ in this repo.
+meteor        # run it
 ```
 
 You can now see your (presumably empty) Spree dashboard at [http://localhost:3000](http://localhost:3000):
 
 ![](http://f.cl.ly/items/243L322B1v0G082j3X0O/Screen%20Shot%202015-07-20%20at%2012.20.38%20PM.png)
 
+If you don't have `meteor` installed, see "Installing Meteor" below.
+
 ### Start `slim`
-Next, run a `slim` process:
+Next, install and run `slim`:
 
 ```
-$ cd slim && node slim.js
+npm install -g slim.js
+slim
 ```
 
 [`slim`][] is a Node server that receives events from [`JsonRelay`][] and writes them to the Mongo instance that Spree is watching. 
 
 By default, `slim` listens for events on `localhost:8123` and writes to a Mongo at `localhost:3001`, which is the default Mongo URL for a Spree started as above.
 
-
-### Build [`JsonRelay`][]
-Build a [`JsonRelay`][] JAR from within this repo:
-
+### Run Spark with [`JsonRelay`][]
+Finally, download a `JsonRelay` JAR:
 ```
-$ cd json-relay && mvn -pl client package -DskipTests
+wget https://repo1.maven.org/maven2/org/hammerlab/spark-json-relay/1.0.0/spark-json-relay-1.0.0.jar
 ```
 
-A shaded JAR can then be found at `json-relay/client/target/json-relay-client-with-deps-1.0-SNAPSHOT.jar`.
-
-
-### Configure Spark to use `JsonRelay`
-Finally, we'll tell Spark to send events to `JsonRelay` by passing arguments like the following to `spark-{shell,submit}`:
+…and tell Spark to send events to it by passing the following arguments to `spark-{shell,submit}`:
 
 ```
   # Include JsonRelay on the driver's classpath
-  --driver-class-path /path/to/spree/json-relay/client/target/json-relay-client-with-deps-1.0-SNAPSHOT.jar
+  --driver-class-path /path/to/json-relay-1.0.0.jar
   
-  # Register your JSON relay as a SparkListener
+  # Register your JsonRelay as a SparkListener
   --conf spark.extraListeners=org.apache.spark.JsonRelay
   
-  # Point it at your `slim` instance
+  # Point it at your `slim` instance; default: localhost:8123
   --conf spark.slim.host=…
   --conf spark.slim.port=…
 ```
@@ -168,6 +166,39 @@ Meteor's default mongo instance will do this, but otherwise you'll need to set i
 * running `rs.initialize()` from a mongo shell connected to that `mongod` server.
 
 Now your Spark jobs will write events to the Mongo instance of your choosing, and Spree will display them to you in real-time!
+
+### Installing Meteor
+Meteor can be installed, per [their docs](https://www.meteor.com/install), by running:
+```
+curl https://install.meteor.com/ | sh
+```
+
+### Installing Spree and Slim sans `sudo`
+
+#### Meteor
+By default, Meteor will install itself in `~/.meteor` and attempt to put an additional helper script at `/usr/local/bin/meteor`.
+
+It's ok to skip the latter if/when it prompts you for your root password by `^C`ing out of the script.
+
+#### Slim
+`npm install -g slim.js` may require superuser privileges; if this is a problem, you can either:
+* Install locally with `npm`, e.g. in your home directory:
+  ```
+  cd ~
+  npm install slim.js
+  cd ~/node_modules/slim.js
+  ./slim
+  ```
+* Run `slim` from the sources in this repository:
+  ```
+  cd slim  # from the root of this repository; make sure you `git clone --recursive`
+  npm install
+  ./slim
+  ```
+
+
+
+
 
 [`ui`]: https://github.com/hammerlab/spree/tree/master/ui
 [Meteor]: https://www.meteor.com/
