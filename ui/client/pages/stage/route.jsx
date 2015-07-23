@@ -92,7 +92,7 @@ var taskTableColumns = [
   new Column('status', 'Status', 'status', { render: statusStr }),
   new Column('localityLevel', 'Locality Level', 'locality'),
   new Column('execId', 'Executor', 'execId'),
-  hostColumn,
+  new Column('host', 'Host', 'metrics.HostName'),
   portColumn,
   startColumn
 ]
