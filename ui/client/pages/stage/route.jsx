@@ -13,12 +13,16 @@ Router.route("/a/:_appId/stage/:_stageId", {
   action: function() {
     var appId = this.params._appId;
     var stageAttempt = StageAttempts.findOne();
+    var stageId = parseInt(this.params._stageId);
+    var attemptId = this.params.query.attempt ? parseInt(this.params.query.attempt) : 0;
     if (!stageAttempt) {
       this.render('stagePage', {
         data: {
           appId: appId,
           app: Applications.findOne(),
-          stagesTab: 1
+          stagesTab: 1,
+          stageId: stageId,
+          attemptId: attemptId
         }
       });
       return;
@@ -29,7 +33,9 @@ Router.route("/a/:_appId/stage/:_stageId", {
         appId: appId,
         app: Applications.findOne(),
         stageAttempt: stageAttempt,
-        stagesTab: 1
+        stagesTab: 1,
+        stageId: stageId,
+        attemptId: attemptId
       }
     });
   }
@@ -102,7 +108,7 @@ function getSubscriptionFn(name, stage) {
 
 Template.stagePage.helpers({
   setTitle: function(data) {
-    document.title = "Stage " + data.stageId + " (" + data.id + ")";
+    document.title = "Stage " + data.stageId + " (" + data.attemptId + ")";
     return null;
   },
   getSummaryMetricsTableData: (stageAttempt) => {
