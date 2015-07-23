@@ -29,9 +29,9 @@
         {{/with}}
 
         {{#with ShuffleReadMetrics}}
-          {{#if shuffleBytesRead this}}
+          {{#if TotalBytesRead}}
           <div>
-            <strong>Shuffle read:</strong> {{shuffleBytesReadStr this}} / {{TotalRecordsRead}} records
+            <strong>Shuffle read:</strong> {{formatBytes TotalBytesRead}} / {{TotalRecordsRead}} records
           </div>
           {{/if}}
         {{/with}}
