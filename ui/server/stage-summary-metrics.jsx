@@ -141,9 +141,8 @@ var statRows = [
   { label: 'Shuffle Write Records', key: 'metrics.ShuffleWriteMetrics.ShuffleRecordsWritten', render: 'num' }
 ];
 
-var moment = Meteor.npmRequire('moment');
 Meteor.publish("stage-summary-metrics", function(appId, stageId, attemptId) {
-  var before = moment();
+  var start = moment();
   var apps = (appId == 'latest') ? lastApp() : Applications.find({ id: appId });
   var app = apps.fetch()[0];
   appId = (appId == 'latest' && app) ? app.id : appId;
@@ -163,6 +162,7 @@ Meteor.publish("stage-summary-metrics", function(appId, stageId, attemptId) {
   var handle = TaskAttempts.find({ appId: appId, stageId: stageId, stageAttemptId: attemptId }).observeChanges({
     added: function(_id, task) {
       numTasks++;
+      var addStart = moment();
       taskById[_id] = task;
       summaryMetricsTrie.walk(task, undefined, self, initializing);
     },
@@ -181,7 +181,7 @@ Meteor.publish("stage-summary-metrics", function(appId, stageId, attemptId) {
   }.bind(this));
   this.ready();
   var after = moment();
-  console.log("stage-summary-metrics finished in %d ms", after - before);
+  console.log("stage-summary-metrics finished in %d ms", after - start);
 
   self.onStop(function () {
     handle.stop();

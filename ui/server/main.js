@@ -1,5 +1,6 @@
 
 extend = Meteor.npmRequire("extend");
+moment = Meteor.npmRequire('moment');
 
 TaskAttempts = new Mongo.Collection("task_attempts");
 
@@ -191,7 +192,7 @@ function publishObjsByStatus(collection, objType, selectors) {
     var statusObj = arr[1];
     Meteor.publish(name, function(additionalFindObj, opts) {
       var findObj = extend({}, statusObj, additionalFindObj);
-      console.log("publish %s:", name, JSON.stringify(findObj));
+      var before = moment();
       var self = this;
       var handle = collection.find(findObj, opts).observeChanges({
         added: function(_id, stage) {
@@ -204,6 +205,7 @@ function publishObjsByStatus(collection, objType, selectors) {
           self.removed(name, _id);
         }
       });
+      console.log("publish %s: %s (%d ms)", name, JSON.stringify(findObj), moment() - before);
 
       this.ready();
 
@@ -253,7 +255,10 @@ Meteor.publish("stage-attempts", function(appId, opts) {
 });
 
 Meteor.publish("stage-tasks", function(appId, stageId, attemptId, opts) {
-  return TaskAttempts.find({ appId: appId, stageId: stageId, stageAttemptId: attemptId }, opts);
+  var before = moment();
+  var ret = TaskAttempts.find({ appId: appId, stageId: stageId, stageAttemptId: attemptId }, opts);
+  console.log("stage-tasks: %d.%d: %s. %d ms", stageId, attemptId, JSON.stringify(opts), moment() - before);
+  return ret;
 });
 
 Meteor.publish("stage-executors", function(appId, stageId, attemptId, opts) {
