@@ -118,9 +118,11 @@ var taskTableColumns = [
       .concat([ taskErrorColumn ]);
 
 function getSubscriptionFn(name, stage) {
-  return (opts) => {
-    return Meteor.subscribe(name, stage.appId, stage.stageId, stage.id, opts);
-  };
+  return stage && (
+              (opts) => {
+                return Meteor.subscribe(name, stage.appId, stage.stageId, stage.id, opts);
+              }
+        );
 }
 
 Template.stagePage.helpers({
@@ -161,8 +163,10 @@ Template.stagePage.helpers({
   },
   getAccumulatorsTableData: (stageAttempt) => {
     var accumulables = [];
-    for (var k in stageAttempt.accumulables) {
-      accumulables.push(stageAttempt.accumulables[k]);
+    if (stageAttempt) {
+      for (var k in stageAttempt.accumulables) {
+        accumulables.push(stageAttempt.accumulables[k]);
+      }
     }
     return {
       component: Table,
@@ -178,14 +182,16 @@ Template.stagePage.helpers({
   getTasksTableData: (stageAttempt) => {
     var accumColumns = [];
     var n = 0;
-    for (var k in stageAttempt.accumulables) {
-      var a = stageAttempt.accumulables[k];
-      var opts = {};
-      if (n >= 5) {
-        opts.showByDefault = false;
+    if (stageAttempt) {
+      for (var k in stageAttempt.accumulables) {
+        var a = stageAttempt.accumulables[k];
+        var opts = {};
+        if (n >= 5) {
+          opts.showByDefault = false;
+        }
+        accumColumns.push(new Column('accum-' + a.ID, a.Name, ['accumulables', a.ID, 'Update'].join('.'), opts));
+        n++;
       }
-      accumColumns.push(new Column('accum-' + a.ID, a.Name, ['accumulables', a.ID, 'Update'].join('.'), opts));
-      n++;
     }
     return {
       component: Table,
@@ -194,7 +200,7 @@ Template.stagePage.helpers({
       collection: "TaskAttempts",
       name: "tasks",
       title: "Tasks",
-      total: stageAttempt.taskCounts.num,
+      total: stageAttempt && stageAttempt.taskCounts.num || 0,
       columnOracle: stageAttempt
     };
   }
