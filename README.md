@@ -5,7 +5,8 @@ Spree is a live-updating web UI for Spark built with [Meteor][] and [React][].
 
 *Left: Spree pages showing all jobs and stages, updating in real-time; right: a `spark-shell` running a simple job.*
 
-The front-end is a near-clone of [the web UI that ships with Spark](https://spark.apache.org/docs/1.4.0/spark-standalone.html#monitoring-and-logging), but the back-end is a complete rewrite, providing several notable benefits…
+## Features!
+Spree is a complete rewrite of [Spark's web UI](https://spark.apache.org/docs/1.4.0/spark-standalone.html#monitoring-and-logging), providing several notable benefits…
 
 ### Real-time Updating
 All data on all pages updates in real-time, thanks to [Meteor][] magic.
@@ -13,14 +14,12 @@ All data on all pages updates in real-time, thanks to [Meteor][] magic.
 ### Persistence, Scalability
 Spree offers a unified interface to past- and currently-running Spark applications, combining functionality that is currently spread across Spark's web UI and "history server".
 
-It also persists all information about Spark applications to MongoDB, allowing for archival storage that is easily query-able and avoids various issues that the Spark history server currently suffers from (due to the latter's use of plain-text JSON files as an ad-hoc database), e.g. slow load-times, caching problems, etc.
+It persists all information about Spark applications to MongoDB, allowing for archival storage that is easily query-able and solves various Spark-history-server issues, e.g. slow load-times, caching problems, etc.
 
-A side effect of this is that various UI-scaling issues are solved by not using the Spark driver as an ad-hoc database.
-
-In particular, all tables are paginated on the server (and sort-able by any column) for graceful handling of arbitrarily large stages, RDDs, etc.
+Pagination and sorting are delegated to Mongo for graceful handling of arbitrarily large stages, RDDs, etc., which makes for a cleaner scalability story than Spark's current usage of textual event-log files and in-memory maps on the driver as ad-hoc databases.
 
 ### Usability
-Spree includes several small usability improvements that you may find useful, including:
+Spree includes several usability improvements, including:
 
 #### Toggle-able Columns
 All tables allow easy customization of displayed columns:
