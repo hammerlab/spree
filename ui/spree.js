@@ -12,5 +12,6 @@ Executors = new Mongo.Collection("executors");
 RDDs = new Mongo.Collection("rdds");
 RDDExecutors = new Mongo.Collection("rdd_executors");
 Environment = new Mongo.Collection("environment");
+StageSummaryMetrics = new Mongo.Collection("stage_summary_metrics");
 
 Test = new Mongo.Collection("test");

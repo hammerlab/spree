@@ -45,20 +45,37 @@ statusStr = function(status) {
   return statuses[status];
 };
 
+var statsData = {
+  'duration': { label: 'Duration', render: formatTime },
+  'metrics.ExecutorRunTime': { label: 'Run Time', render: formatTime },
+  'metrics.ExecutorDeserializeTime': { label: 'Task Deserialization Time', render: formatTime },
+  'metrics.GettingResultTime': { label: 'Getting Result Time', render: formatTime },
+  'metrics.SchedulerDelayTime': { label: 'Scheduler Delay Time', render: formatTime },
+  'metrics.ResultSerializationTime': { label: 'Result Serialization Time', render: formatTime },
+  'metrics.JVMGCTime': { label: 'GC Time', render: formatTime },
+  'metrics.InputMetrics.BytesRead': { label: 'Input Bytes', render: formatBytes },
+  'metrics.InputMetrics.RecordsRead': { label: 'Input Records' },
+  'metrics.OutputMetrics.BytesWritten': { label: 'Output Bytes', render: formatBytes },
+  'metrics.OutputMetrics.RecordsWritten': { label: 'Output Records' },
+  'metrics.ShuffleReadMetrics.TotalBytesRead': { label: 'Shuffle Read Bytes', render: formatBytes },
+  'metrics.ShuffleReadMetrics.TotalRecordsRead': { label: 'Shuffle Read Records' },
+  'metrics.ShuffleWriteMetrics.ShuffleBytesWritten': { label: 'Shuffle Write Bytes', render: formatBytes },
+  'metrics.ShuffleWriteMetrics.ShuffleRecordsWritten': { label: 'Shuffle Write Records' }
+};
 
 var statsColumns = [
   new Column('id', 'Metric', 'label'),
-  new Column('min', 'Min', 'stats.min'),
-  new Column('tf', '25th Percentile', 'stats.tf'),
-  new Column('median', 'Median', 'stats.median'),
-  new Column('sf', '75th Percentile', 'stats.sf'),
-  new Column('max', 'Max', 'stats.max')
+  new Column('min', 'Min', 'min'),
+  new Column('tf', '25th Percentile', 'tf'),
+  new Column('median', 'Median', 'median'),
+  new Column('sf', '75th Percentile', 'sf'),
+  new Column('max', 'Max', 'max')
 ];
 
 var executorColumns = [
   new Column('id', 'Executor ID', 'execId', { truthyZero: true }),
   new Column('host', 'Host', 'host'),
-  new Column('port', 'Port', 'port', { showByDefault: false }),
+  new Column('port', 'Port', 'port', { showByDefault: false })
 ]
       .concat(taskTimeRollupColumns)
       .concat(taskColumns)
@@ -118,7 +135,8 @@ Template.stagePage.helpers({
       title: "Summary Metrics",
       columns: statsColumns,
       subscriptionFn: getSubscriptionFn("stage-summary-metrics", stageAttempt),
-      collection: "SummaryMetrics",
+      collection: "StageSummaryMetrics",
+      rowData: statsData,
       allowEmptyColumns: true,
       hideEmptyRows: true,
       hideRowCount: true,

@@ -261,6 +261,13 @@ Meteor.publish("stage-tasks", function(appId, stageId, attemptId, opts) {
   return ret;
 });
 
+Meteor.publish("stage-summary-metrics", function(appId, stageId, attemptId, opts) {
+  var before = moment();
+  var ret = StageSummaryMetrics.find({ appId: appId, stageId: stageId, stageAttemptId: attemptId }, opts);
+  console.log("stage-summary-metrics: %d.%d: %s. %d ms", stageId, attemptId, JSON.stringify(opts), moment() - before);
+  return ret;
+});
+
 Meteor.publish("stage-executors", function(appId, stageId, attemptId, opts) {
   return StageExecutors.find({ appId: appId, stageId: stageId, stageAttemptId: attemptId }, opts);
 });

@@ -96,6 +96,9 @@ Table = React.createClass({
             row.id = row._id.toHexString();
           }
         }
+        if (!row.label) {
+          row.label = this.props.rowData[row.id].label;
+        }
       });
     }
     return {
@@ -181,13 +184,8 @@ Table = React.createClass({
       var cols = displayCols.map((column) => {
         var render =
               column.render ||
-              (typeof row.render === 'string' ?
-                    (row.render in renderers ?
-                          renderers[row.render] :
-                          defaultRenderer
-                    ) :
-                    row.render
-              );
+              (this.props.rowData && row.id in this.props.rowData && this.props.rowData[row.id].render) ||
+              defaultRenderer;
         var renderValueFn = column.renderValueFn || column.sortBys[0];
         return <td key={column.id}>{render ? render(renderValueFn(row)) : renderValueFn(row)}</td>
       });
