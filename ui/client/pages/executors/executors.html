@@ -6,12 +6,10 @@
   <div class="container-fluid">
     <div class="row-fluid">
       <ul class="unstyled">
-        {{#if app.MemorySize}}
-          <li>
-            <strong>Total Memory:</strong>
-            {{formatBytes app.MemorySize}} ({{formatBytes app.maxMem}} total)
-          </li>
-        {{/if}}
+        <li>
+          <strong>Total Memory:</strong>
+          {{formatBytes app.MemorySize}} ({{formatBytes app.maxMem}} total)
+        </li>
         {{#if app.DiskSize}}
           <li>
             <strong>Total Disk:</strong>
