@@ -10,8 +10,18 @@ function numCmp(a,b) {
   return 0;
 }
 
+function makeStatsArr(n) {
+  return [
+    ['min', 0],
+    ['tf', parseInt(n/4)],
+    ['median', parseInt(n/2)],
+    ['sf', parseInt(3*n/4)],
+    ['max', Math.max(0, n - 1)]
+  ];
+}
+
 function SummaryMetric(label, key, render, handle) {
-  this.usesHist = true;
+  this.usesHist = false;
 
   if (typeof label == 'object') {
     var obj = label;
@@ -25,6 +35,9 @@ function SummaryMetric(label, key, render, handle) {
     this.render = render;
     this.handle = handle;
   }
+  this._id = new Mongo.ObjectID();
+  this.fn = acc(this.key);
+  this.stats = {};
 
   this.initializing = true;
 
@@ -35,20 +48,9 @@ function SummaryMetric(label, key, render, handle) {
     this.n = 0;
   } else {
     this.values = [];
-  }
 
-  this._id = new Mongo.ObjectID();
-  this.fn = acc(this.key);
-  this.stats = {};
-
-  function stats(n) {
-    return [
-      ['min', 0],
-      ['tf', parseInt(n/4)],
-      ['median', parseInt(n/2)],
-      ['sf', parseInt(3*n/4)],
-      ['max', n - 1]
-    ];
+    this.tree = new OST();
+    this.n = 0;
   }
 
   this.initialize = function() {
@@ -60,9 +62,10 @@ function SummaryMetric(label, key, render, handle) {
       this.uniqueValues = [];
       this.uniqueValuesMap = {};
     } else {
-      this.values.sort();
+      //this.values.sort();
     }
     this.getChangedObj();
+    //console.log("%s stats:", this.label, JSON.stringify(this.stats));
     var obj = { label: this.label, stats: this.stats, render: this.render };
     //console.log("adding:", JSON.stringify(obj), JSON.stringify(this.hist));
     this.handle.added("summary-metrics", this._id, obj);
@@ -124,64 +127,103 @@ function SummaryMetric(label, key, render, handle) {
   };
 
   this.updateValuesArray = function(newValue, prevValue) {
-    if (this.initializing) {
-      this.values.push(newValue);
-      return;
-    }
-    var idx = -1;
-    var dir = -1;
-    if (prevValue === undefined) {
-
-      this.values.push(newValue);
-      idx = this.values.length - 1;
-    } else {
-      idx = this.values.lastIndexOf(prevValue);
-      if (idx < 0) {
+    if (prevValue !== undefined) {
+      var prevNode = this.tree.search(prevValue);
+      if (!prevNode) {
         console.error("Metrics %s didn't find previous value %s:\n%s", this.label, prevValue, this.values.join(','));
-        // Most graceful way to handle this is just insert a new record; stats won't be exactly correct anymore but they
-        // can't be at this point, something has gone wrong and an ERROR has been logged.
-        this.values.push(newValue);
-        idx = this.values.length;
+        this.n++;
       } else {
-        if (newValue >= prevValue) {
-          dir = 1;
-        }
-        this.values[idx] = newValue;
+        this.tree.delete(prevNode);
       }
+    } else {
+      this.n++;
     }
-    for (
-          var i = idx + dir;
-          0 <= i &&
-          i < this.values.length &&
-          (
-                (dir > 0) ?
-                      (newValue > this.values[i]) :
-                      (newValue < this.values[i])
-          );
-          i += dir
-    ) {
-      var t = this.values[idx];
-      this.values[idx] = this.values[i];
-      this.values[i] = t;
-      idx = i;
+
+    //var prevSize = this.tree.size();
+    //console.log("inserting: %s->%d", prevValue, newValue);
+    if (!this.tree.insert(newValue, newValue)) {
+      console.error("Failed to insert %d (%s, %s) into tree of size %d", newValue, parseInt(newValue, 10), isNaN(parseInt(newValue, 10)), this.tree.size());
+    } else {
+      //console.log("Inserted %d into tree. Size: %d", newValue, this.tree.size());
     }
+    //console.log("inserted");
+    //console.log("Inserted %s->%d. Size %d -> %d", prevValue, newValue, prevSize, this.tree.size());
+
+    //if (this.initializing) {
+    //  this.values.push(newValue);
+    //  return;
+    //}
+    //var idx = -1;
+    //var dir = -1;
+    //if (prevValue === undefined) {
+    //
+    //  this.values.push(newValue);
+    //  idx = this.values.length - 1;
+    //} else {
+    //  idx = this.values.lastIndexOf(prevValue);
+    //  if (idx < 0) {
+    //    console.error("Metrics %s didn't find previous value %s:\n%s", this.label, prevValue, this.values.join(','));
+    //    // Most graceful way to handle this is just insert a new record; stats won't be exactly correct anymore but they
+    //    // can't be at this point, something has gone wrong and an ERROR has been logged.
+    //    this.values.push(newValue);
+    //    idx = this.values.length;
+    //  } else {
+    //    if (newValue >= prevValue) {
+    //      dir = 1;
+    //    }
+    //    this.values[idx] = newValue;
+    //  }
+    //}
+    //for (
+    //      var i = idx + dir;
+    //      0 <= i &&
+    //      i < this.values.length &&
+    //      (
+    //            (dir > 0) ?
+    //                  (newValue > this.values[i]) :
+    //                  (newValue < this.values[i])
+    //      );
+    //      i += dir
+    //) {
+    //  var t = this.values[idx];
+    //  this.values[idx] = this.values[i];
+    //  this.values[i] = t;
+    //  idx = i;
+    //}
   };
 
   this.getChangedObjArray = function() {
     var changed = {};
-    stats(this.values.length).forEach(function(o) {
-      if (this.stats[o[0]] != this.values[o[1]]) {
-        changed['stats.' + o[0]] = this.values[o[1]];
-        this.stats[o[0]] = this.values[o[1]];
+
+    //console.log("changed obj: tree size %d, n: %d", this.tree.size(), this.n);
+    makeStatsArr(this.tree.size()).forEach(function(o) {
+      var node = this.tree.select(o[1]);
+      if (!node) {
+        console.error("Failed to find node at idx %d", o[1]);
+      } else {
+        var prev = this.stats[o[0]];
+        //console.log("%s: %s->%s vs %d for %s:%d, %s, %s != %s: %s", this.label, prev, this.stats[o[0]], node.value, o[0], o[1], JSON.stringify(this.stats), this.stats[o[0]], node.value, this.stats[o[0]] != node.value);
+        if (this.stats[o[0]] != node.value) {
+          changed['stats.' + o[0]] = node.value;
+          this.stats[o[0]] = node.value;
+        }
       }
     }.bind(this));
+
+    //makeStatsArr(this.values.length).forEach(function(o) {
+    //  if (this.stats[o[0]] != this.values[o[1]]) {
+    //    changed['stats.' + o[0]] = this.values[o[1]];
+    //    this.stats[o[0]] = this.values[o[1]];
+    //  }
+    //}.bind(this));
+
     return changed;
   };
 
   this.getChangedObjHist = function() {
     var changed = {};
 
-    var statsArr = stats(this.n);
+    var statsArr = makeStatsArr(this.n);
     var curStatsIdx = 0;
     var curStat = statsArr[curStatsIdx];
     var curIdx = 0;
@@ -263,6 +305,67 @@ function SummaryMetricsTrie(metrics) {
   };
 }
 
+function SkipMetric(stat, pub, appId, stageId, attemptId) {
+  var label = stat.label;
+  var key = stat.key;
+  var render = stat.render;
+
+  var id = new Mongo.ObjectID();
+  var fn = acc(key);
+  stats = {};
+  handles = [];
+
+  var fieldsObj = {};
+  fieldsObj[key] = 1;
+
+  var sortObj = {};
+  sortObj[key] = 1;
+
+
+  this.initialize = function(stage) {
+    var total = stage.taskCounts.num;
+
+    pub.added("stage-summary-metrics", id, { label: label, stats: {}, render: render });
+    handles = makeStatsArr(total).map((arr) => {
+      var key = arr[0];
+      var skip = arr[1];
+
+      var statHandle =
+            TaskAttempts.find(
+                  { appId: appId, stageId: stageId, stageAttemptId: attemptId },
+                  { fields: fieldsObj, sort: sortObj, skip: skip, limit: 1 }
+            ).observeChanges({
+              added(_id, t) {
+                var val = fn(t);
+                console.log("%s:%s: added %s (%d)", label, key, JSON.stringify(t), val);
+                if (stats[key] != val) {
+                  var changedObj = {};
+                  changedObj[key] = val;
+                  pub.changed("stage-summary-metrics", id, { stats: changedObj });
+                }
+              },
+              changed(_id, fields) {
+                var val = fn(t);
+                console.log("%s:%s: changed %s", label, key, JSON.stringify(fields));
+                if (stats[key] != val) {
+                  var changedObj = {};
+                  changedObj[key] = val;
+                  pub.changed("stage-summary-metrics", id, { stats: changedObj });
+                }
+              }
+            });
+
+      return statHandle;
+    });
+  };
+
+  this.stop = function() {
+    handles.forEach((handle) => {
+      handle.stop();
+    });
+  };
+}
+
 var statRows = [
   { label: 'Duration', key: 'duration', render: 'time' },
   { label: 'Run Time', key: 'metrics.ExecutorRunTime', render: 'time' },
@@ -287,9 +390,37 @@ Meteor.publish("stage-summary-metrics", function(appId, stageId, attemptId) {
   var app = apps.fetch()[0];
   appId = (appId == 'latest' && app) ? app.id : appId;
 
-  var taskById = {};
-
   var self = this;
+
+  //var skipMetrics = statRows.map((stat) => {
+  //  return new SkipMetric(stat, self, appId, stageId, attemptId);
+  //});
+  //
+  //var stageHandle =
+  //      StageAttempts.find(
+  //            { appId: appId, stageId: stageId, id: attemptId },
+  //            { 'taskCounts.num': 1 }
+  //      ).observeChanges({
+  //        added(_id, stage) {
+  //          console.log("got stage, %d tasks", stage.taskCounts.num);
+  //          skipMetrics.forEach((skipMetric) => {
+  //            skipMetric.initialize(stage);
+  //          });
+  //        }
+  //      });
+  //
+  //this.ready();
+  //var after = moment();
+  //console.log("stage-summary-metrics finished in %d ms", after - start);
+  //
+  //self.onStop(function () {
+  //  stageHandle.stop();
+  //  skipMetrics.forEach((skipMetric) => {
+  //    skipMetric.stop();
+  //  });
+  //});
+
+  var taskById = {};
 
   var metrics =
         statRows.map((stat) => {
@@ -343,6 +474,7 @@ Meteor.publish("stage-summary-metrics", function(appId, stageId, attemptId) {
   metrics.forEach(function (metric) {
     metric.initialize();
   }.bind(this));
+
   this.ready();
   var after = moment();
   console.log("stage-summary-metrics finished in %d ms", after - start);
