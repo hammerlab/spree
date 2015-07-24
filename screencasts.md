@@ -22,5 +22,9 @@
 [<img alt="Spree and a recent build of the Spark web UI showing a few stages running" src="http://f.cl.ly/items/3I2g3h182L3O1J0E0U2r/spree-h2h-3.gif" />](http://f.cl.ly/items/3I2g3h182L3O1J0E0U2r/spree-h2h-3.gif)
 *Spree (top) and a recent build of the Spark web UI (bottom) showing a few stages running*
 
+<br/>
 
+## On an Android!
+[<img alt="Spree showing a simple job in Chrome on an Android" src="http://f.cl.ly/items/3X110R2z3G2H033Y3L3I/spree.gif" />](http://f.cl.ly/items/3X110R2z3G2H033Y3L3I/spree.gif)
+*Spree showing a simple job in Chrome on an Android*
 
