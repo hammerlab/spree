@@ -3,7 +3,7 @@ Spree is a live-updating web UI for Spark built with [Meteor][] and [React][].
 
 ![Screencast of a Spark job running and UI updating along with it](http://f.cl.ly/items/3r0C1J1Z1v472s1u1F14/Screen%20Recording%202015-07-06%20at%2001.31%20PM.gif)
 
-*Left: Spree pages showing all jobs and stages, updating in real-time; right: a `spark-shell` running a simple job.*
+*Left: Spree pages showing all jobs and stages, updating in real-time; right: a `spark-shell` running a simple job; see [the Screencast gallery in this repo](https://github.com/hammerlab/spree/blob/master/screencasts.md) for more examples.*
 
 ## Features!
 Spree is a complete rewrite of [Spark's web UI](https://spark.apache.org/docs/1.4.0/spark-standalone.html#monitoring-and-logging), providing several notable benefits…
@@ -106,12 +106,10 @@ wget https://repo1.maven.org/maven2/org/hammerlab/spark-json-relay/1.0.0/spark-j
   --conf spark.slim.port=…
 ```
 
-## Notes
-
-### Comparison to Spark UI
+## Comparison to Spark UI
 Below is a journey through Spark JIRAs past, present, and future, comparing the current state of Spree with Spark's web UI.
 
-#### ~Fixed JIRAs
+### ~Fixed JIRAs
 I believe the following are resolved or worked around by Spree:
 * Live updating: [SPARK-5106](https://issues.apache.org/jira/browse/SPARK-5106).
 * Scalability / Pagination: [SPARK-2015](https://issues.apache.org/jira/browse/SPARK-2015), [SPARK-2016](https://issues.apache.org/jira/browse/SPARK-2016), [SPARK-2017](https://issues.apache.org/jira/browse/SPARK-2017), [SPARK-4598](https://issues.apache.org/jira/browse/SPARK-4598).
@@ -119,7 +117,7 @@ I believe the following are resolved or worked around by Spree:
 * Other: [SPARK-9195](https://issues.apache.org/jira/browse/SPARK-9195).
 
 
-#### Missing Functionality
+### Missing Functionality
 Functionality known to be present in the existing Spark web UI / history server and missing from Spree:
 * Most viz covered by [SPARK-6942](https://issues.apache.org/jira/browse/SPARK-6942), including:
   * RDD DAG viz ([SPARK-6943](https://issues.apache.org/jira/browse/SPARK-6943)).
@@ -127,7 +125,7 @@ Functionality known to be present in the existing Spark web UI / history server 
 * Executor thread-dumps.
 * Streaming UI.
 
-#### Future Nice-to-haves
+### Future Nice-to-haves
 A motley collection of open Spark-UI JIRAs that might be well-suited for fixing in Spree:
 * [SPARK-1622](https://issues.apache.org/jira/browse/SPARK-1622): expose input splits
 * [SPARK-1832](https://issues.apache.org/jira/browse/SPARK-1832): better use of warning colors
@@ -145,6 +143,7 @@ A motley collection of open Spark-UI JIRAs that might be well-suited for fixing 
   * [SPARK-8778](https://issues.apache.org/jira/browse/SPARK-8778): "scheduler delay" mismatch between event timeline, task list.
 * [SPARK-4800](https://issues.apache.org/jira/browse/SPARK-4800): preview/sample RDD elements.
 
+## Notes / Implementation Details / FAQ
 ### BYO Mongo
 Meteor (hence Spree) spins up its own Mongo instance by default, typically at port 3001.
 
@@ -195,9 +194,11 @@ It's ok to skip the latter if/when it prompts you for your root password by `^C`
   ./slim
   ```
 
+### More Screencasts
+See [the screencast gallery in this repo](https://github.com/hammerlab/spree/blob/master/screencasts.md) for more GIFs showing Spree in action!
 
-
-
+### Questions / Comments?
+Please [file issues](https://github.com/hammerlab/spree/issues)!
 
 [`ui`]: https://github.com/hammerlab/spree/tree/master/ui
 [Meteor]: https://www.meteor.com/
