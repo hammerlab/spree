@@ -221,7 +221,7 @@ taskTimeRollupColumns = [
 
 logUrlsColumn = new Column(
       'logUrls',
-      'Log URLs',
+      'Logs',
       'urls',
       {
         render: (urls) => {
