@@ -91,12 +91,12 @@ var taskErrorColumn =
       new Column(
             'errors',
             'Errors',
-            'end.reason',
+            'end.Reason',
             {
               requireOracle: 'taskCounts.failed',
               renderKey: 'end',
               render: (end) => {
-                return <TaskEnd {...end} />;
+                return end ? <TaskEnd {...end} /> : null;
               }
             }
       );
