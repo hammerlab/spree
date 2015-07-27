@@ -170,12 +170,13 @@ Template.stagePage.helpers({
     }
     return {
       component: Table,
+      name: "accumulables",
       data: accumulables,
       total: accumulables.length,
       title: "Accumulables",
       paginate: false,
       columns: accumulatorColumns,
-      keyFn: "ID",
+      keyFn: "id",
       clientSort: true
     }
   },
