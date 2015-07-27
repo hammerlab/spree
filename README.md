@@ -52,7 +52,7 @@ These offer potentially-useful alternatives to Spark's [`EventLoggingListener`][
 Spree has three components, each in its own subdirectory:
 
 * [`ui`][]: a web-app that displays the contents of a Mongo database populated with information about running Spark applications.
-* [`slim`][]: a Node server that receives events about running Spark applications, aggregates statistics about them, and writes them to Mongo for Spree to read/display.
+* [`slim`][]: a Node server that receives events about running Spark applications, aggregates statistics about them, and writes them to Mongo for Spree's `ui` above to read/display.
 * [`json-relay`][]: a [`SparkListener`][] that serializes [`SparkListenerEvent`s](https://github.com/apache/spark/blob/658814c898bec04c31a8e57f8da0103497aac6ec/core/src/main/scala/org/apache/spark/scheduler/SparkListener.scala#L32-L128) to JSON and sends them to a listening [`slim`][] process.
 
 The latter two are linked in this repo as `git` submodules, so you'll want to have cloned with `git clone --recursive` (or run `git submodule update`) in order for them to be present.
@@ -197,8 +197,14 @@ It's ok to skip the latter if/when it prompts you for your root password by `^C`
 ### More Screencasts
 See [the screencast gallery in this repo](https://github.com/hammerlab/spree/blob/master/screencasts.md) for more GIFs showing Spree in action!
 
-### Questions / Comments?
-Please [file issues](https://github.com/hammerlab/spree/issues)!
+### Spark Version Compatibility
+Spree has been tested pretty heavily against Spark 1.4.1. It's been tested less heavily, but should Just Work™, on Sparks from 1.3.0, when [the `spark.extraListeners` conf option was added](https://github.com/apache/spark/blob/v1.3.0/core/src/main/scala/org/apache/spark/SparkContext.scala#L1667-L1676), which `JsonRelay` uses to register itself with the driver.
+
+## Contributing, Reporting Issues
+
+Please file issues if you have any trouble using Spree or its sub-components or have any questions!
+
+See [`slim`'s documentation](https://github.com/hammerlab/slim#contributing-reporting-issues) for info about ways to report issues with it.
 
 [`ui`]: https://github.com/hammerlab/spree/tree/master/ui
 [Meteor]: https://www.meteor.com/
