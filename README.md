@@ -1,4 +1,6 @@
 # Spree
+
+[![Join the chat at https://gitter.im/hammerlab/spree](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/hammerlab/spree?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 Spree is a live-updating web UI for Spark built with [Meteor][] and [React][].
 
 ![Screencast of a Spark job running and UI updating along with it](http://f.cl.ly/items/3r0C1J1Z1v472s1u1F14/Screen%20Recording%202015-07-06%20at%2001.31%20PM.gif)
