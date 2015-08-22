@@ -15,10 +15,12 @@ ProgressBar = React.createClass({
       }
       running = counts.running || 0;
       succeeded = counts.succeeded || 0;
-      total = Math.max(running + succeeded, counts.num);
+      var skipped = counts.skipped || 0;
+      total = Math.max(running + succeeded, counts.num - skipped);
       var clauses = [];
       if (counts.running) clauses.push(counts.running + " running");
       if (counts.failed) clauses.push(counts.failed + " failed");
+      if (skipped) clauses.push(skipped + " skipped");
       label =
             (counts.succeeded || 0) +
             "/" +
