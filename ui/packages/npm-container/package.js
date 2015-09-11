@@ -3,7 +3,7 @@ var fs = Npm.require('fs');
 
 Package.describe({
   summary: 'Contains all your npm dependencies',
-  version: '1.0.0',
+  version: '1.1.0',
   name: 'npm-container'
 });
 
@@ -19,5 +19,8 @@ try {
 // Adding the app's packages.json as a used file for this package will get
 // Meteor to watch it and reload this package when it changes
 Package.onUse(function(api) {
-  api.add_files(['index.js', '../../packages.json'], 'server');
+  api.add_files('index.js', 'server');
+  api.add_files('../../packages.json', 'server', {
+    isAsset: true
+  });
 });
