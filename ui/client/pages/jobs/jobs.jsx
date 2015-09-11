@@ -38,7 +38,7 @@ var stageIDsColumn = new Column(
       'stageIDs',
       {
         render: function(job) {
-          return job.stageIDs.sort(function(a,b) { return a - b; }).map((stageID, idx) => {
+          return (job.stageIDs || []).sort(function(a,b) { return a - b; }).map((stageID, idx) => {
             return <span key={stageID}>
               {idx ? ", " : ""}
               <a href={[ '', 'a', job.appId, 'stage', stageID ].join('/')}>{stageID}</a>
