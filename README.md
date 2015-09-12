@@ -87,24 +87,32 @@ slim
 By default, `slim` listens for events on `localhost:8123` and writes to a Mongo at `localhost:3001`, which is the default Mongo URL for a Spree started as above.
 
 ### Run Spark with [`JsonRelay`][]
-Finally, download a `JsonRelay` JAR:
-```
-wget https://repo1.maven.org/maven2/org/hammerlab/spark-json-relay/1.0.0/spark-json-relay-1.0.0.jar
-```
+If using Spark ≥ 1.5.0, simply pass the following flags to `spark-{shell,submit}`:
 
-…and tell Spark to send events to it by passing the following arguments to `spark-{shell,submit}`:
+  ```
+  --packages org.hammerlab:spark-json-relay:2.0.0
+  --conf spark.extraListeners=org.apache.spark.JsonRelay
+  ```
 
-```
+Otherwise, download a `JsonRelay` JAR:
+
+  ```
+  wget https://repo1.maven.org/maven2/org/hammerlab/spark-json-relay/2.0.0/spark-json-relay-2.0.0.jar
+  ```
+
+…then tell Spark to send events to it by passing the following arguments to `spark-{shell,submit}`:
+
+  ```
   # Include JsonRelay on the driver's classpath
-  --driver-class-path /path/to/json-relay-1.0.0.jar
-  
+  --driver-class-path /path/to/json-relay-2.0.0.jar
+    
   # Register your JsonRelay as a SparkListener
   --conf spark.extraListeners=org.apache.spark.JsonRelay
-  
+    
   # Point it at your `slim` instance; default: localhost:8123
   --conf spark.slim.host=…
   --conf spark.slim.port=…
-```
+  ```
 
 ## Comparison to Spark UI
 Below is a journey through Spark JIRAs past, present, and future, comparing the current state of Spree with Spark's web UI.
