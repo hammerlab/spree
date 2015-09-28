@@ -154,6 +154,23 @@ A motley collection of open Spark-UI JIRAs that might be well-suited for fixing 
 * [SPARK-4800](https://issues.apache.org/jira/browse/SPARK-4800): preview/sample RDD elements.
 
 ## Notes / Implementation Details / FAQ
+
+### `ECONNREFUSED` / `MongoError`
+If you see errors like this when starting `slim`:
+
+```
+/usr/local/lib/node_modules/slim.js/node_modules/mongodb/lib/server.js:228
+        process.nextTick(function() { throw err; })
+                                      ^
+AssertionError: null == { [MongoError: connect ECONNREFUSED 127.0.0.1:3001]
+  name: 'MongoError',
+  message: 'connect ECONNREFUSED 127.0.0.1:3001' }
+```
+
+it's likely because you need to start Spree first (by running `meteor` from the `ui` subdirectory of this repo). 
+
+`slim` expects to connect to a MongoDB that Spree starts (at localhost:3001 by default).
+
 ### BYO Mongo
 Meteor (hence Spree) spins up its own Mongo instance by default, typically at port 3001.
 
