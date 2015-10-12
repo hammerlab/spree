@@ -13,7 +13,8 @@ Router.route("/a/:_appId/environment", {
         environmentTab: 1
       }
     });
-  }
+  },
+  name: 'environment'
 });
 
 

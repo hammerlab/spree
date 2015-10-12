@@ -29,8 +29,8 @@ ProgressBar = React.createClass({
     }
     return <div className="progress">
       <span className="progress-label">{label}</span>
-      <div className="bar bar-completed" style={{width: (((succeeded / total) || 0) * 100) + '%'}}></div>
-      {running ? <div className="bar bar-running" style={{width: (((running / total) || 0) * 100) + '%'}}></div> : null}
+      <div className="progress-bar progress-bar-completed" style={{width: (((succeeded / total) || 0) * 100) + '%'}}></div>
+      {running ? <div className="progress-bar progress-bar-running" style={{width: (((running / total) || 0) * 100) + '%'}}></div> : null}
     </div>;
   }
 });

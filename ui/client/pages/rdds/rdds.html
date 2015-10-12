@@ -3,7 +3,7 @@
   {{>navbar}}
   {{setTitle "Storage - Spark"}}
   {{log this}}
-  <div class="container-fluid">
+  <div class="container">
     {{#if app.MemorySize}}<div><strong>Memory Usage:</strong> {{formatBytes app.MemorySize}}</div>{{/if}}
     {{#if app.DiskSize}}<div><strong>Disk Usage:</strong> {{formatBytes app.DiskSize}}</div>{{/if}}
     {{#if app.ExternalBlockStoreSize}}<div><strong>Off-Heap Usage:</strong> {{formatBytes app.ExternalBlockStoreSize}}</div>{{/if}}

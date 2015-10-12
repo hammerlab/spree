@@ -1,25 +1,33 @@
 
 <template name="navbar">
-  <div class="navbar navbar-static-top">
-    <div class="navbar-inner">
-      <div class="brand">
-        <a href="/" class="brand">
-          <img src="/img/spark-logo-77x50px-hd.png" />
-        </a>
-      </div>
+  <nav class="navbar navbar-default navbar-static-top">
+    <div class="navbar-header">
+      <a href="/" class="navbar-brand">
+        <img src="/img/spark-logo-77x50px-hd.png" />
+      </a>
+    </div>
+    <div>
       {{#if includeNavLinks}}
-        <ul class="nav">
+        <ul class="nav navbar-nav">
           <li class="{{#if jobsTab}}active{{/if}}">
             <a href="/a/{{appId}}">Jobs</a>
           </li>
           <li class="{{#if stagesTab}}active{{/if}}"><a href="/a/{{appId}}/stages">Stages</a></li>
           <li class="{{#if storageTab}}active{{/if}}"><a href="/a/{{appId}}/storage">Storage</a></li>
           <li class="{{#if environmentTab}}active{{/if}}"><a href="/a/{{appId}}/environment">Environment</a></li>
-          <li class="{{#if executorsTab}}active{{/if}}"><a href="/a/{{appId}}/executors">Executors</a></li>
+          <li class="{{#if executorsTab}}active{{/if}}">
+            <a href="/a/{{appId}}/executors">
+              Executors {{executorsInfo}}
+            </a>
+          </li>
         </ul>
       {{/if}}
-      <div id="mongoUrlContainer" class="navbar-text pull-right">{{app.id}} Mongo: <span id="mongoUrl">{{mongoUrl}}</span></div>
+      <div class="navbar-header navbar-right navbar-text">
+        {{#if app}}
+          {{app.id}}: {{appStatusStr app.status}}
+        {{/if}}
+      </div>
     </div>
-  </div>
+  </nav>
 </template>
 

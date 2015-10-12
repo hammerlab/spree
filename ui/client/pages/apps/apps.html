@@ -3,10 +3,11 @@
   {{setTitle "Applications - Spark"}}
   {{>navbar hideLinks=false}}
   {{log this}}
-  <div class="container-fluid">
+  <div class="container">
     <div>
       {{>React
           component=Table
+          name="apps"
           title="Spark Applications"
           collection="Applications"
           columns=columns

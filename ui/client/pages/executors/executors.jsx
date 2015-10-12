@@ -16,7 +16,8 @@ Router.route("/a/:_appId/executors", {
         executorsTab: 1
       }
     });
-  }
+  },
+  name: 'executors'
 });
 
 var baseExecutorColumns = [
@@ -28,7 +29,13 @@ var baseExecutorColumns = [
   numBlocksColumn,
   maxMemColumn
 ]
-      .concat([ memPercentColumn, executorMemUsageProgressBarColumn, memColumn.copy({ showByDefault: false }), diskColumn, offHeapColumn ])
+      .concat([
+        memPercentColumn,
+        executorMemUsageProgressBarColumn,
+        memColumn.copy({ showByDefault: false }),
+        diskColumn,
+        offHeapColumn
+      ])
       .concat(taskColumns)
       .concat(taskTimeRollupColumns)
       .concat(ioColumns())

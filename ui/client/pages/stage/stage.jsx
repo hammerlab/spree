@@ -38,12 +38,9 @@ Router.route("/a/:_appId/stage/:_stageId", {
         attemptId: attemptId
       }
     });
-  }
+  },
+  name: 'stage'
 });
-
-statusStr = function(status) {
-  return statuses[status];
-};
 
 var statsData = {
   'duration': { label: 'Duration', render: formatTime },
@@ -60,7 +57,9 @@ var statsData = {
   'metrics.ShuffleReadMetrics.TotalBytesRead': { label: 'Shuffle Read Bytes', render: formatBytes },
   'metrics.ShuffleReadMetrics.TotalRecordsRead': { label: 'Shuffle Read Records' },
   'metrics.ShuffleWriteMetrics.ShuffleBytesWritten': { label: 'Shuffle Write Bytes', render: formatBytes },
-  'metrics.ShuffleWriteMetrics.ShuffleRecordsWritten': { label: 'Shuffle Write Records' }
+  'metrics.ShuffleWriteMetrics.ShuffleRecordsWritten': { label: 'Shuffle Write Records' },
+  'metrics.MemoryBytesSpilled': { label: 'Memory Spilled' },
+  'metrics.DiskBytesSpilled': { label: 'Disk Spilled' }
 };
 
 var statsColumns = [
@@ -106,7 +105,7 @@ var taskTableColumns = [
   new Column('id', 'ID', 'id'),
   new Column('attempt', 'Attempt', 'attempt'),
   lastUpdatedColumn,
-  new Column('status', 'Status', 'status', { render: statusStr }),
+  statusColumn,
   new Column('localityLevel', 'Locality Level', 'locality'),
   new Column('execId', 'Executor', 'execId'),
   new Column('host', 'Host', 'metrics.HostName'),
@@ -129,6 +128,9 @@ Template.stagePage.helpers({
   setTitle: function(data) {
     document.title = "Stage " + data.stageId + " (" + data.attemptId + ")";
     return null;
+  },
+  showSpillStats: (metrics) => {
+    return metrics.MemoryBytesSpilled || metrics.DiskBytesSpilled;
   },
   getSummaryMetricsTableData: (stageAttempt) => {
     return {
@@ -176,7 +178,7 @@ Template.stagePage.helpers({
       title: "Accumulables",
       paginate: false,
       columns: accumulatorColumns,
-      keyFn: "id",
+      keyFn: "ID",
       clientSort: true
     }
   },

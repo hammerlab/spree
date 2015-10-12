@@ -31,22 +31,38 @@ var stageNameColumn = new Column(
       }
 );
 
-var stageColumns = [
-  stageIDColumn,
-  stageNameColumn,
-  lastUpdatedColumn,
-  startColumn,
-  durationColumn,
-  taskIdxsColumn,
-  tasksColumn
-].concat(ioColumns());
+var stageColumns = (name) => {
+  return [
+    stageIDColumn,
+    stageNameColumn,
+    lastUpdatedColumn,
+    startColumn,
+    durationColumn
+  ]
+        .concat(name === 'all' ? [ statusColumn ] : [])
+        .concat([
+          taskIdxsColumn,
+          tasksColumn
+        ])
+        .concat(ioColumns());
+};
 
 Template.stagesTables.helpers({
   showAll: function(total) {
     return !total || Cookie.get('stages-showAll') !== false;
   },
   getTableData(data, label, name) {
-    return getTableData(data.app, "stages", label + " Stages", data.counts[name], label + "Stages", name, stageColumns, name === "all", data.job);
+    return getTableData(
+          data.app,
+          "stages",
+          label + " Stages",
+          data.counts[name],
+          label + "Stages",
+          name,
+          stageColumns(name),
+          name === "all",
+          data.job
+    );
   }
 });
 

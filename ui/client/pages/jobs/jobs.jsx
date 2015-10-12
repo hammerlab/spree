@@ -17,7 +17,8 @@ Router.route("/a/:_appId", {
         jobsTab: 1
       }
     });
-  }
+  },
+  name: 'jobs'
 });
 
 var jobIdColumn = new Column(
