@@ -73,7 +73,7 @@ formatBytes = function(bytes) {
   for (var i = 0; i < levels.length; i++) {
     var order = levels[i];
     if (bytes < cutoff*base || order == 'PB') {
-      return sigFigs(bytes) + ' ' + order;
+      return sigFigs(bytes, 4) + ' ' + order;
     }
     bytes /= base;
   }
