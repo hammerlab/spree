@@ -56,7 +56,9 @@ var statsData = {
   'metrics.ShuffleReadMetrics.TotalBytesRead': { label: 'Shuffle Read Bytes', render: formatBytes },
   'metrics.ShuffleReadMetrics.TotalRecordsRead': { label: 'Shuffle Read Records' },
   'metrics.ShuffleWriteMetrics.ShuffleBytesWritten': { label: 'Shuffle Write Bytes', render: formatBytes },
-  'metrics.ShuffleWriteMetrics.ShuffleRecordsWritten': { label: 'Shuffle Write Records' }
+  'metrics.ShuffleWriteMetrics.ShuffleRecordsWritten': { label: 'Shuffle Write Records' },
+  'metrics.MemoryBytesSpilled': { label: 'Memory Spilled' },
+  'metrics.DiskBytesSpilled': { label: 'Disk Spilled' }
 };
 
 var statsColumns = [
@@ -125,6 +127,9 @@ Template.stagePage.helpers({
   setTitle: function(data) {
     document.title = "Stage " + data.stageId + " (" + data.attemptId + ")";
     return null;
+  },
+  showSpillStats: (metrics) => {
+    return metrics.MemoryBytesSpilled || metrics.DiskBytesSpilled;
   },
   getSummaryMetricsTableData: (stageAttempt) => {
     return {

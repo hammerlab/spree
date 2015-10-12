@@ -44,6 +44,10 @@
           </div>
           {{/if}}
         {{/with}}
+
+        {{#if showSpillStats this}}
+          <div><strong>Spill</strong>: {{formatBytes MemoryBytesSpilled}} memory, {{formatBytes DiskBytesSpilled}} disk</div>
+        {{/if}}
       {{/with}}
     {{/with}}
 
