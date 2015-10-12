@@ -19,7 +19,8 @@ Router.route("/a/:_appId/rdd/:_rddId", {
         storageTab: 1
       }
     });
-  }
+  },
+  name: 'rdd'
 });
 
 

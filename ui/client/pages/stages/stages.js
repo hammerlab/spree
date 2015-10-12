@@ -16,6 +16,7 @@ Router.route("/a/:_appId/stages", {
         stagesTab: 1
       }
     });
-  }
+  },
+  name: 'stages'
 });
 

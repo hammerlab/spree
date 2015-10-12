@@ -38,7 +38,8 @@ Router.route("/a/:_appId/stage/:_stageId", {
         attemptId: attemptId
       }
     });
-  }
+  },
+  name: 'stage'
 });
 
 var statsData = {

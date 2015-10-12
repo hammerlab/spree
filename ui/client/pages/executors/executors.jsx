@@ -16,7 +16,8 @@ Router.route("/a/:_appId/executors", {
         executorsTab: 1
       }
     });
-  }
+  },
+  name: 'executors'
 });
 
 var baseExecutorColumns = [

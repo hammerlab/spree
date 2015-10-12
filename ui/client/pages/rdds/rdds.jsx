@@ -15,7 +15,8 @@ Router.route("/a/:_appId/storage", {
         storageTab: 1
       }
     });
-  }
+  },
+  name: 'rdds'
 });
 
 var rddIdColumn = new Column(

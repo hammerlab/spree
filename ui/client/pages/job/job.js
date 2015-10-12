@@ -19,7 +19,8 @@ Router.route("/a/:_appId/job/:_jobId", {
         jobsTab: 1
       }
     });
-  }
+  },
+  name: 'job'
 });
 
 
