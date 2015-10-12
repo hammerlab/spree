@@ -131,9 +131,5 @@ getHostPort = function(e) {
   return null;
 };
 
-renderers = {
-  bytes: formatBytes,
-  time: formatTime
-};
 defaultRenderer = (x) => { if (!x) return '-'; return x; };
 
