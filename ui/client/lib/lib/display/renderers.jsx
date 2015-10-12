@@ -79,6 +79,22 @@ formatBytes = function(bytes) {
   }
 };
 
+formatNumber = function(n) {
+  if (!n) return "-";
+  if (typeof n != 'number') return n;
+  var cutoff = 2;
+  var levels = [['', 1], ['MM', 1000000], ['B', 1000], ['T', 1000]];
+  var order = '';
+  for (var i = 0; i < levels.length; i++) {
+    var base = levels[i][1];
+    if (n < cutoff*base || order == 'T') {
+      return (n == parseInt(n.toString()) ? n : sigFigs(n, 4)) + ' ' + order;
+    }
+    n /= base;
+    order = levels[i][0];
+  }
+};
+
 formatPercent = (p) => {
   return (100*p).toString().substr(0, 3) + '%';
 };
