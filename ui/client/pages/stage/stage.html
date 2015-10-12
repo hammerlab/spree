@@ -6,8 +6,9 @@
   <div class="container">
     <h3>Details for Stage {{stageId}}, Attempt {{attemptId}}</h3>
     {{#with stageAttempt}}
+      <div><strong>Status:</strong> {{statusStr status}}</div>
       {{#with taskCounts}}
-        {{orZero succeeded}}/{{num}} succeeded, {{running}} active, {{orZero failed}} failed.
+        {{orZero succeeded}}/{{num}} succeeded, {{running}} active, {{orZero failed}} failed
       {{/with}}
       {{#with metrics}}
         <div><strong>Total time across all tasks:</strong> {{formatTime ExecutorRunTime}}</div>
@@ -52,11 +53,13 @@
     <div>
       {{>React getExecutorTableData stageAttempt}}
     </div>
+
     {{#if nonEmptyObject stageAttempt.accumulables}}
     <div>
       {{>React getAccumulatorsTableData stageAttempt}}
     </div>
     {{/if}}
+
     <div>
       {{>React getTasksTableData stageAttempt}}
     </div>

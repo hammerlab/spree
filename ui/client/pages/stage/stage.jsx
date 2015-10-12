@@ -41,10 +41,6 @@ Router.route("/a/:_appId/stage/:_stageId", {
   }
 });
 
-statusStr = function(status) {
-  return statuses[status];
-};
-
 var statsData = {
   'duration': { label: 'Duration', render: formatTime },
   'metrics.ExecutorRunTime': { label: 'Run Time', render: formatTime },
@@ -106,7 +102,7 @@ var taskTableColumns = [
   new Column('id', 'ID', 'id'),
   new Column('attempt', 'Attempt', 'attempt'),
   lastUpdatedColumn,
-  new Column('status', 'Status', 'status', { render: statusStr }),
+  statusColumn,
   new Column('localityLevel', 'Locality Level', 'locality'),
   new Column('execId', 'Executor', 'execId'),
   new Column('host', 'Host', 'metrics.HostName'),

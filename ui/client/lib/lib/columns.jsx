@@ -245,3 +245,10 @@ lastUpdatedColumn = new Column(
         showByDefault: false
       }
 );
+
+statusStr = function(status) {
+  return statuses[status];
+};
+Template.registerHelper('statusStr', statusStr);
+
+statusColumn = new Column('status', 'Status', 'status', { render: statusStr });
