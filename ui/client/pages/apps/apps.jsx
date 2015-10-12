@@ -26,6 +26,8 @@ var columns = [
   new Column('start', 'Started', 'time.start', { render: formatDateTime }),
   new Column('end', 'Completed', 'time.end', { render: formatDateTime }),
   durationColumn,
+  new Column('executors', 'Executors', 'executorCounts.running'),
+  new Column('executorsrm', 'Executors Removed', 'executorCounts.removed', { showByDefault: false }),
   new Column('user', 'User', 'user')
 ];
 
