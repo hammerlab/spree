@@ -40,6 +40,7 @@ iron:router@1.0.9
 iron:url@1.0.9
 jquery@1.11.4
 jsx@0.2.1
+keypress:keypress@2.1.0
 launch-screen@1.0.4
 less@2.5.0_3
 livedata@1.0.15

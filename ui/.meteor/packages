@@ -29,5 +29,6 @@ random
 ejson
 spacebars
 check
+keypress:keypress
 momentjs:moment
 twbs:bootstrap
