@@ -177,7 +177,7 @@ Template.stagePage.helpers({
       title: "Accumulables",
       paginate: false,
       columns: accumulatorColumns,
-      keyFn: "id",
+      keyFn: "ID",
       clientSort: true
     }
   },
