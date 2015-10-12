@@ -251,4 +251,11 @@ statusStr = function(status) {
 };
 Template.registerHelper('statusStr', statusStr);
 
+appStatusStr = function(status) {
+  if (status == RUNNING) return "RUNNING";
+  return "FINISHED";
+};
+Template.registerHelper('appStatusStr', appStatusStr);
+
 statusColumn = new Column('status', 'Status', 'status', { render: statusStr });
+appStatusColumn = new Column('appStatus', 'Status', 'status', { render: appStatusStr });

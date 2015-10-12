@@ -23,6 +23,7 @@ var columns = [
   new Column('id', 'App ID', 'id', { render: (id) => { return <a href={"/a/" + id}>{id}</a>; }, defaultSort: -1 }),
   nameColumn,
   lastUpdatedColumn,
+  appStatusColumn,
   new Column('start', 'Started', 'time.start', { render: formatDateTime }),
   new Column('end', 'Completed', 'time.end', { render: formatDateTime }),
   durationColumn,

@@ -22,7 +22,11 @@
           </li>
         </ul>
       {{/if}}
-      <div id="mongoUrlContainer" class="navbar-header navbar-right navbar-text">{{app.id}} Mongo: <span id="mongoUrl">{{mongoUrl}}</span></div>
+      <div class="navbar-header navbar-right navbar-text">
+        {{#if app}}
+          {{app.id}}: {{appStatusStr app.status}}
+        {{/if}}
+      </div>
     </div>
   </nav>
 </template>
