@@ -3,7 +3,7 @@
   {{>navbar}}
   {{setTitle "Environment - Spark"}}
   {{log this}}
-  <div class="container-fluid">
+  <div class="container">
     <h3>Environment</h3>
     {{>environmentTable name="jvm" data=env.jvm title="Runtime Information"}}
     {{>environmentTable name="spark" data=env.spark title="Spark Properties"}}

@@ -12,6 +12,12 @@
   user-select: none;
 }
 
+ul.unstyled {
+  list-style: none;
+  margin-left: 0;
+  padding-left: 0;
+}
+
 .table-container {
   clear: both;
   position: relative;
@@ -26,40 +32,45 @@
     .settings-container {
       float: left;
 
-      .gear {
-        float: left;
-        padding-left: 3px;
-        cursor: pointer;
-      }
+      .settings-container-abs {
+        position: absolute;
 
-      .settings-tooltip-container {
-        float: left;
-        position: relative;
-        top: -1em;
+        .gear {
+          float: left;
+          padding-left: 3px;
+          cursor: pointer;
+          margin-top: -1px;
+        }
 
-        .settings-tooltip {
-          min-width: 200px;
-          border: 1px solid black;
-          position: absolute;
-          background-color: #FFF;
-          padding: 5px 10px;
-          font-size: 0.8em;
-          line-height: 1.3em;
-          font-weight: normal;
-          z-index: 100;
-          
-          .tooltip-row {
-            cursor: pointer;
+        .settings-tooltip-container {
+          float: left;
+          position: relative;
+          top: -1em;
 
-            .tooltip-checkbox {
-              margin-top: 0px;
-            }
-            .tooltip-label {
-              .noselect;
-              padding-left: 5px;
-            }
-            .tooltip-label.empty {
-              color: #CCC;
+          .settings-tooltip {
+            min-width: 200px;
+            border: 1px solid black;
+            position: absolute;
+            background-color: #FFF;
+            padding: 5px 10px;
+            font-size: 0.8em;
+            line-height: 1.3em;
+            font-weight: normal;
+            z-index: 100;
+
+            .tooltip-row {
+              cursor: pointer;
+
+              .tooltip-checkbox {
+                margin-top: 0px;
+              }
+              .tooltip-label {
+                .noselect;
+                padding-left: 5px;
+              }
+              .tooltip-label.empty {
+                color: #CCC;
+              }
             }
           }
         }
@@ -127,39 +138,37 @@
 }
 
 .navbar {
-  height: 50px;
   font-size: 15px;
-  margin-bottom: 15px;
+  padding: 0 20px;
+  -webkit-box-shadow: 0 1px 10px rgba(0,0,0,.1);
+  -moz-box-shadow: 0 1px 10px rgba(0,0,0,.1);
+  box-shadow: 0 1px 10px rgba(0,0,0,.1);
+  margin-bottom: 10px;
 
-  .navbar-inner {
+  border-bottom: 1px solid #d4d4d4;
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#f2f2f2));
+
+  .navbar-div {
     height: 50px;
+  }
+
+  .navbar-brand {
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-left: 10px;
+    margin-right: 40px;
   }
 
   .nav > li {
     height: 50px;
   }
 
-  .nav > li a {
-    height: 30px;
-    line-height: 2;
-  }
-
   .navbar-text {
-    height: 50px;
-    line-height: 3.3;
     max-width: 200px;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
     cursor: pointer;
-  }
-
-  .brand {
-    margin-right: 20px;
-    margin-bottom: 0;
-    margin-top: 0;
-    margin-left: 10px;
-    padding: 0;
   }
 
   .version {
@@ -174,14 +183,22 @@
 
 }
 
-.container-fluid {
+.container {
+
+  width: 100%;
+  padding-left: 20px;
+  padding-right: 20px;
+
+  h3 {
+    margin-top: 10px;
+  }
 
   .progress {
     margin-bottom: 0px;
     position: relative;
 
-    .progress-completed .bar,
-    .bar-completed {
+    .progress-completed .progress-bar,
+    .progress-bar-completed {
       background-color: #3EC0FF;
       background-image: -moz-linear-gradient(top, #44CBFF, #34B0EE);
       background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#44CBFF), to(#34B0EE));
@@ -192,8 +209,8 @@
       filter: progid:dximagetransform.microsoft.gradient(startColorstr='#FF44CBFF', endColorstr='#FF34B0EE', GradientType=0);
     }
 
-    .progress-running .bar,
-    .bar-running {
+    .progress-running .progress-bar,
+    .progress-bar-running {
       background-color: #A0DFFF;
       background-image: -moz-linear-gradient(top, #A4EDFF, #94DDFF);
       background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#A4EDFF), to(#94DDFF));
