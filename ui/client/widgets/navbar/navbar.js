@@ -16,6 +16,14 @@ Template.registerHelper("mongoUrl", mongoUrl);
 Template.navbar.helpers({
   includeNavLinks: function() {
     return this.hideLinks != false;
+  },
+  executorsInfo() {
+    var ec = this.app.executorCounts;
+    if (ec.removed) {
+      return "(+" + ec.running + ",-" + ec.removed + ")";
+    } else {
+      return "(" + ec.running + ")";
+    }
   }
 });
 
