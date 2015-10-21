@@ -1,6 +1,6 @@
 [submodule "json-relay"]
 	path = json-relay
-	url = git@github.com:hammerlab/json-relay-spark-listener.git
+	url = https://github.com/hammerlab/json-relay-spark-listener.git
 [submodule "slim"]
 	path = slim
-	url = git@github.com:hammerlab/slim.git
+	url = https://github.com/hammerlab/slim.git
