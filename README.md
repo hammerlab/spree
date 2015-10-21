@@ -84,6 +84,8 @@ npm install -g slim.js
 slim
 ```
 
+If you have an older unsupported version of npm installed you may get error messages from the above command that contain `message failed to fetch from registry`. If so, upgrade the version of node and npm and try again.
+
 [`slim`][] is a Node server that receives events from [`JsonRelay`][] and writes them to the Mongo instance that Spree is watching. 
 
 By default, `slim` listens for events on `localhost:8123` and writes to a Mongo at `localhost:3001`, which is the default Mongo URL for a Spree started as above.
