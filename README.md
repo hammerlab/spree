@@ -65,7 +65,7 @@ Following are instructions for configuring/running them:
 First, run a Spree app using [Meteor][]:
 
 ```
-git clone --recursive git@github.com:hammerlab/spree.git
+git clone --recursive https://github.com/hammerlab/spree.git
 cd spree/ui   # the Spree Meteor app lives in ui/ in this repo.
 meteor        # run it
 ```
