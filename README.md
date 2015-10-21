@@ -65,7 +65,7 @@ Following are instructions for configuring/running them:
 First, run a Spree app using [Meteor][]:
 
 ```
-git clone --recursive git@github.com:hammerlab/spree.git
+git clone --recursive https://github.com/hammerlab/spree.git
 cd spree/ui   # the Spree Meteor app lives in ui/ in this repo.
 meteor        # run it
 ```
@@ -83,6 +83,8 @@ Next, install and run `slim`:
 npm install -g slim.js
 slim
 ```
+
+If you have an older unsupported version of npm installed you may get error messages from the above command that contain `message failed to fetch from registry`. If so, upgrade the version of node and npm and try again.
 
 [`slim`][] is a Node server that receives events from [`JsonRelay`][] and writes them to the Mongo instance that Spree is watching. 
 
