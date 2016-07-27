@@ -80,7 +80,7 @@ formatBytes = function(bytes) {
 };
 
 formatNumber = function(n) {
-  if (!n) return "-";
+  if (!n && n !== 0) return "-";
   if (typeof n != 'number') return n;
   var cutoff = 2;
   var levels = [['', 1], ['MM', 1000000], ['B', 1000], ['T', 1000]];
@@ -96,6 +96,7 @@ formatNumber = function(n) {
 };
 
 formatPercent = (p) => {
+  if (!p) return "-";
   return (100*p).toString().substr(0, 3) + '%';
 };
 
@@ -131,5 +132,4 @@ getHostPort = function(e) {
   return null;
 };
 
-defaultRenderer = (x) => { if (!x) return '-'; return x; };
-
+defaultRenderer = (x) => { if (!x && x !== 0) return '-'; return x; };
