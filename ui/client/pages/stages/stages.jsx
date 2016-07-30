@@ -21,14 +21,55 @@ var stageIDColumn = new Column(
         truthyZero: true
       }
 );
+
+PreSpan = React.createClass({
+  mixins: [ReactMeteorData],
+  getMeteorData() {
+    const subscription = Meteor.subscribe('stage-details', this.props.appId, this.props.stageId);
+
+    return {
+      ready: subscription.ready(),
+      stage: Stages.findOne({appId: this.props.appId, id: this.props.stageId})
+    };
+  },
+  render() {
+    return (this.data.ready) ? <pre className='code'>{this.data.stage.details}</pre> : <span></span>;
+  }
+})
+
+StageNameSpan = React.createClass({
+  getInitialState() {
+    return {
+      toggle: false
+    };
+  },
+  handleClick() {
+    this.setState({toggle: !this.state.toggle});
+  },
+  render() {
+    var header = <div className='stage-name-container'>
+      <a href={this.props.url}>{this.props.name}</a>
+      <span className='expand-details' onClick={this.handleClick}>+ details</span>
+    </div>;
+    if (this.state.toggle) {
+      return <div>{header}<PreSpan appId={this.props.appId} stageId={this.props.stageId} /></div>;
+    } else {
+      return header;
+    }
+  }
+});
+
 var stageNameColumn = new Column(
-      'desc',
-      'Description',
-      'name',
-      {
-        render: (attempt) => { return <a href={stageAttemptUrl(attempt)}>{attempt.name}</a>; },
-        renderKey: ''
-      }
+  'desc',
+  'Description',
+  'name',
+  {
+    render: (attempt) => {
+      const url = stageAttemptUrl(attempt);
+      return <StageNameSpan appId={attempt.appId} stageId={attempt.stageId} name={attempt.name} url={url}/>;
+    },
+    renderKey: ''
+  }
 );
 
 var stageColumns = (name) => {
@@ -95,4 +136,3 @@ getTableData = function(app, objType, title, total, collection, titleId, columns
     sortDir: -1
   };
 };
-

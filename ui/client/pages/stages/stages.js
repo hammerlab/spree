@@ -19,4 +19,3 @@ Router.route("/a/:_appId/stages", {
   },
   name: 'stages'
 });
-
