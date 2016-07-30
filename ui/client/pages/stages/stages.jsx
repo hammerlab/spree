@@ -22,7 +22,9 @@ var stageIDColumn = new Column(
       }
 );
 
-PreSpan = React.createClass({
+// == Stage name column with details ==
+// React element to display 'pre' with details
+StageDetails = React.createClass({
   mixins: [ReactMeteorData],
   getMeteorData() {
     const subscription = Meteor.subscribe('stage-details', this.props.appId, this.props.stageId);
@@ -35,9 +37,10 @@ PreSpan = React.createClass({
   render() {
     return (this.data.ready) ? <pre className='code'>{this.data.stage.details}</pre> : <span></span>;
   }
-})
+});
 
-StageNameSpan = React.createClass({
+// Stage name element to display details when clicked
+StageNameElement = React.createClass({
   getInitialState() {
     return {
       toggle: false
@@ -52,7 +55,7 @@ StageNameSpan = React.createClass({
       <span className='expand-details' onClick={this.handleClick}>+ details</span>
     </div>;
     if (this.state.toggle) {
-      return <div>{header}<PreSpan appId={this.props.appId} stageId={this.props.stageId} /></div>;
+      return <div>{header}<StageDetails appId={this.props.appId} stageId={this.props.stageId} /></div>;
     } else {
       return header;
     }
@@ -66,7 +69,7 @@ var stageNameColumn = new Column(
   {
     render: (attempt) => {
       const url = stageAttemptUrl(attempt);
-      return <StageNameSpan appId={attempt.appId} stageId={attempt.stageId} name={attempt.name} url={url}/>;
+      return <StageNameElement appId={attempt.appId} stageId={attempt.stageId} name={attempt.name} url={url}/>;
     },
     renderKey: ''
   }
