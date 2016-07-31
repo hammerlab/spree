@@ -126,11 +126,18 @@ function getSubscriptionFn(name, stage) {
 
 Template.stagePage.helpers({
   setTitle: function(data) {
-    document.title = "Stage " + data.stageId + " (" + data.attemptId + ")";
+    document.title = "Details for Stage " + data.stageId + " (attempt " + data.attemptId + ")";
     return null;
   },
   showSpillStats: (metrics) => {
     return metrics.MemoryBytesSpilled || metrics.DiskBytesSpilled;
+  },
+  showDAGVisualization: function(stageAttempt) {
+    return {
+      component: DAGVisualization,
+      name: "DAG Visualization",
+      stageAttempt: stageAttempt
+    };
   },
   getSummaryMetricsTableData: (stageAttempt) => {
     return {
@@ -208,4 +215,3 @@ Template.stagePage.helpers({
     };
   }
 });
-

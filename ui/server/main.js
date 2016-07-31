@@ -12,6 +12,7 @@ Meteor.startup(function() {
     [ Jobs, { appId: 1, id: 1 } ],
     [ Stages, { appId: 1, id: 1 } ],
     [ Stages, { appId: 1, jobId: 1 } ],
+    [ Graphs, { appId: 1, stageId: 1} ],
     [ StageAttempts, { appId: 1, stageId: 1, id: 1 } ],
     [ RDDs, { appId: 1, id: 1 } ],
     [ Executors, { appId: 1, id: 1 } ],
@@ -123,6 +124,11 @@ Meteor.publish("stage-page", function(appId, stageId, attemptId) {
     apps,
     StageAttempts.find({ appId: appId, stageId: stageId, id: attemptId })
   ];
+});
+
+// Graph for StageAttempt page, loaded on demand
+Meteor.publish("stage-page-graph", function(appId, stageId) {
+  return Graphs.find({appId: appId, stageId: stageId});
 });
 
 function publishCountsByStatus(collection, objType) {

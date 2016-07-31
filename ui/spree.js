@@ -4,6 +4,7 @@ RDDBlocks = new Mongo.Collection("rdd_blocks");
 NonRDDBlocks = new Mongo.Collection("non_rdd_blocks");
 Jobs = new Mongo.Collection("jobs");
 Stages = new Mongo.Collection("stages");
+Graphs = new Mongo.Collection("graphs");
 StageAttempts = new Mongo.Collection("stage_attempts");
 StageExecutors = new Mongo.Collection("stage_executors");
 Tasks = new Mongo.Collection("tasks");
