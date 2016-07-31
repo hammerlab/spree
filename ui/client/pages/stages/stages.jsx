@@ -27,15 +27,46 @@ var stageIDColumn = new Column(
 StageDetails = React.createClass({
   mixins: [ReactMeteorData],
   getMeteorData() {
-    const subscription = Meteor.subscribe('stage-details', this.props.appId, this.props.stageId);
-
-    return {
-      ready: subscription.ready(),
-      stage: Stages.findOne({appId: this.props.appId, id: this.props.stageId})
-    };
+    const subscription1 = Meteor.subscribe('stage-details', this.props.appId, this.props.stageId);
+    const subscription2 = Meteor.subscribe('rdds', this.props.appId);
+    if (subscription1.ready() && subscription2.ready()) {
+      var stage = Stages.findOne(
+        {appId: this.props.appId, id: this.props.stageId},
+        {fields: {name: true, details: true, rddIDs: true}});
+      var cachedRDDs = RDDs.find(
+        {appId: this.props.appId, id: {$in: stage.rddIDs}},
+        {fields: {appId: true, id: true, name: true}}
+      ).fetch();
+      return {ready: true, stage: stage, rdds: cachedRDDs};
+    } else {
+      return {return: false, stage: null, rdds: []};
+    }
   },
   render() {
-    return (this.data.ready) ? <pre className='code'>{this.data.stage.details}</pre> : <span></span>;
+    if (this.data.ready) {
+      var rddsToDisplay = null;
+      if (this.data.rdds.length) {
+        rddsToDisplay = [
+          // title to display when there are cached RDDs, id = -1 for eliminating key collisions.
+          <span key="-1">RDDs:</span>,
+          // all cached RDDs' links with some adjacent spaces
+          this.data.rdds.map(function(rdd) {
+            var href = ['', 'a', rdd.appId, 'rdd', rdd.id].join('/');
+            return <span key={rdd.id}>
+              <span>&nbsp;</span>
+              <a href={href}>{rdd.name}</a>
+            </span>;
+          })
+        ];
+      }
+
+      return <div>
+        {rddsToDisplay}
+        <pre className='code'>{this.data.stage.details}</pre>
+      </div>;
+    } else {
+      return <span></span>;
+    }
   }
 });
 
