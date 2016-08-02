@@ -95,7 +95,10 @@ Meteor.publish("job-page", function(appId, jobId) {
   ];
 });
 
-
+// Graph for Job page, loaded on demand
+Meteor.publish("job-page-graph", function(appId, jobId) {
+  return Graphs.find({appId: appId, jobId: jobId});
+});
 
 function identity(x) { return x; }
 acc = function(key) {

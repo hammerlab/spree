@@ -31,4 +31,3 @@ check
 keypress:keypress
 momentjs:moment
 twbs:bootstrap
-d3

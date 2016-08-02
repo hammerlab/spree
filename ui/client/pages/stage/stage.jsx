@@ -136,7 +136,8 @@ Template.stagePage.helpers({
     return {
       component: DAGVisualization,
       name: "DAG Visualization",
-      stageAttempt: stageAttempt
+      "type": "stage",
+      "item": stageAttempt
     };
   },
   getSummaryMetricsTableData: (stageAttempt) => {
