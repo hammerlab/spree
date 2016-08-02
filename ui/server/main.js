@@ -250,6 +250,10 @@ publishObjsByStatus(
       ]
 );
 
+Meteor.publish("stage-details", function(appId, stageId) {
+  return Stages.find({appId: appId, id: stageId});
+});
+
 Meteor.publish("stage-attempts", function(appId, opts) {
   return StageAttempts.find({ appId: appId }, opts);
 });
