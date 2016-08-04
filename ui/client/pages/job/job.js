@@ -29,6 +29,14 @@ Template.jobPage.helpers({
     if (data && data.job && data.job.id !== undefined) {
       document.title = "Job " + data.job.id + " - Spark";
     }
+  },
+  showDAGVisualization: function(job) {
+    return {
+      component: DAGVisualization,
+      name: "DAG Visualization",
+      "type": "job",
+      "item": job
+    };
   }
 });
 
@@ -39,4 +47,3 @@ Template.registerHelper("jobStatus", function(job) {
   if (job.inProgress) return "RUNNING";
   return "UNKNOWN";
 });
-

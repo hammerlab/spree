@@ -6,7 +6,9 @@
   <div class="container">
     <h3>Details for Job {{job.id}}</h3>
     <div><strong>Status:</strong> {{jobStatus job}}</div>
+    <div class="link-set">
+      {{>React showDAGVisualization job}}
+    </div>
     {{>stagesTables}}
   </div>
 </template>
-

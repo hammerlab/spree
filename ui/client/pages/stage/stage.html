@@ -4,7 +4,7 @@
   {{setTitle this}}
   {{log this}}
   <div class="container">
-    <h3>Details for Stage {{stageId}}, Attempt {{attemptId}}</h3>
+    <h3>Details for Stage {{stageId}} (Attempt {{attemptId}})</h3>
     {{#with stageAttempt}}
       <div><strong>Status:</strong> {{statusStr status}}</div>
       {{#with taskCounts}}
@@ -50,6 +50,10 @@
         {{/if}}
       {{/with}}
     {{/with}}
+
+    <div class="link-set">
+      {{>React showDAGVisualization stageAttempt}}
+    </div>
 
     <div>
       {{>React getSummaryMetricsTableData stageAttempt}}
