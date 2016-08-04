@@ -97,7 +97,8 @@ Meteor.publish("job-page", function(appId, jobId) {
 
 // Graph for Job page, loaded on demand
 Meteor.publish("job-page-graph", function(appId, jobId) {
-  return Graphs.find({appId: appId, jobId: jobId});
+  // sort by stage Id to display graph flow correctly
+  return Graphs.find({appId: appId, jobId: jobId}, {sort: {stageId: 1}});
 });
 
 function identity(x) { return x; }

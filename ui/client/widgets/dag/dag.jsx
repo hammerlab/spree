@@ -1,3 +1,4 @@
+
 var VizConstants = {
   svgMarginX: 16,
   svgMarginY: 16,
@@ -360,6 +361,8 @@ function toFloat(f) {
 
 
 function displayGraph(forJob) {
+  // in order to re-render graph correctly, we have to clean up SVG container
+  graphContainer().selectAll("*").remove();
   var jobOrStage = forJob ? "job" : "stage";
   var svg = graphContainer().append("svg").attr("class", jobOrStage);
   if (forJob) {
@@ -383,7 +386,7 @@ GraphMetadataElement = React.createClass({
   componentDidMount() {
     // setting custom properties on stage-metadata to correctly draw skipped stages
     var stageId = this.props.graph['stageId'];
-    var skipped = this.props.graph['skipped'] && true;
+    var skipped = !this.props.graph['submitted'] && this.props.graph['childSubmitted'];
     this.getDOMNode().setAttribute('stage-id', stageId);
     this.getDOMNode().setAttribute('skipped', skipped);
   },
@@ -419,29 +422,41 @@ GraphMetadataElement = React.createClass({
 });
 
 // Graph element, takes array of graphs for job (single element array for stage)
-// takes: isShown, isJob, graphs
+// takes: shouldDisplay, isJob, graphs
 DAGVizElement = React.createClass({
   getInitialState() {
-    // state whether or not we already displayed graph
+    // state whether or not we already displayed graph and if we need to update it
     return {
-      alreadyDrawn: false
+      alreadyDrawn: false,
+      maxUpdateTime: 0
     };
   },
-  componentDidMount() {
-    if (this.props.isShown) {
-      this.setState({alreadyDrawn: true});
-      displayGraph(this.props.isJob);
+  forceRenderGraph(graphs) {
+    // get max update time for graphs, and compare to max update time to find if we need to
+    // re-render SVG element. Method has side-effect by updating max time in case of re-rendering.
+    var times = graphs.map(function(graph) {
+      return graph['l'];
+    });
+    var currentMaxTime = Math.max(...times)
+    if (this.state.maxUpdateTime < currentMaxTime) {
+      this.setState({maxUpdateTime: currentMaxTime});
+      return true;
+    } else {
+      return false;
     }
   },
   componentDidUpdate() {
-    if (!this.state.alreadyDrawn && this.props.isShown) {
-      this.setState({alreadyDrawn: true});
-      displayGraph(this.props.isJob);
+    if (this.props.shouldDisplay) {
+      // based on first check, find out if we need to redraw graph, or use cached version
+      if (!this.state.alreadyDrawn || this.forceRenderGraph(this.props.graphs)) {
+        this.setState({alreadyDrawn: true});
+        displayGraph(this.props.isJob);
+      }
     }
   },
   render() {
     if (this.props.graphs) {
-      var show = (this.props.isShown) ? "block": "none";
+      var show = (this.props.shouldDisplay) ? "block": "none";
       return <div>
         <div id="dag-viz-graph" style={{display: show}}></div>
         <div id="dag-viz-metadata" style={{display: "none"}}>
@@ -472,7 +487,7 @@ JobGraphElement = React.createClass({
   },
   render() {
     if (this.data.ready) {
-      return <DAGVizElement isShown={this.props.isShown} isJob={true} graphs={this.data.graphs} />;
+      return <DAGVizElement shouldDisplay={this.props.shouldDisplay} isJob={true} graphs={this.data.graphs} />;
     } else {
       return <span></span>;
     }
@@ -492,7 +507,7 @@ StageGraphElement = React.createClass({
     if (this.data.ready) {
       // since stage has only one graph, we need to wrap it into array and check that element is valid
       var graphs = (this.data.graph) ? [this.data.graph] : false;
-      return <DAGVizElement isShown={this.props.isShown} isJob={false} graphs={graphs} />;
+      return <DAGVizElement shouldDisplay={this.props.shouldDisplay} isJob={false} graphs={graphs} />;
     } else {
       return <span></span>;
     }
@@ -519,12 +534,12 @@ DAGVisualization = React.createClass({
     if (isJob) {
       return <div>
         {link}
-        <JobGraphElement isShown={this.state.toggle} appId={appId} jobId={this.props.item.id} />
+        <JobGraphElement shouldDisplay={this.state.toggle} appId={appId} jobId={this.props.item.id} />
       </div>;
     } else {
       return <div>
         {link}
-        <StageGraphElement isShown={this.state.toggle} appId={appId} stageId={this.props.item.stageId} />
+        <StageGraphElement shouldDisplay={this.state.toggle} appId={appId} stageId={this.props.item.stageId} />
       </div>;
     }
   }
