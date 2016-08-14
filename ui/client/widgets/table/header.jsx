@@ -29,20 +29,12 @@ TableHeader = React.createClass({
     var opts = Cookie.get(this.props.tableOptsKey) || {};
     var sort = opts.sort;
     var isCurrentSort = this.isCurrentSort();
+    // sort triangle (1-UP/2-DOWN) with space when sort is enabled, otherwise non-rendered null
+    var currentSortSpan = (isCurrentSort == 1) ? <span>&nbsp;&#x25B2;</span> :
+      ((isCurrentSort == -1) ? <span>&nbsp;&#x25BC;</span> : null);
     return <th onClick={this.onClick}>
-      {
-        this.props.label +
-        (
-              (isCurrentSort == 1) ?
-                    ' ▴' :
-                    ((isCurrentSort == -1) ?
-                          ' ▾' :
-                          ''
-                    )
-        )
-      }
+      <span>{this.props.label}</span>
+      {currentSortSpan}
     </th>
   }
 });
-
-
