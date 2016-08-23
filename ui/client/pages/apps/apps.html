@@ -7,11 +7,25 @@
     <div>
       {{>React
           component=Table
-          name="apps"
-          title="Spark Applications"
+          name="running-apps"
+          title="Running Applications"
           collection="Applications"
           columns=columns
-          totalCollection="NumApplications"
+          selector=runningAppsSelector
+          totalCollection="NumRunningApplications"
+          sortId='id'
+          sortDir=-1
+      }}
+    </div>
+    <div>
+      {{>React
+          component=Table
+          name="completed-apps"
+          title="Completed Applications"
+          collection="Applications"
+          columns=columns
+          selector=completedAppsSelector
+          totalCollection="NumCompletedApplications"
           sortId='id'
           sortDir=-1
       }}

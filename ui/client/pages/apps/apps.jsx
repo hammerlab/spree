@@ -11,10 +11,11 @@ Router.route("/", {
     }
     return [
       Meteor.subscribe("apps", opts),
-      Meteor.subscribe("num-applications")
+      Meteor.subscribe("num-running-applications"),
+      Meteor.subscribe("num-completed-applications"),
     ];
   },
-  action:function() {
+  action: function() {
     this.render('appsPage', { data: { apps: Applications.find() } });
   }
 });
@@ -33,5 +34,7 @@ var columns = [
 ];
 
 Template.appsPage.helpers({
-  columns: () => { return columns; }
+  columns: () => { return columns; },
+  runningAppsSelector: () => { return isAppRunningQuery(); },
+  completedAppsSelector: () => { return isAppCompletedQuery(); }
 });

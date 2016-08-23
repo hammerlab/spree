@@ -24,4 +24,14 @@ lstatuses = {
   5: "removed"
 };
 
+// function to determine whether or not application is running or pending
+// status <= 1 or undefined
+isAppRunningQuery = function() {
+  return {$or: [{status: {$lte: 1}}, {status: undefined}]};
+}
 
+// function to return completed application status (completed, removed, skipped, failed)
+// status > 1
+isAppCompletedQuery = function() {
+  return {status: {$gt: 1}};
+}
