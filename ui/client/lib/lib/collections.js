@@ -8,7 +8,9 @@ NumStageExecutors = new Mongo.Collection("num-stage-executors");
 NumRDDs = new Mongo.Collection("num-rdds");
 NumRDDExecutors = new Mongo.Collection("num-rdd-executors");
 NumRDDBlocks = new Mongo.Collection("num-rdd-blocks");
-NumApplications = new Mongo.Collection("num-applications");
+
+NumRunningApplications = new Mongo.Collection("num-running-applications");
+NumCompletedApplications = new Mongo.Collection("num-completed-applications");
 
 StageCounts = new Mongo.Collection("stage-counts");
 AllStages = new Mongo.Collection("all-stages");

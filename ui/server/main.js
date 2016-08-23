@@ -438,35 +438,42 @@ function publishNum(collectionName, collection, findFields) {
       }
 );
 
-Meteor.publish("num-applications", function() {
-  var initializing = true;
-  var self = this;
-  var count = 0;
+// generic function for publishing number of applications depending on predicate
+// currently used only to select running and completed applications
+function publishNumApplications(collection, query) {
+  Meteor.publish(collection, function() {
+    var initializing = true;
+    var self = this;
+    var count = 0;
 
-  var _id = new Mongo.ObjectID();
+    var _id = new Mongo.ObjectID();
 
-  var handle = Applications.find({}, { fields: {} }).observeChanges({
-    added: function (id, a) {
-      count++;
-      if (!initializing) {
-        self.changed("num-applications", _id, { count: count });
-      }
-    },
-    changed: function (id, e) {
-      if ('unpersisted' in e) {
-        count--;
+    var handle = Applications.find(query || {}, { fields: {} }).observeChanges({
+      added: function (id, a) {
+        count++;
         if (!initializing) {
-          self.changed("num-applications", _id, { count: count });
+          self.changed(collection, _id, { count: count });
+        }
+      },
+      changed: function (id, e) {
+        if ('unpersisted' in e) {
+          count--;
+          if (!initializing) {
+            self.changed(collection, _id, { count: count });
+          }
         }
       }
-    }
-  });
+    });
 
-  initializing = false;
-  this.added("num-applications", _id, { count: count });
-  this.ready();
+    initializing = false;
+    this.added(collection, _id, { count: count });
+    this.ready();
 
-  this.onStop(function() {
-    handle.stop();
+    this.onStop(function() {
+      handle.stop();
+    });
   });
-});
+}
+
+publishNumApplications("num-running-applications", isAppRunningQuery());
+publishNumApplications("num-completed-applications", isAppCompletedQuery());
