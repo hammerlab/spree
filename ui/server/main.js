@@ -15,7 +15,7 @@ Meteor.startup(function() {
     [ StageAttempts, { appId: 1, stageId: 1, id: 1 } ],
     [ RDDs, { appId: 1, id: 1 } ],
     [ Executors, { appId: 1, id: 1 } ],
-    [ ExecutorThreadDumps, { appId: 1, execId: 1, threadId: 1 } ],
+    [ ExecutorThreadDumps, { appId: 1, execId: 1 } ],
     [ Tasks, { appId: 1, stageId: 1, id: 1 } ],
     [ TaskAttempts, { appId: 1, stageId: 1, stageAttemptId: 1, id: 1 } ],
     [ Environment, { appId: 1 } ]
