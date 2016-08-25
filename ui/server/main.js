@@ -15,6 +15,7 @@ Meteor.startup(function() {
     [ StageAttempts, { appId: 1, stageId: 1, id: 1 } ],
     [ RDDs, { appId: 1, id: 1 } ],
     [ Executors, { appId: 1, id: 1 } ],
+    [ ExecutorThreadDumps, { appId: 1, execId: 1, threadId: 1 } ],
     [ Tasks, { appId: 1, stageId: 1, id: 1 } ],
     [ TaskAttempts, { appId: 1, stageId: 1, stageAttemptId: 1, id: 1 } ],
     [ Environment, { appId: 1 } ]
@@ -323,6 +324,10 @@ Meteor.publish("environment-page", function(appId) {
 
 Meteor.publish("executors", function(appId, opts) {
   return Executors.find({ appId: appId }, opts);
+});
+
+Meteor.publish("executor-thread-dumps", function(appId, execId) {
+  return ExecutorThreadDumps.find({ appId: appId, execId: execId });
 });
 
 Meteor.publish("rdds", function(appId, opts) {

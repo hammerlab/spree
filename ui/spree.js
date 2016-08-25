@@ -9,6 +9,7 @@ StageExecutors = new Mongo.Collection("stage_executors");
 Tasks = new Mongo.Collection("tasks");
 //TaskAttempts = new Mongo.Collection("task_attempts");
 Executors = new Mongo.Collection("executors");
+ExecutorThreadDumps = new Mongo.Collection("executor_thread_dumps");
 RDDs = new Mongo.Collection("rdds");
 RDDExecutors = new Mongo.Collection("rdd_executors");
 Environment = new Mongo.Collection("environment");
