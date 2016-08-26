@@ -20,6 +20,20 @@ Router.route("/a/:_appId/executors", {
   name: 'executors'
 });
 
+// thread dump column for executor
+var threadDumpColumn = new Column(
+  'threadDump',
+  'Thread Dump',
+  'id',
+  {
+    render: (executor) => {
+      var href = ['', 'a', executor.appId, 'executors', executor.id, 'threadDump'].join('/');
+      return <div><a href={href}>Thread Dump</a></div>;
+    },
+    renderKey: ''
+  }
+);
+
 var baseExecutorColumns = [
   new Column('id', 'ID', 'id', { truthyZero: 0 }),
   hostColumn,
@@ -39,7 +53,8 @@ var baseExecutorColumns = [
       .concat(taskColumns)
       .concat(taskTimeRollupColumns)
       .concat(ioColumns())
-      .concat([logUrlsColumn]);
+      .concat([logUrlsColumn])
+      .concat([threadDumpColumn]);
 
 var executorEndedColumns = [
   reasonColumn,

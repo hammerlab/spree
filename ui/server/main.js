@@ -15,6 +15,7 @@ Meteor.startup(function() {
     [ StageAttempts, { appId: 1, stageId: 1, id: 1 } ],
     [ RDDs, { appId: 1, id: 1 } ],
     [ Executors, { appId: 1, id: 1 } ],
+    [ ExecutorThreadDumps, { appId: 1, execId: 1 } ],
     [ Tasks, { appId: 1, stageId: 1, id: 1 } ],
     [ TaskAttempts, { appId: 1, stageId: 1, stageAttemptId: 1, id: 1 } ],
     [ Environment, { appId: 1 } ]
@@ -323,6 +324,12 @@ Meteor.publish("environment-page", function(appId) {
 
 Meteor.publish("executors", function(appId, opts) {
   return Executors.find({ appId: appId }, opts);
+});
+
+Meteor.publish("executor-thread-dumps", function(appId, execId) {
+  // we need to account for fact that executor id is integer in Mongo, but driver id is a string
+  var resolvedExecId = isNaN(parseInt(execId)) ? execId : parseInt(execId);
+  return ExecutorThreadDumps.find({ appId: appId, execId: resolvedExecId });
 });
 
 Meteor.publish("rdds", function(appId, opts) {
