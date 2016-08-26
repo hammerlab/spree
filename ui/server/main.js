@@ -327,7 +327,9 @@ Meteor.publish("executors", function(appId, opts) {
 });
 
 Meteor.publish("executor-thread-dumps", function(appId, execId) {
-  return ExecutorThreadDumps.find({ appId: appId, execId: execId });
+  // we need to account for fact that executor id is integer in Mongo, but driver id is a string
+  var resolvedExecId = isNaN(parseInt(execId)) ? execId : parseInt(execId);
+  return ExecutorThreadDumps.find({ appId: appId, execId: resolvedExecId });
 });
 
 Meteor.publish("rdds", function(appId, opts) {
