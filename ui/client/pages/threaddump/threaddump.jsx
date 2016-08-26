@@ -61,6 +61,7 @@ ThreadDumpList = React.createClass({
     this.setState({isGloballyCollapsed: !this.state.isGloballyCollapsed})
   },
   getLastUpdateTime() {
+    // last update time is select as maximum update time for all executor threads
     var time = "Undefined";
     if (this.props.threads) {
       var updates = this.props.threads.map(function(thread) {

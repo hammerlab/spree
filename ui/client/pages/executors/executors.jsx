@@ -27,7 +27,7 @@ var threadDumpColumn = new Column(
   'id',
   {
     render: (executor) => {
-      var href = ["", "a", executor.appId, "executors", executor.id, "threadDump"].join('/');
+      var href = ['', 'a', executor.appId, 'executors', executor.id, 'threadDump'].join('/');
       return <div><a href={href}>Thread Dump</a></div>;
     },
     renderKey: ''
