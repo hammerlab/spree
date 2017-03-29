@@ -1,6 +1,5 @@
-
-extend = Meteor.npmRequire("extend");
-moment = Meteor.npmRequire('moment');
+import extend from "extend";
+import moment from "moment";
 
 TaskAttempts = new Mongo.Collection("task_attempts");
 
