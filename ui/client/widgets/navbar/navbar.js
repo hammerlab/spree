@@ -19,6 +19,9 @@ Template.navbar.helpers({
   },
   executorsInfo() {
     var ec = this.app.executorCounts;
+    if (!ec) {
+      return "";
+    }
     if (ec.removed) {
       return "(+" + ec.running + ",-" + ec.removed + ")";
     } else {

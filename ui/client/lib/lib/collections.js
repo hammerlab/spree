@@ -1,5 +1,4 @@
 
-TaskAttempts = new Mongo.Collection("task_attempts");
 SummaryMetrics = new Mongo.Collection("summary-metrics");
 NumStages = new Mongo.Collection("num-stage-attempts");
 

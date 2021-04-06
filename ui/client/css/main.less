@@ -220,6 +220,17 @@ ul.unstyled {
       filter: progid:dximagetransform.microsoft.gradient(startColorstr='#FFA4EDFF', endColorstr='#FF94DDFF', GradientType=0);
     }
 
+    .progress-bar-failed {
+      background-color: #A0DFFF;
+      background-image: -moz-linear-gradient(top, #FFB2B2, #FF9999);
+      background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#FFB2B2), to(#FF9999));
+      background-image: -webkit-linear-gradient(top, #FFB2B2, #FF9999);
+      background-image: -o-linear-gradient(top, #FFB2B2, #FF9999);
+      background-image: linear-gradient(to bottom, #FFB2B2, #FF9999);
+      background-repeat: repeat-x;
+      filter: progid:dximagetransform.microsoft.gradient(startColorstr='#FFFFB2B2', endColorstr='#FFFF9999', GradientType=0);
+    }
+
     .progress-label {
       position: absolute;
       width: 100%;
@@ -235,6 +246,11 @@ ul.unstyled {
     th {
       .noselect;
       cursor: pointer;
+    }
+
+    td {
+      max-width: 600px;
+      word-wrap: break-word;
     }
   }
 }
@@ -252,4 +268,43 @@ ul.unstyled {
     max-width: 600px;
     width: 50%;
   }
+}
+
+.failure-hist {
+  .failure-hist-cell {
+    padding: 1px 5px;
+    white-space: nowrap;
+  }
+}
+
+.failure-type-hist-cell {
+  padding: 1px 5px;
+  white-space: nowrap;
+}
+
+.kill-link {
+  float: right;
+  cursor: pointer;
+  color: grey;
+  font-size: 10pt;
+  margin-left: 20px;
+  margin-right: 2px;
+}
+
+.toggle-details {
+  float: right;
+  font-size: 10pt;
+  cursor: pointer;
+  color: grey;
+}
+
+.stage-details {
+  max-height: 100px;
+  max-width: 400px;
+  overflow: auto;
+  transition: max-height 0.25s ease-out, padding 0.25s ease-out;
+}
+
+.stage-details.collapsed {
+  max-height: 0;
 }

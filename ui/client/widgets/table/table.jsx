@@ -1,9 +1,18 @@
 
 function emptyColumnCheck(col, rows, columnOracle) {
-  if (!rows || !rows.length || !columnOracle) {
+  if (!rows || !rows.length) {
     return col.showInEmptyTable != false;
   }
-  if (!col.requireOracle) return true;
+  if (!col.requireOracle) {
+    return rows.find((row) => {
+      for (var i = 0; i < col.sortBys.length; i++) {
+        var val = col.sortBys[i](row);
+        if (val || (val == 0 && col.truthyZero)) {
+          return true;
+        }
+      }
+    });
+  }
   var val = null;
   if (typeof col.requireOracle === 'function') {
     val = col.requireOracle(columnOracle)
@@ -97,7 +106,11 @@ Table = React.createClass({
           }
         }
         if (!row.label) {
-          row.label = this.props.rowData[row.id].label;
+          if (row.id in this.props.rowData) {
+            row.label = this.props.rowData[row.id].label;
+          } else {
+            console.error("No rowData entry found for %s", row.id, this.props.rowData);
+          }
         }
       });
     }
@@ -187,7 +200,7 @@ Table = React.createClass({
               (this.props.rowData && row.id in this.props.rowData && this.props.rowData[row.id].render) ||
               defaultRenderer;
         var renderValueFn = column.renderValueFn || column.sortBys[0];
-        return <td key={column.id}>{render ? render(renderValueFn(row)) : renderValueFn(row)}</td>
+        return <td key={column.id}>{render ? render(renderValueFn(row), this.props.columnOracle) : renderValueFn(row)}</td>
       });
       var keyFn = this.props.keyFn;
       if (typeof keyFn === 'string') {

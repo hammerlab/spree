@@ -16,7 +16,7 @@
         {{#with InputMetrics}}
           {{#if BytesRead}}
           <div>
-            <strong>Input Size / Records:</strong> {{formatBytes BytesRead}} / {{RecordsRead}} records
+            <strong>Input Size / Records:</strong> {{formatBytes BytesRead}} / {{formatNumber RecordsRead}} records
           </div>
           {{/if}}
         {{/with}}
@@ -24,7 +24,7 @@
         {{#with OutputMetrics}}
           {{#if BytesWritten}}
           <div>
-            <strong>Output Size / Records:</strong> {{formatBytes BytesWritten}} / {{RecordsWritten}} records
+            <strong>Output Size / Records:</strong> {{formatBytes BytesWritten}} / {{formatNumber RecordsWritten}} records
           </div>
           {{/if}}
         {{/with}}
@@ -32,7 +32,7 @@
         {{#with ShuffleReadMetrics}}
           {{#if TotalBytesRead}}
           <div>
-            <strong>Shuffle read:</strong> {{formatBytes TotalBytesRead}} / {{TotalRecordsRead}} records
+            <strong>Shuffle read:</strong> {{formatBytes TotalBytesRead}} / {{formatNumber TotalRecordsRead}} records
           </div>
           {{/if}}
         {{/with}}
@@ -40,7 +40,7 @@
         {{#with ShuffleWriteMetrics}}
           {{#if ShuffleBytesWritten}}
           <div>
-            <strong>Shuffle write:</strong> {{formatBytes ShuffleBytesWritten}} / {{ShuffleRecordsWritten}} records
+            <strong>Shuffle write:</strong> {{formatBytes ShuffleBytesWritten}} / {{formatNumber ShuffleRecordsWritten}} records
           </div>
           {{/if}}
         {{/with}}

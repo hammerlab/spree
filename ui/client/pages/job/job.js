@@ -32,7 +32,7 @@ Template.jobPage.helpers({
   }
 });
 
-Template.registerHelper("jobStatus", function(job) {
+Template.registerHelper("jobStatus", function(job) { //TODO
   if (!job) { return ""; }
   if (job.succeeded) return "SUCCEEDED";
   if (job.failed) return "FAILED";

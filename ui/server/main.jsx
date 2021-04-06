@@ -2,7 +2,8 @@
 extend = Meteor.npmRequire("extend");
 moment = Meteor.npmRequire('moment');
 
-TaskAttempts = new Mongo.Collection("task_attempts");
+//Environment = new Mongo.Collection("environment");
+//TaskAttempts = new Mongo.Collection("task_attempts");
 
 console.log("Starting server with Mongo URL: " + process.env.MONGO_URL);
 
@@ -261,13 +262,6 @@ Meteor.publish("stage-tasks", function(appId, stageId, attemptId, opts) {
   return ret;
 });
 
-Meteor.publish("stage-summary-metrics", function(appId, stageId, attemptId, opts) {
-  var before = moment();
-  var ret = StageSummaryMetrics.find({ appId: appId, stageId: stageId, stageAttemptId: attemptId }, opts);
-  console.log("stage-summary-metrics: %d.%d: %s. %d ms", stageId, attemptId, JSON.stringify(opts), moment() - before);
-  return ret;
-});
-
 Meteor.publish("stage-executors", function(appId, stageId, attemptId, opts) {
   return StageExecutors.find({ appId: appId, stageId: stageId, stageAttemptId: attemptId }, opts);
 });
@@ -320,6 +314,41 @@ Meteor.publish("environment-page", function(appId) {
     Environment.find({ appId: appId })
   ];
 });
+
+//Meteor.publish("environment", function(appId) {
+//  //var initializing = true;
+//  var self = this;
+//
+//  var handle = Environment.find({ appId: appId }).observeChanges({
+//    added(_id, env) {
+//      self.added("environment", _id, )
+//    }
+//  });
+//
+//  //initializing = true;
+//  this.ready();
+//
+//  this.onStop(function() {
+//    handle.stop();
+//  });
+//});
+
+//Meteor.publish("max-task-failures", function(appId) {
+//  apps = (appId == 'latest') ? lastApp() : Applications.find({ id: appId });
+//  appId = (appId == 'latest') ? apps.fetch()[0].id : appId;
+//  var maxTaskFailures = 4;
+//  var env = Environment.find({ appId: appId });
+//  if (env && env.spark) {
+//    var failuresArr =
+//          env.spark.find((a) => {
+//            return a[0] == 'spark.task.maxFailures';
+//          });
+//    if (failuresArr) {
+//      maxTaskFailures = parseInt(failuresArr[1]);
+//    }
+//  }
+//  return maxTaskFailures;
+//});
 
 Meteor.publish("executors", function(appId, opts) {
   return Executors.find({ appId: appId }, opts);

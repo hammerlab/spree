@@ -3,7 +3,7 @@ sigFigs = function(m, n) {
   if (!m) return m;
   n = n || 3;
   var leftOfDecimal = Math.max(1, Math.ceil(Math.log(m) / Math.log(10)));
-  return m.toFixed(Math.max(0, n - leftOfDecimal));
+  return m.toFixed(Math.max(0, n - leftOfDecimal))/*.replace(/\.0+$/, '')*/;
 };
 
 formatTime = function(ms, roundToSecond) {
@@ -50,19 +50,21 @@ formatDateTime = function(dt) {
   return dt && moment(dt).format("YYYY/MM/DD HH:mm:ss") || "-";
 };
 
-formatBytesRatio = function(used, total) {
+formatBytesRatio = function(used, total, digits) {
   var base = 1024;
   var cutoff = 2;
   var levels = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
   var idx = 0;
+  used = used || 0;
   while (total > base && idx < levels.length) {
     used /= base;
     total /= base;
     idx++;
   }
   var order = levels[idx];
-  return sigFigs(used) + '/' + sigFigs(total) + ' ' + order;
+  return sigFigs(used, digits || 3) + '/' + sigFigs(total, digits || 3) + ' ' + order;
 };
+Template.registerHelper('formatBytesRatio', formatBytesRatio);
 
 formatBytes = function(bytes) {
   if (!bytes) return "-";
@@ -94,6 +96,7 @@ formatNumber = function(n) {
     order = levels[i][0];
   }
 };
+Template.registerHelper('formatNumber', formatNumber);
 
 formatPercent = (p) => {
   return (100*p).toString().substr(0, 3) + '%';
@@ -130,6 +133,11 @@ getHostPort = function(e) {
   }
   return null;
 };
+
+memPercentage = (app) => {
+  return sigFigs((app.MemorySize || 0) / app.maxMem * 100) + '%';
+};
+Template.registerHelper('memPercentage', memPercentage);
 
 defaultRenderer = (x) => { if (!x) return '-'; return x; };
 

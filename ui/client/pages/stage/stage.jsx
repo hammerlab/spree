@@ -58,9 +58,13 @@ var statsData = {
   'metrics.ShuffleReadMetrics.TotalRecordsRead': { label: 'Shuffle Read Records' },
   'metrics.ShuffleWriteMetrics.ShuffleBytesWritten': { label: 'Shuffle Write Bytes', render: formatBytes },
   'metrics.ShuffleWriteMetrics.ShuffleRecordsWritten': { label: 'Shuffle Write Records' },
-  'metrics.MemoryBytesSpilled': { label: 'Memory Spilled' },
-  'metrics.DiskBytesSpilled': { label: 'Disk Spilled' }
+  'metrics.MemoryBytesSpilled': { label: 'Memory Spilled', render: formatBytes },
+  'metrics.DiskBytesSpilled': { label: 'Disk Spilled', render: formatBytes }
 };
+
+for (var metricId in statsData) {
+  statsData[metricId].acc = acc(metricId);
+}
 
 var statsColumns = [
   new Column('id', 'Metric', 'label'),
@@ -99,6 +103,7 @@ var taskErrorColumn =
               }
             }
       );
+
 // Per-task table
 var taskTableColumns = [
   new Column('index', 'Index', 'index', { truthyZero: true }),
@@ -133,13 +138,21 @@ Template.stagePage.helpers({
     return metrics.MemoryBytesSpilled || metrics.DiskBytesSpilled;
   },
   getSummaryMetricsTableData: (stageAttempt) => {
+    var data = [];
+    if (stageAttempt && stageAttempt.sm) {
+      for (var metricId in statsData) {
+        var metric = statsData[metricId].acc(stageAttempt.sm);
+        if (!metric) continue;
+        metric.id = metricId;
+        data.push(metric);
+      }
+    }
     return {
       component: Table,
       name: "summaryMetrics",
       title: "Summary Metrics",
       columns: statsColumns,
-      subscriptionFn: getSubscriptionFn("stage-summary-metrics", stageAttempt),
-      collection: "StageSummaryMetrics",
+      data: data,
       rowData: statsData,
       allowEmptyColumns: true,
       hideEmptyRows: true,

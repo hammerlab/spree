@@ -26,8 +26,103 @@ var stageNameColumn = new Column(
       'Description',
       'name',
       {
-        render: (attempt) => { return <a href={stageAttemptUrl(attempt)}>{attempt.name}</a>; },
+        render: (attempt, app) => {
+          var key = attempt.appId + "." + attempt.stageId + "." + attempt.id + ".details";
+          var expanded = !!LocalStore.get(key);
+          var showKillLink = app && app.driverUrl && (attempt.status == RUNNING || attempt.status == PENDING);
+          return <div data-toggle="popover" title="foo" data-content="bar">
+            {
+                  showKillLink ?
+                  <a href={app.driverUrl + "/stages/stage/kill?terminate=true&id=" + attempt.stageId} className="kill-link">
+                    (kill)
+                  </a> : null
+                  }
+            <a href={stageAttemptUrl(attempt)}>{attempt.name}</a>
+            {
+                  attempt.details ?
+                  <span className="toggle-details" onClick={(e) => { LocalStore.set(key, !expanded); }}>
+                    +details
+                  </span> : null
+                  }
+            <div className={"stage-details" + (expanded ? '' : ' collapsed')}>
+              <pre>{expanded ? attempt.details : ''}</pre>
+            </div>
+          </div>;
+        },
         renderKey: ''
+      }
+);
+
+var failingTaskIndexHistColumn = new Column(
+      'tasks-failed',
+      'Failing Task Hist',
+      'failed',
+      {
+        renderKey: '',
+        render(stageAttempt) {
+          var failed = stageAttempt.failed;
+          var failing = stageAttempt.failing;
+
+          var app = Applications.findOne();
+          var maxTaskFailures = app && app.maxTaskFailures || 4;
+
+          var spans = [];
+          for (var numFailures in failed) {
+            if (!failed[numFailures] && !failing[numFailures]) continue;
+            var blueGreenColor = parseInt(255 * (1 - numFailures / maxTaskFailures)).toString(16);
+            if (blueGreenColor.length == 1) blueGreenColor = '0' + blueGreenColor;
+            var color = '#FF' + blueGreenColor + blueGreenColor;
+            spans.push(
+                  <span
+                        key={numFailures}
+                        className="failure-hist-cell"
+                        style={{backgroundColor: color}}>
+                    {numFailures}: {failing[numFailures]}({failed[numFailures]})
+                  </span>
+            );
+          }
+          return <span className="failure-hist">{spans}</span>;
+        }
+      }
+);
+
+var failureTypeAbbrevMap = {
+  ExecutorLostFailure: { name: 'ELF', color: '#DFD' },
+  FetchFailure: { name: 'FF', color: '#FDD' },
+  ExceptionFailure: { name: 'EF', color: '#DDF' },
+  TaskCommitDenied: { name: 'TCD', color: '#FFD' },
+  Success: { name: 'S', color: '#FFF' },
+  TaskKilled: { name: 'TK', color: '#FDF' },
+  undefined: { name: '??', color: '#DDD' }
+};
+
+var taskFailureTypeHistogramColumn = new Column(
+      'failure-type-hist',
+      'Failure Types',
+      'failTypes',
+      {
+        render(failTypes) {
+          var failedArr = [];
+          for (var ft in failTypes) {
+            failedArr.push([ft, failTypes[ft]]);
+          }
+          var spans = failedArr.map((arr, idx) => {
+            var ft = arr[0];
+            var num = arr[1];
+            var attrs = failureTypeAbbrevMap[ft];
+            if (!attrs) {
+              console.error("Bad failure type:", ft);
+              attrs = failureTypeAbbrevMap[undefined];
+            }
+            return <span
+                  key={idx}
+                  className="failure-type-hist-cell"
+                  style={{ backgroundColor: attrs.color }}>
+              {attrs.name}: {num}
+            </span>;
+          });
+          return <span className="failure-type-hist">{spans}</span>;
+        }
       }
 );
 
@@ -42,7 +137,9 @@ var stageColumns = (name) => {
         .concat(name === 'all' ? [ statusColumn ] : [])
         .concat([
           taskIdxsColumn,
-          tasksColumn
+          tasksColumn,
+          failingTaskIndexHistColumn,
+          taskFailureTypeHistogramColumn
         ])
         .concat(ioColumns());
 };

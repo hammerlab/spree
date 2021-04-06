@@ -13,7 +13,11 @@
             <a href="/a/{{appId}}">Jobs</a>
           </li>
           <li class="{{#if stagesTab}}active{{/if}}"><a href="/a/{{appId}}/stages">Stages</a></li>
-          <li class="{{#if storageTab}}active{{/if}}"><a href="/a/{{appId}}/storage">Storage</a></li>
+          <li class="{{#if storageTab}}active{{/if}}">
+            <a href="/a/{{appId}}/storage">
+              Storage ({{formatBytesRatio app.MemorySize app.maxMem 2}}: {{memPercentage app}})
+            </a>
+          </li>
           <li class="{{#if environmentTab}}active{{/if}}"><a href="/a/{{appId}}/environment">Environment</a></li>
           <li class="{{#if executorsTab}}active{{/if}}">
             <a href="/a/{{appId}}/executors">

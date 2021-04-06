@@ -2,8 +2,8 @@
 StackTrace = React.createClass({
   render() {
     return <div className="stack-trace">
-      {this.props.stack.map((s) => {
-        return <div>
+      {this.props.stack.map((s, idx) => {
+        return <div key={idx}>
           {s.DeclaringClass}.{s.MethodName} {s.FileName}:{s.LineNumber}
         </div>;
       })}

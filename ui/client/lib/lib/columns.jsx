@@ -103,7 +103,7 @@ function progressBar(counts) {
 tasksColumn = new Column(
       'tasks',
       'Tasks Attempts: Succeeded/Total',
-      'taskCounts.succeeded',
+      [ 'taskCounts.succeeded', 'taskCounts.running', 'taskCounts.failed' ],
       {
         render: progressBar,
         renderKey: 'taskCounts',
@@ -114,7 +114,7 @@ tasksColumn = new Column(
 taskIdxsColumn = new Column(
       'tasksIdxs',
       'Tasks: Succeeded/Total',
-      'taskIdxCounts.succeeded',
+      [ 'taskIdxCounts.succeeded', 'taskIdxCounts.running', 'taskIdxCounts.failed' ],
       {
         render: progressBar,
         renderKey: 'taskIdxCounts',

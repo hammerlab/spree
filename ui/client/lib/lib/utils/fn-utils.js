@@ -1,4 +1,8 @@
 
+Meteor.startup(function() {
+  $('[data-toggle="popover"]').popover();
+});
+
 identity = function(x) { return x; };
 
 acc = function(key) {
